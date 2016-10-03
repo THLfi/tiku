@@ -1,0 +1,228 @@
+<summary id="test1" drill="no" spec="1.1" scheme="ref">
+ <lang>fi</lang>
+ <lang>en</lang>
+ <lang>sv</lang>
+ <subject lang="fi">Testitiiviste 1</subject>
+ <subject lang="en">Test summary #1</subject>
+ <subject lang="sv">Test nummer 1</subject>
+ <title lang="fi">Valintojen testaustiiviste</title>
+ <title lang="en">Selections testing</title>
+ <title lang="sv">SV Selections test</title>
+ <link lang="fi">http://wwww.thl.fi/</link>
+ <link lang="en">http://wwww.thl.fi/</link>
+ <link lang="sv">http://wwww.thl.fi/</link>
+ <fact>fact_toitu</fact>
+ <!-- select: dim -->
+ <select id="kuntakaikki">
+  <dim>municip</dim>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/297</default>
+ </select>
+ <!-- select: dim multi -->
+ <select id="kuntakaikkimulti" multi="yes" >
+  <dim>municip</dim>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/091</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/297</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/205</default>
+ </select>
+ <!-- select: dim without default with search -->
+ <select id="kuntakaikkisearch" search="yes">
+  <dim>municip</dim>
+ </select>
+ <!-- select: root -->
+ <select id="roottest">
+  <dim>municip</dim>
+  <stage>root</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/root</default>
+ </select>
+ <!-- select: dim & stage -->
+ <select id="kuntataso">
+  <dim>municip</dim>
+  <stage>municipality</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+ </select>
+ <!-- select: dim & stage with search -->
+ <select id="kuntatasosearch" search="yes">
+  <dim>municip</dim>
+  <stage>municipality</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+ </select>
+ <!-- select: dim & stage with multi and search -->
+ <select id="kuntatasomultisearch" multi="yes" search="yes">
+  <dim>municip</dim>
+  <stage>municipality</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/091</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/297</default>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/205</default>
+ </select>
+ <!-- select: dual -->
+ <select id="tuplavalinta">
+  <dim>avi</dim>
+  <stage>avi</stage>
+  <stage>region</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/5</default>
+ </select>
+ <!-- select: triple -->
+ <select id="triplavalinta">
+  <dim>avi</dim>
+  <stage>root</stage>
+  <stage>avi</stage>
+  <stage>region</stage>
+  <default>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/5</default>
+ </select>
+ <!-- select: sets and items, hidden: no -->
+ <select id="alue1" hidden="no">
+  <dim>avi</dim>
+  <set>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/3</set>
+  <set>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/1</set>
+  <item>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/1</item>
+  <default>http://meta.thl.fi/codes/wild/dimension/avi/2011/region/11</default>
+ </select>
+ <!-- select: sets and items, hidden: yes -->
+ <select id="alue2" hidden="yes">
+  <dim>avi</dim>
+  <set>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/3</set>
+  <set>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/1</set>
+  <item>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/1</item>
+  <default>http://meta.thl.fi/codes/wild/dimension/avi/2011/avi/3</default>
+ </select>
+ <!-- select: sets and items, retain: no -->
+ <select id="kuntaretainno" retain="no">
+  <dim>municip</dim>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/285</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/297</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/491</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/091</item>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+ </select>
+ <!-- select: sets and items, retain: yes -->
+ <select id="kuntaretainyes" retain="yes">
+  <dim>municip</dim>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/285</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/297</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/491</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/091</item>
+  <default>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/182</default>
+ </select>
+ <!-- select: dim (measure) -->
+ <select id="mittarikaikki">
+  <dim>measure</dim>
+  <default>http://meta.thl.fi/codes/wild/measure/perus_brutto_viimv</default>
+ </select>
+ <!-- select: dim & stage (measure) -->
+ <select id="mittarialkeis">
+  <dim>measure</dim>
+  <stage>leaf</stage>
+  <default>http://meta.thl.fi/codes/wild/measure/perus_brutto_viimv</default>
+ </select>
+ <!-- select: sets and items (measure) -->
+ <select id="mittari1">
+  <dim>measure</dim>
+  <set>http://meta.thl.fi/codes/wild/measure/mittarikansio4</set>
+  <set>http://meta.thl.fi/codes/wild/measure/mittarikansio5</set>
+  <item>http://meta.thl.fi/codes/wild/measure/perus_brutto</item>
+  <item>http://meta.thl.fi/codes/wild/measure/yht_brutto</item>
+  <default>http://meta.thl.fi/codes/wild/measure/yht_brutto</default>
+ </select>
+ <!-- select: sets and items, retain: yes (measure) -->
+ <select id="mittari2" retain="yes">
+  <dim>measure</dim>
+  <set>http://meta.thl.fi/codes/wild/measure/mittarikansio4</set>
+  <set>http://meta.thl.fi/codes/wild/measure/mittarikansio5</set>
+  <item>http://meta.thl.fi/codes/wild/measure/perus_brutto</item>
+  <item>http://meta.thl.fi/codes/wild/measure/yht_brutto</item>
+  <default>http://meta.thl.fi/codes/wild/measure/yht_brutto</default>
+ </select>
+ <presentation id="graafi1">
+  <type>line</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <presentation id="graafi2">
+  <type>line</type>
+  <dim>time</dim>
+  <measureref>mittari2</measureref>
+  <filterref>alue2</filterref>
+ </presentation>
+ <presentation id="graafi3">
+  <!-- uses new features in presentation: item -->
+  <type>line</type>
+  <dim>municip</dim>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/925</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/927</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/051</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/071</item>
+  <item>http://meta.thl.fi/codes/wild/dimension/municip/2011/municipality/090</item>
+  <measureref>mittari2</measureref>
+ </presentation>
+ <presentation id="graafi4">
+  <!-- uses new features in presentation: set -->
+  <type>line</type>
+  <dim>avi</dim>
+  <set>http://meta.thl.fi/codes/wild/dimension/avi/2011/root</set>
+  <measureref>mittari2</measureref>
+ </presentation>
+ <presentation id="subtitle_xyz1" group="begin">
+  <type>info</type>
+  <content lang="fi">Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat</content>
+  <content lang="en">This is a text a bc askdljfalksdjf öalksdjf aklösdjfa ölsdkjfölkasdjf löaksdjf aösdfjkasödlfkja sdöfjka sdölkfj asölkdfja öslkdfj aslködfja södlfkjaö sdkfjaösdkf jasdklöfj asöldkfj asdölkfjasö dlkfj mviiviv iv iviv iviv iviv iviviivivivv iv iviv ivi asdfiasd fiasdf iasdfiwe rewirwer werwerwerwe were</content>
+  <content lang="sv">Ekstra info text här svenska kasjdflökajsd fök aksldfioqwe riqweu riqwpeu rw equqweoir qweoiru qweiur qwoieruowqie ruoiqweur qwieour wqioeur wqeiruwqeior uwqieur wqerqiweur oqiweur ioqweur qwer qwe jhhe eh ehe heh ehehe hheheheh eheheheheheheheheh ehehe he he ehe he he he ehehe he ehe he he ehehehas</content>
+ </presentation>
+ <presentation id="subtitle_xyz3" group="end">
+  <type>info</type>
+  <content lang="fi">Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat Seuraavissa graafeissa on ala- ja ylärajat</content>
+  <content lang="en">This is a text a bc askdljfalksdjf öalksdjf aklösdjfa ölsdkjfölkasdjf löaksdjf aösdfjkasödlfkja sdöfjka sdölkfj asölkdfja öslkdfj aslködfja södlfkjaö sdkfjaösdkf jasdklöfj asöldkfj asdölkfjasö dlkfj mviiviv iv iviv iviv iviv iviviivivivv iv iviv ivi asdfiasd fiasdf iasdfiwe rewirwer werwerwerwe were</content>
+  <content lang="sv">Ekstra info text här svenska kasjdflökajsd fök aksldfioqwe riqweu riqwpeu rw equqweoir qweoiru qweiur qwoieruowqie ruoiqweur qwieour wqioeur wqeiruwqeior uwqieur wqerqiweur oqiweur ioqweur qwer qwe jhhe eh ehe heh ehehe hheheheh eheheheheheheheheh ehehe he he ehe he he he ehehe he ehe he he ehehehas</content>
+ </presentation>
+ <presentation id="subtitle_xyza" group="begin">
+  <type>subtitle</type>
+  <content lang="fi">Seuraavissa graafeissa on ala- ja ylärajat</content>
+  <content lang="en">This is a subtitle</content>
+  <content lang="sv">Ekstra titel här</content>
+ </presentation>
+<presentation id="subtitle_xyzb" group="end">
+  <type>subtitle</type>
+  <content lang="fi">Seuraavissa graafeissa on ala- ja ylärajat</content>
+  <content lang="en">This is a subtitle</content>
+  <content lang="sv">Ekstra titel här</content>
+ </presentation>
+<presentation id="graafi22134234234">
+  <type min="10000" max="500000">bar</type>
+  <dim>time</dim>
+  <emphasize>http://meta.thl.fi/codes/wild/dimension/time/1/year/2010</emphasize>
+  <emphasize>http://meta.thl.fi/codes/wild/dimension/time/1/year/2011</emphasize>
+  <measureref>mittari2</measureref>
+  <filterref>alue2</filterref>
+</presentation>
+<presentation id="graafi22134234515">
+  <type min="10000" max="500000" n="yes">bar</type>
+  <dim>time</dim>
+  <emphasize>http://meta.thl.fi/codes/wild/dimension/time/1/year/2010</emphasize>
+  <measureref>mittarikaikki</measureref>
+  <filterref>alue2</filterref>
+</presentation>
+<presentation id="graafi22134234238">
+  <type min="10000" max="500000" ci="yes">bar</type>
+  <dim>time</dim>
+  <measureref>mittarikaikki</measureref>
+  <filterref>alue2</filterref>
+</presentation>
+<presentation id="graafi22134234557">
+  <type min="10000" max="500000" ci="yes" n="yes">bar</type>
+  <dim>time</dim>
+  <measureref>mittarikaikki</measureref>
+  <filterref>alue2</filterref>
+</presentation>
+ <presentation id="gauge_abc_def">
+  <type palette="redyellowgreen" min="10000" max="500000">gauge</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari2</measureref>
+  <filterref>alue2</filterref>
+ </presentation>
+</summary>

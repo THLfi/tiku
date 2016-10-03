@@ -1,0 +1,378 @@
+body {
+	font-family: "Source Sans Pro", Arial, sans-serif;
+	color: #303030;
+	background: #fff;
+	border-top: 5px solid #2a6496;
+}
+
+h1 {
+	position: relative;
+  margin-top: 25px;
+	margin-left: 30px;
+	font-size: 18pt;
+	font-weight: 700;
+	line-height: 36pt;
+}
+
+.pivot-banner {
+	background: #fff;
+	height: 10px;
+	position: absolute;
+	top: 70px;
+	left: 0;
+	right: 0;
+}
+
+#languages {
+	position: absolute;
+	top: 0;
+	right: 40px;
+}
+#languages ul li {
+	display: inline-block;
+	padding-right: 15px;
+	list-style-type: none;
+}
+
+#languages li a {
+  color: #606060;
+}
+#languages li a:hover {
+  text-decoration: none;
+  color: #000;
+}
+
+#languages li.active a:before, #languages li a:hover:before {
+  content: "";
+  display: block;
+  margin: 0 auto;
+  width: 0;
+  border: 5px solid #2a6496;
+  border-color: #2a6496 transparent transparent transparent;
+  padding-top: 0px;
+}
+#languages li a:before {
+  content: "";
+  display: block;
+  margin: 0 auto;
+  width: 0;
+  border: 5px solid #fff;
+  border-color: #fff transparent transparent transparent;
+  padding-top: 0px;
+}
+
+
+.filter-control {
+	padding: 0 20px;
+	margin-right: 16.7%;
+	margin-left: -15px;
+}
+
+.pivot-header {
+	position: absolute;
+	top: 5px;
+	left: 0px;
+	right: 0px;
+	height: 120px;
+	background: #fff;
+	padding-top: 10px;
+}
+
+.logo {
+	position: absolute;
+	top: 20px; right : 20px;
+	padding: 0 10px;
+	border-radius: 5px 5px 5px 5px;
+	right: 20px;
+}
+
+.toolbar-control {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 80px;
+	height: 60px;
+	background: #2a6496;
+	padding: 10px;
+}
+.toolbar-control > div > .btn-group > a {
+	color: #fff;
+}
+
+.toolbar-control .btn-group {
+	margin-top: 5px;
+}
+.toolbar-control .btn-group > .btn {
+	background: transparent;
+	border: 0;
+	color: #fff;
+}
+.toolbar-control .btn-group > .btn .caret {
+	border-top-color: #fff;
+}
+
+
+.pivot-footer {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 32px;
+	background: #808080;
+	color: #fff;
+	text-align: center;
+	padding: 6px 0;
+}
+
+.pivot-footer a, .pivot-footer a:focus, .pivot-footer a:visited {
+	color: #fff;
+}
+
+.pivot-body {
+	position: absolute;
+	left: 0;
+	right: 10px;
+	top: 145px;
+	bottom: 32px;
+}
+
+.pivot-content {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 19.5%;
+	width: 80%;
+	overflow: auto;
+	padding: 20px;
+}
+
+.pivot-sidebar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	padding: 1ex 1ex;
+	overflow: auto;
+	width: 19.5%;
+	padding: 20px;
+
+	background: #efefef;
+}
+
+.cube th {
+	text-align: left;
+}
+
+.column-target.accept-all {
+	border-bottom-color: #999;
+	border-left: 0;
+}
+table tbody>tr>th.row-target, table tbody>tr>th.column-target {
+	position: relative;
+	padding-right: 23px;
+}
+.row-target.accept-all {
+    border-right-color: #999;
+    border-top: 0;
+}
+
+.row-target .dropdown, .column-target .dropdown {
+	display: block;
+	position: absolute;
+	right: 3px;
+	top: 3px;
+}
+.row-target .dropdown > button, .column-target .dropdown > button {
+	border: 0;
+}
+.column-target .dropdown  .dropdown-menu {
+	 	left: auto;
+		right: 0;
+}
+
+
+.accept-all .glyphicon {
+	display: none;
+}
+.accept-all.drop-active .glyphicon {
+    display: block;
+}
+
+.filter-target * {
+	display: none;
+}
+.filter-target.drop-active {
+	padding: 15px;
+    border: 2px dashed #808080;
+    background: #fff !important;
+    font-size: 20px;
+    border-radius: 10px 10px 10x 10px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center;
+    color: #303030;
+}
+.filter-target.drop-hover {
+	background: #e7e7e7 !important;
+}
+.filter-target.drop-active * {
+	display: block;
+}
+
+
+.dropdown-menu .asc, .dropdown-menu .desc {
+    display: none;
+}
+.leaf .dropdown-menu .asc, .leaf .dropdown-menu .desc {
+	display: block;
+}
+th.empty {
+	border: 0;
+}
+
+.cube td {
+	text-align: right !important;
+}
+
+.cube td.highlight {
+	background: #e7e7e7;
+}
+
+form {
+	display: none;
+}
+
+form.form {
+	display: block;
+}
+
+ul.tree-browser {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.tree {
+	list-style-type: none;
+	padding-left: 2ex;
+	text-indent: -1ex;
+}
+
+.tree span {
+	cursor: move;
+}
+
+.tree-browser>li {
+	margin: 0;
+	padding: 0;
+}
+
+.tree-browser>li>span {
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.tree .ui-draggable:hover {
+	text-decoration: underline;
+}
+
+
+.caret-right {
+	border-bottom: 4px solid transparent;
+	border-top: 4px solid transparent;
+	border-left: 4px solid;
+	display: inline-block;
+	height: 0;
+	width: 0;
+}
+
+.drop-active, .drop-active a, .drop-active>button {
+	background: #FBC365;
+	color: #fff;
+}
+
+.drop-hover, .drop-hover a, .drop-hover>button, th.hover {
+	background: #faa61a;
+	color: #fff;
+}
+
+.label.hover {
+	background: #e6e6e6;
+	cursor: hand;
+}
+
+.step {
+	display: inline-block;
+	clear: left;
+	font-size: 18pt;
+	padding-right: 0.5em;
+}
+
+.label.label-default {
+	color: #303030;
+	background: #e7e7e7;
+	font-weight: normal;
+	font-size: 10pt;
+	letter-spacing: 1px;
+}
+.label .glyphicon {
+	display: none;
+	color: #c00;
+}
+.label.hover .glyphicon {
+	display: inline-block;
+}
+
+.form-group.search {
+	position: relative;
+}
+.search .glyphicon {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+.search .input {
+	padding-right: 30px;
+}
+
+option.l1 { text-indent: 5px; }
+option.l2 { text-indent: 10px; font-style: italic;}
+option.l3 { text-indent: 15px; }
+option.l4 { text-indent: 20px; font-style: italic;}
+option.l5 { text-indent: 25px; }
+option.l6 { text-indent: 30px; font-style: italic;}
+option.l7 { text-indent: 35px; }
+option.l8 { text-indent: 40px; font-style: italic;}
+option.l9 { text-indent: 45px; }
+option.l10 { text-indent: 50px; font-style: italic;}
+option.l::before { content: "- "; }
+
+.environment {
+	position: absolute;
+	left: -2em;
+	top: -0.5em;
+	opacity: 0.9;
+	width: 4em;
+	padding: 0;
+	text-align: center;
+	display: block;
+	font-size: 14px;
+	line-height: 1.2em;
+	font-weight: bold;
+	color: #c00;
+	background: #fff;
+	border: 2px solid #c00;
+	-ms-transform: rotate(-37deg); /* IE 9 */
+  -webkit-transform: rotate(-37deg); /* Chrome, Safari, Opera */
+	transform: rotate(-37deg);
+
+}
+
+@media screen and (min-width: 768px) {
+	.modal-dialog {
+		width: 80%;
+	}
+	.toolbar-control>div {
+		margin-left: 16.7%;
+		padding-left: 30px;
+	}
+}

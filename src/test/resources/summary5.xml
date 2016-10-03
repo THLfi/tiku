@@ -1,0 +1,86 @@
+<summary id="tiiviste1a" drill="yes" spec="1.1">
+	<!-- Tämä käytössä 2014 -->
+	<lang define="yes">fi</lang>
+	<lang>en</lang>
+	<lang>sv</lang>
+	<subject lang="fi">Toimeentulotuen menot</subject>
+	<subject lang="en">Expenditure on social assistance</subject>
+	<subject lang="sv">Utgifter för utkomststödet</subject>
+	<title lang="fi">Toimeentulotuen menot ja kotitaloudet alueittain
+	</title>
+	<title lang="en">Expenditure and number of households on social
+		assistance regionally</title>
+	<title lang="sv">Utgifter för utkomststöd och hushållen regionvis
+	</title>
+	<link lang="fi">http://www.thl.fi/fi_FI/web/fi/tilastot/aiheittain/aikuisten_sosiaalipalvelut/toimeentulotuki/toimeentulotuen_menot
+	</link>
+	<link lang="en">http://www.thl.fi/fi_FI/web/fi/tilastot/aiheittain/aikuisten_sosiaalipalvelut/toimeentulotuki/toimeentulotuen_menot
+	</link>
+	<link lang="sv">http://www.thl.fi/fi_FI/web/fi/tilastot/aiheittain/aikuisten_sosiaalipalvelut/toimeentulotuki/toimeentulotuen_menot
+	</link>
+	<note lang="fi">Toimeentulotuen menotilastoista saatavat
+		kotitalousmäärät ovat epävirallisia ja viralliset tiedot saadaan
+		marraskuun lopulla toimeentulotuen henkilöperusteisesta
+		vuositilastosta. Menotilastojen kotitalousmäärät ovat käytännössä
+		vajaat 10 % korkeampia kuin henkilöperustaisen virallisen tilaston
+		tiedot. Tämä on huomioitu Tilastojulkistuksen tekstiosassa.</note>
+	<note lang="en">Data on the number of households receiving social
+		assistance, retrieved from the statistics on social assistance
+		expenditure, are unofficial. The official figures are published at the
+		end of November in the annual statistics on social assistance. In
+		practice, the numbers of recipient households reported in the
+		expenditure statistics are nearly 10 per cent higher than the numbers
+		reported in the annual statistics. This difference has taken into
+		account in the statistical report text. </note>
+	<note lang="sv">Antalet hushåll som fås ur utgiftsstatistiken över
+		utkomststödet är inofficiellt och de officiella uppgifterna fås i
+		slutet av november ur årsstatistiken för det personbaserade
+		utkomststödsregistret. I praktiken är antalet hushåll i
+		utgiftsstatistiken knappt 10 procent fler än de officiella uppgifterna
+		i den personbaserade statistiken. Detta har också beaktats i textdelen
+		i statistikpublikationen.</note>
+	<fact>fact_toitu</fact>
+	<select id="aika">
+		<dim>time</dim>
+		<stage>year</stage>
+		<default>:last:</default>
+	</select>
+	<select id="bruttomenot">
+		<dim>measure</dim>
+		<!-- Bruttomenot käyvin hinnoin 1 000 € -->
+		<item>Perustoimeentulotuen menot</item>
+		<item>Täydentävän toimeentulotuen menot</item>
+		<item>Muun toimeentulotuen menot</item>
+		<item>Toimeentulotuen menot yhteensä</item>
+		<default>Toimeentulotuen menot yhteensä</default>
+	</select>
+	<select id="kotitaloudet">
+		<dim>measure</dim>
+		<!-- Toimeentulotukea saaneiden kotitalouksien määrä -->
+		<item>Perustoimeentulotuen kotitaloudet</item>
+		<item>Täydentävän toimeentulotuen kotitaloudet</item>
+		<item>Muun toimeentulotuen kotitaloudet</item>
+		<item>Toimeentulotuen kotitaloudet yhteensä</item>
+		<default>Toimeentulotuen kotitaloudet yhteensä</default>
+	</select>
+	<presentation id="taulukko1">
+		<type>table</type>
+		<rows>
+			<dim>time</dim>
+		</rows>
+		<rowsMulti>
+			<dim total="yes">avi</dim>
+			<stage>avi</stage>
+			<stage>region</stage>
+		</rowsMulti>
+		<columns>
+			<measureref>bruttomenot</measureref>
+			<measureref>kotitaloudet</measureref>
+		</columns>
+		<columnsMulti>
+			<dim total="yes">mgroup</dim>
+			<stage>municipalgroup</stage>
+		</columnsMulti>
+		<filterref>aika</filterref>
+	</presentation>
+</summary>

@@ -1,0 +1,7 @@
+log4j.logger.rootLogger=INFO, LOG
+log4j.logger.fi.thl = TRACE,LOG
+log4j.logger.org.springframework.web = DEBUG,LOG
+
+log4j.appender.LOG=org.apache.log4j.ConsoleAppender
+log4j.appender.LOG.layout=org.apache.log4j.PatternLayout
+log4j.appender.LOG.layout.ConversionPattern=%d{HH:mm:ss dd.MM.yyyy} %-5p %c - %m%n

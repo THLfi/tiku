@@ -1,0 +1,307 @@
+<summary id="demo2" drill="no" spec="1.1">
+	<lang define="yes">fi</lang>
+	<lang>en</lang>
+	<lang>sv</lang>
+	<subject lang="fi">Demotiiviste 2</subject>
+	<subject lang="en">Demo Summary #2</subject>
+	<subject lang="sv">Demo Koncentrat 2</subject>
+	<title lang="fi">Kaikki graafityypit</title>
+	<title lang="en">All graph types</title>
+	<title lang="sv">Svensk text här</title>
+	<link lang="fi">http://wwww.thl.fi/</link>
+	<link lang="en">http://wwww.thl.fi/</link>
+	<link lang="sv">http://wwww.thl.fi/</link>
+	<note lang="fi">Tähän voi laittaa vapaavalintaisen huomiotekstin.
+		Teksti tulee näkyviin tiivisteen loppuun.</note>
+	<note lang="en">Additional note text can be put here.</note>
+	<note lang="sv">Svensk text här.</note>
+	<fact>fact_toitu</fact>
+	<select id="kuntakaikki">
+		<dim>municip</dim>
+		<default>Jämsä</default>
+	</select>
+	<select id="mittari">
+		<dim>measure</dim>
+		<stage>leaf</stage>
+		<default>Toimeentulotuen menot yhteensä</default>
+	</select>
+	<!-- presentation: line -->
+	<presentation id="line">
+		<type>line</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: multiline -->
+	<presentation id="multiline">
+		<type>line</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: subtitle -->
+	<presentation id="subtitle1">
+		<type>subtitle</type>
+		<content lang="fi">Tämä on alaotsikko</content>
+		<content lang="en">This is a subtitle</content>
+		<content lang="sv">Ekstra titel här</content>
+	</presentation>
+	<!-- presentation: bar vertical -->
+	<presentation id="barvertical">
+		<type>bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: bar horizontal -->
+	<presentation id="barhorizontal">
+		<type orientation="horizontal">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: bar group vertical -->
+	<presentation id="bargroupvertical">
+		<type multi="group">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: bar group norizontal -->
+	<presentation id="bargrouphorizontal">
+		<type multi="group" orientation="horizontal">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: subtitle -->
+	<presentation id="subtitle2">
+		<type>subtitle</type>
+		<content lang="fi">Tämä on jälleen alaotsikko</content>
+		<content lang="en">This is another subtitle</content>
+		<content lang="sv">Ekstra titel igen här</content>
+	</presentation>
+	<!-- presentation: info -->
+	<presentation id="info2">
+		<type>info</type>
+		<content lang="fi">Terveyden ja hyvinvoinnin laitos (THL) on
+			sosiaali- ja terveysministeriön hallinnonalalla toimiva tutkimus- ja
+			kehittämislaitos. THL palvelee valtion ja kuntien päättäjiä, alan
+			toimijoita, järjestöjä, tutkimusmaailmaa ja kansalaisia. Tavoitteena
+			on vaikuttaa suomalaisten terveyden ja hyvinvoinnin puolesta.</content>
+		<content lang="en">The National Institute for Health and Welfare
+			(THL) is a research and development institute under the Finnish
+			Ministry of Social Affairs and Health. THL seeks to serve the broader
+			society in addition to the scientific community, actors in the field
+			and decision-makers in central government and municipalities. The aim
+			is to promote health and welfare in Finland.</content>
+		<content lang="sv">Institutet för hälsa och välfärd (THL) är ett
+			forsknings- och utvecklingsinstitut inom social- och
+			hälsovårdsministeriets förvaltningsområde. Institutet betjänar
+			statliga och kommunala beslutsfattare, sektorns aktörer,
+			organisationer, forskningsvärlden och medborgarna.</content>
+	</presentation>
+	<!-- presentation: bar stack vertical -->
+	<presentation id="barstackvertical">
+		<type multi="stack">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: bar stack horizontal -->
+	<presentation id="barstackhorizontal">
+		<type multi="stack" orientation="horizontal">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: bar stack 100 vertical -->
+	<presentation id="barstack100vertical">
+		<type multi="stack100">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: bar stack 100 horizontal -->
+	<presentation id="barstack100horizontal">
+		<type multi="stack100" orientation="horizontal">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+	<!-- presentation: info -->
+	<presentation id="info3">
+		<type>info</type>
+		<content lang="fi">Terveyden ja hyvinvoinnin laitos (THL) on
+			sosiaali- ja terveysministeriön hallinnonalalla toimiva tutkimus- ja
+			kehittämislaitos. THL palvelee valtion ja kuntien päättäjiä, alan
+			toimijoita, järjestöjä, tutkimusmaailmaa ja kansalaisia. Tavoitteena
+			on vaikuttaa suomalaisten terveyden ja hyvinvoinnin puolesta.</content>
+		<content lang="en">The National Institute for Health and Welfare
+			(THL) is a research and development institute under the Finnish
+			Ministry of Social Affairs and Health. THL seeks to serve the broader
+			society in addition to the scientific community, actors in the field
+			and decision-makers in central government and municipalities. The aim
+			is to promote health and welfare in Finland.</content>
+		<content lang="sv">Institutet för hälsa och välfärd (THL) är ett
+			forsknings- och utvecklingsinstitut inom social- och
+			hälsovårdsministeriets förvaltningsområde. Institutet betjänar
+			statliga och kommunala beslutsfattare, sektorns aktörer,
+			organisationer, forskningsvärlden och medborgarna.</content>
+	</presentation>
+	<!-- presentation: pie -->
+	<presentation id="pie">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: gauge -->
+	<presentation id="gauge1">
+		<type palette="redyellowgreen">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="subtitle_abc">
+		<type>subtitle</type>
+		<content lang="fi">Seuraavassa esitellään esitysten sijoittamista
+			vierekkäin</content>
+		<content lang="en">This is another text, seuraavassa esitysten
+			sijoittaminen vierekkäin</content>
+		<content lang="sv">Svensk text här igen, seuraavassa esitysten
+			sijoittaminen vierekkäin</content>
+	</presentation>
+	<!-- presentation: two gauges -->
+	<presentation id="gauge2" group="begin">
+		<type palette="redyellowgreen">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="gauge3" group="end">
+		<type palette="redyellowgreen" legendless="yes">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: three gauges -->
+	<presentation id="gaugea" group="begin">
+		<type palette="redyellowgreen">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="gaugeb" group="within">
+		<type palette="redyellowgreen">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="gaugec" group="end">
+		<type palette="redyellowgreen">gauge</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: two pies -->
+	<presentation id="pie_abc" group="begin">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="pie_abcdef" group="end">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: three pies -->
+	<presentation id="pie_q" group="begin">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="pie_w" group="within">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="pie_r" group="end">
+		<type>pie</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: line & vertical bar -->
+	<presentation id="line_asdfadsfasdfasdfasdf" group="begin">
+		<type>line</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="barvertical_adfadfaq3wasdfasdf" group="end">
+		<type>bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<!-- presentation: three presentations -->
+	<presentation id="line_asdfadsfasdfasdfasdfzzz" group="begin">
+		<type>line</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="barvertical_adfadfaq3wasdfasdfyyy"
+		group="within">
+		<type>bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<measureref>mittari</measureref>
+		<filterref>kuntakaikki</filterref>
+	</presentation>
+	<presentation id="barstack100verticalzzxxxd" group="end">
+		<type multi="stack100">bar</type>
+		<dim>time</dim>
+		<stage>year</stage>
+		<dimMulti>avi</dimMulti>
+		<stageMulti>avi</stageMulti>
+		<measureref>mittari</measureref>
+	</presentation>
+</summary>

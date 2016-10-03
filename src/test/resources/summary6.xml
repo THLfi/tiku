@@ -1,0 +1,182 @@
+<summary id="test2" drill="no" spec="1.1">
+ <lang define="yes">fi</lang>
+ <lang>en</lang>
+ <lang>sv</lang>
+ <subject lang="fi">Testitiiviste 2</subject>
+ <subject lang="en">Test summary #2</subject>
+ <subject lang="sv">Test nummer 2</subject>
+ <title lang="fi">Graafien testaustiiviste</title>
+ <title lang="en">Graph testing</title>
+ <title lang="sv">SV Graph test</title>
+ <link lang="fi">http://wwww.thl.fi/</link>
+ <link lang="en">http://wwww.thl.fi/</link>
+ <link lang="sv">http://wwww.thl.fi/</link>
+ <fact>fact_toitu</fact>
+ <select id="kuntakaikki">
+  <dim>municip</dim>
+  <default>Kuopio</default>
+ </select>
+ <select id="kuntataso">
+  <dim>municip</dim>
+  <stage>municipality</stage>
+  <default>Jämsä</default>
+ </select>
+ <select id="mittari1">
+  <dim>measure</dim>
+  <set>Bruttomenot reaalihinnoin 1 000 €</set>
+  <set>Menot reaalihinnoin/asukas tai kotitalous €</set>
+  <item>Perustoimeentulotuen menot</item>
+  <item>Toimeentulotuen menot yhteensä</item>
+  <default>Toimeentulotuen menot yhteensä</default>
+ </select>
+ <select id="mittari2">
+  <dim>measure</dim>
+  <set>Bruttomenot reaalihinnoin 1 000 €</set>
+  <set>Menot reaalihinnoin/asukas tai kotitalous €</set>
+  <item>Perustoimeentulotuen menot</item>
+  <item>Toimeentulotuen menot yhteensä</item>
+  <default>Perustoimeentulotuen menot</default>
+ </select>
+ <select id="mittari3">
+  <dim>measure</dim>
+  <set>Bruttomenot reaalihinnoin 1 000 €</set>
+  <set>Menot reaalihinnoin/asukas tai kotitalous €</set>
+  <item>Perustoimeentulotuen menot</item>
+  <item>Toimeentulotuen menot yhteensä</item>
+  <default>Perustoimeentulotuki reaalihinnoin</default>
+ </select>
+ <select id="yksivuosi" hidden="yes">
+  <dim>time</dim>
+  <stage>year</stage>
+  <default>2010</default>
+ </select>
+ <select id="yksiavi" hidden="yes">
+  <dim>avi</dim>
+  <stage>avi</stage>
+  <default>Ahvenanmaan valtionvirasto</default>
+ </select>
+ <!-- presentation: single line, dim, fixed measure -->
+ <presentation id="graafi1">
+  <type>line</type>
+  <dim>time</dim>
+  <measure>Perustoimeentulotuki reaalihinnoin</measure>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <!-- presentation: bar, dim & stage, mesureref, sort -->
+ <presentation id="graafi2">
+  <type sort="desc">bar</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <!-- presentation: multiline on measures -->
+ <presentation id="graafi3">
+  <type>line</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <measure>Perustoimeentulotuki reaalihinnoin</measure>
+  <measureref>mittari2</measureref>
+ </presentation>
+ <!-- presentation: multiline on itemMulti -->
+ <presentation id="graafiitemmulti">
+  <type>line</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <dimMulti>municip</dimMulti>
+  <itemMulti>Jämsä</itemMulti>
+  <itemMulti>Kuopio</itemMulti>
+  <itemMulti>Helsinki</itemMulti>
+  <itemMulti>Tampere</itemMulti>
+ </presentation>
+ <!-- presentation: stacked bar multiDim -->
+ <presentation id="graafi4">
+  <type multi="stack">bar</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <dimMulti>avi</dimMulti>
+ </presentation>
+ <!-- presentation: group bar multiDim multiStage horizontal -->
+ <presentation id="graafi5">
+  <type multi="group" orientation="horizontal">bar</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <dimMulti>avi</dimMulti>
+  <stageMulti>avi</stageMulti>
+ </presentation>
+ <!-- presentation: mixing of measure, folder, measureref -->
+ <presentation id="graafisuper">
+  <type multi="group">bar</type>
+  <dim>time</dim>
+  <folder>Bruttomenot reaalihinnoin 1 000 €</folder>
+  <measureref>mittari1</measureref>
+  <measure>Muu toimeentulotuki</measure>
+  <filterref>yksivuosi</filterref>
+ </presentation>
+ <!-- presentation: pie -->
+ <presentation id="pie">
+  <type>pie</type>
+  <dim>time</dim>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <!-- presentation: gauge -->
+ <presentation id="gauge1" group="begin">
+  <type>gauge</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <presentation id="gauge2" group="within">
+  <type legendless="yes">gauge</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <presentation id="gauge2plus" group="within">
+  <type legendless="yes">gauge</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+ <presentation id="gauge3" group="end">
+  <type legendless="yes">gauge</type>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measureref>mittari1</measureref>
+  <filterref>kuntakaikki</filterref>
+ </presentation>
+  <!-- presentation supression test, unsuppressed -->
+ <presentation id="prunsuppressed">
+  <type multi="group">bar</type>
+  <dimMulti>municip</dimMulti>
+  <stageMulti>municipality</stageMulti>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measure>Perustoimeentulotuki</measure>
+  <filterref>yksivuosi</filterref>
+ </presentation>
+ <!-- presentation supression test, suppressed -->
+ <presentation id="prsuppressed" suppression="yes">
+  <type multi="group">bar</type>
+  <dimMulti>municip</dimMulti>
+  <stageMulti>municipality</stageMulti>
+  <dim>time</dim>
+  <stage>year</stage>
+  <measure>Perustoimeentulotuki</measure>
+  <filterref>yksivuosi</filterref>
+ </presentation>
+ <!-- presentation: root -->
+ <presentation id="rootpie">
+  <type>pie</type>
+  <dim>avi</dim>
+  <stage>root</stage>
+  <measure>Perustoimeentulotuki reaalihinnoin</measure>
+ </presentation>
+</summary>

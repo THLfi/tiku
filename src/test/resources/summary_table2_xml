@@ -1,0 +1,39 @@
+<summary id="psykiatria" drill="yes" spec="1.1">
+  <lang define="yes">fi</lang>
+  <subject lang="fi">Erikoissairaanhoidon hoitoonpääsy</subject>
+  <title lang="fi">Lasten ja nuorten mielenterveyspalvelut</title>
+  <note lang="fi">Tiedonkeruu aloitettu 2013.</note>
+  <link lang="fi">http://www.thl.fi/fi_FI/web/fi/tilastot/tiedonkeruut/erikoissairaanhoidon_hoitoonpaasy</link>
+  <fact>fact_esh_psyk</fact>
+  <select id="aika" hidden="yes">
+    <dim>time</dim>
+    <stage>period</stage>
+    <default>:last:</default>
+  </select>
+  <select id="paltu" hidden="no">
+    <dim>tuottaja</dim>
+    <stage>tuottajatyyppi</stage>
+    <stage>tuottajayksikko</stage>
+    <default>SAIRAANHOITOPIIRIT</default>
+  </select>
+  <select id="eala" hidden="no">
+    <dim>eala</dim>
+    <stage>tautiryhma</stage>
+    <stage>erikoisala</stage>
+    <default>PSYKIATRIA YHTEENSÄ</default>
+  </select>
+  <select id="mittarit">
+    <dim>measure</dim>
+    <set>Mielenterveyspalveluja odottaneet</set>
+    <set>Mielenterveyspalv. hoidon tarpeen arv. odottaneet</set>
+    <default>Yli 90 vrk, hoitoa odottaneet, %</default>
+  </select>
+  <presentation id="psykiatriabar" suppression="no">
+    <type orientation="vertical"  positive="yes" >Bar</type>
+    <dim>time</dim>
+    <stage>period</stage>
+    <measureref>mittarit</measureref>
+    <filterref>paltu</filterref>
+    <filterref>eala</filterref>
+  </presentation>
+</summary>

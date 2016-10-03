@@ -1,0 +1,36 @@
+<summary id='budget5' drill='no' spec='1.1'>
+ <lang define='yes'>fi</lang>
+ <subject lang='fi'>Budjettirahoitus, demo</subject>
+ <title lang='fi'>Vieläkö on rahaa jäljellä</title>
+ <link lang='fi'>http://www.thl.fi/</link>
+ <note lang='fi'></note>
+ <fact>fact_budget</fact>
+<select id='mittari' hidden='yes'>
+  <dim>measure</dim>
+  <default>Jäljellä</default>
+ </select>
+<select id='syyskuu' hidden='yes'>
+  <dim>time</dim>
+  <default>9/2015</default>
+ </select>
+<presentation id='graafi'>
+  <type>line</type>
+  <dim>time</dim>
+  <stage>month</stage>
+  <dimMulti>unit</dimMulti>
+  <stageMulti>ta</stageMulti>
+  <measureref>mittari</measureref>
+ </presentation>
+<presentation id="toteuma_p">
+ <type>subtitle</type>
+ <content lang="fi">Toteuma %, syyskuu 2015</content>
+</presentation>
+<presentation id='gauge1'>
+  <type min="0" max="100" palette="greenyellowred">gauge</type>
+  <dim>unit</dim>
+  <stage>ta</stage>
+  <measure>Toteutuma %</measure>
+  <filterref>syyskuu</filterref>
+ </presentation>
+
+</summary>

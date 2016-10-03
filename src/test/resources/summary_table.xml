@@ -1,0 +1,38 @@
+<summary id="sthrapo1" drill="yes" spec="1.1">
+	<lang define="yes">fi</lang>
+	<subject lang="fi">Hoitoonpääsy suunterveydenhuollossa</subject>
+	<title lang="fi">Käyntien odotusajat suunterveydenhuollossa</title>
+	<note lang="fi"></note>
+	<link lang="fi">http://www.thl.fi/fi/tilastot/tiedonkeruut/hoitoonpaasy-perusterveydenhuollossa
+	</link>
+	<fact>fact_ahil_hpaasysth01_kaikki</fact>
+	<select id="Aika">
+		<dim>aika</dim>
+		<stage>kuukausi</stage>
+		<default>:last:</default>
+	</select>
+	<select id="Ammatti">
+		<dim>ammatti</dim>
+		<stage>ammattiryhma</stage>
+		<default>Hammaslääkärit</default>
+	</select>
+	<select id="Mittari">
+		<dim>measure</dim>
+		<stage>leaf</stage>
+		<default>Käynnit</default>
+	</select>
+	<presentation id="taulukko" suppression="yes">
+		<type>table</type>
+		<columns>
+			<measure>TESTIMITTARI</measure>
+			<measure>II</measure>
+		</columns>
+		<rows>
+			<dim total="yes">palveluntuottaja</dim>
+			<stage>palveluntuottaja_avi</stage>
+		</rows>
+		<measureref>Mittari</measureref>
+		<filterref>Aika</filterref>
+		<filterref>Ammatti</filterref>
+	</presentation>
+</summary>

@@ -1,0 +1,45 @@
+<summary id="finres3" drill="yes" spec="1.1">
+	<lang define="yes">fi</lang>
+	<subject lang="fi">Mikrobilääkeresistenssi</subject>
+	<title lang="fi">Mikrobilääkeresistenssi Suomessa</title>
+	<note lang="fi">Finres-tietokannassa on
+		mikrobilääkeherkkyystestitulokset 20 yleisimmälle Suomessa tavatulle
+		mikrobille. Finresin tiedot tulevat 24 suurimmalta
+		lääkeherkkyystestejä tekevältä laboratoriolta. Finres-järjestelmän
+		tiedot kattavat n. 95% Suomessa tehdyistä
+		mikrobilääkeherkkyystestituloksista. Testitulosten tulkintarajat
+		muuttuivat vuonna 2011, kun tulkintarajoissa otettiin käyttöön
+		EUCAST-standardin mukaiset raja-arvot, joten osalla lääkeaineista
+		ennen vuotta 2011 raportoidut tulokset eivät ole suoraan
+		vertailukelpoisia vuoden 2011 ja sen jälkeen raportoituihin tuloksiin.
+	</note>
+	<link lang="fi">http://www.thl.fi/fi_FI/web/fi/tutkimus/hankkeet/fire
+	</link>
+	<fact>fact_lite</fact>
+	<select id="organismi">
+		<dim>organism</dim>
+		<stage>species</stage>
+		<default>Acinetobacter sp.</default>
+	</select>
+	<select id="periodi">
+		<dim>time</dim>
+		<default>2013</default>
+	</select>
+	<select id="näytetyyppi">
+		<dim>spec_type</dim>
+		<default>Kaikki näytetyypit</default>
+	</select>
+	<presentation id="grafiikka3" suppression="yes">
+		<type orientation="vertical" multi="group">bar</type>
+		<dim>antibiotic</dim>
+		<stage>antibiotic</stage>
+		<measure>Kantojen määrä</measure>
+		<measure>Testien määrä</measure>
+		<measure>S. määrä</measure>
+		<measure>I. määrä</measure>
+		<measure>R. määrä</measure>
+		<filterref>organismi</filterref>
+		<filterref>periodi</filterref>
+		<filterref>näytetyyppi</filterref>
+	</presentation>
+</summary>

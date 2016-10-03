@@ -1,0 +1,201 @@
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="load-node-metadata"><![CDATA[
+select 
+    ref,
+    lang,
+    tag,
+    data
+from 
+    %1$s
+ ]]></entry>
+	<entry key="load-cube-name"><![CDATA[
+select 
+    ref,
+    lang,
+    tag,
+    data 
+from 
+    %1$s
+where 
+    tag = 'name'
+    and ref in (
+        select 
+            ref
+        from %1$s
+        where 
+            tag = 'is'
+            and data = ?
+            and lang is null
+   )
+ ]]></entry>
+ <entry key="load-cube-metadata"><![CDATA[
+select 
+    ref,
+    lang,
+    tag,
+    data 
+from 
+    %1$s
+where 
+    ref in (
+        select 
+            ref
+        from %1$s
+        where 
+            tag = 'is'
+            and data = ?
+            and lang is null
+   )
+ ]]></entry>
+	<entry key="traverse-tree-using-bfs"><![CDATA[
+with recursive bfs_tree as (
+    select 
+        key,
+        parent_key,
+        dim,
+        stage,
+        ref
+    from
+        %1$s
+    where
+        parent_key is null
+    union all
+    select
+        c.key,
+        c.parent_key,
+        c.dim,
+        c.stage,
+        c.ref
+    from
+        bfs_tree
+    join %1$s c 
+        on c.parent_key = bfs_tree.key
+)
+select 
+    key,
+    parent_key,
+    dim,
+    stage,
+    ref,
+    map_id surrogate_id
+from bfs_tree
+left join amor_%2$s.meta_ref_id_map using (ref)
+    ]]>
+	</entry>
+	<entry key="list-reports"><![CDATA[
+	select * from (
+	select 
+	   subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type
+	from amor_%1$s.meta_hydra 
+	join amor_%1$s.meta_table using (run_id) 
+	join amor_%1$s.meta_state using (run_id)
+	where 
+	   logical_name like 'fact%%' 
+	   and state = ?
+	union all
+	select 
+	   subject, hydra, added_meta_hydra, run_id, summary_id, 'summary'
+       from amor_%1$s.amor_summaries
+       join amor_%1$s.meta_hydra using (run_id)
+       join amor_%1$s.meta_state using (run_id)
+       where state = ?
+    ) d
+	order by subject, hydra, logical_name, added_meta_hydra desc
+	]]></entry>
+	<entry key="list-reports-with-subject"><![CDATA[
+	select * from (
+	select 
+	   subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type
+	from amor_%1$s.meta_hydra 
+	join amor_%1$s.meta_table using (run_id) 
+	join amor_%1$s.meta_state using (run_id)
+	where 
+	   logical_name like 'fact%%' 
+	   and subject = ?
+	   and state = ?
+	union all
+	select 
+	   subject, hydra, added_meta_hydra, run_id, summary_id, 'summary'
+       from amor_%1$s.amor_summaries
+       join amor_%1$s.meta_hydra using (run_id)
+       join amor_%1$s.meta_state using (run_id)
+       where 
+         subject = ?
+         and state = ?
+    ) d
+	order by subject, hydra, logical_name, added_meta_hydra desc
+	]]></entry>
+	<entry key="load-latest-report"><![CDATA[
+    select * from (
+	    select 
+	       subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type, state
+	    from amor_%1$s.meta_hydra 
+	    join amor_%1$s.meta_table using (run_id) 
+	    join amor_%1$s.meta_state using (run_id)
+	    union all
+	    select 
+	       subject, hydra, added_meta_hydra, run_id, summary_id, 'summary', state
+	       from amor_%1$s.amor_summaries
+	       join amor_%1$s.meta_hydra using (run_id)
+           join amor_%1$s.meta_state using (run_id)
+    ) d
+    where 
+       subject = ?
+       and hydra = ?
+       and logical_name = ?
+       and state = ?
+    order by added_meta_hydra desc
+    limit 1
+    ]]></entry>
+    <entry key="list-summary-name"><![CDATA[
+with x as 
+	(select 
+	  run_id, 
+	  summary_id, 
+	  summary_xml as col,
+	  subject,
+	  hydra,
+	  state,
+	  summary_id logical_name,
+	  added_meta_hydra,
+	  row_number() over (partition by subject, hydra, summary_id order by run_id desc) rn
+	from amor_%1$s.amor_summaries
+	join amor_%1$s.meta_hydra using (run_id)
+	join amor_%1$s.meta_state using (run_id)
+	join amor_%1$s.meta_table using (run_id)
+		where state = ?
+		and subject = ?) 
+select 
+    run_id,
+    summary_id id, 
+	unnest(xpath('/summary/title/text()', col::xml)) as title ,
+	unnest(xpath('/summary/title/@lang', col::xml)) as lang,
+	unnest(xpath('/summary/subject/text()', col::xml)) as subject_title,
+	unnest(xpath('/summary/subject/@lang', col::xml)) as subject_lang,
+	subject,
+	hydra,
+	state,
+	logical_name, 
+	added_meta_hydra, 
+	'summary' view_type
+from x
+where rn = 1
+    ]]></entry>
+	<entry key="list-sources"><![CDATA[
+	select 
+	   subject, 
+	   hydra, 
+	   added_meta_hydra, 
+	   run_id, 
+	   logical_name
+	from amor_%1$s.meta_hydra 
+	   join amor_%1$s.meta_table using (run_id)
+	   join amor_%1$s.meta_state using (run_id)
+	where subject = ? 
+	   and hydra = ?
+	   and logical_name  = ?
+	   and run_id = ?
+	   and state = ?
+	]]></entry>
+</properties>
