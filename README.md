@@ -70,8 +70,8 @@ Tables describing datasets include
 - x<runid>_meta - one for each dataset
 
 Tables for usage logging include
-- TODO - for each access 
-- TODO - for each filter value in access
+- user_log - for each access 
+- user_log_seletion - for each filter value in access
 
 ### Fact tables
 
