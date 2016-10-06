@@ -84,6 +84,13 @@ public class HydraSourceTest {
         assertEquals(1, time.getLevel("leaf").getNodes().size());
     }
     
+    @Test
+    public void shouldFindNodesByName() {
+        DimensionNode node = source.findNodeByName("2016", "fi");
+        assertNotNull(node);
+        assertEquals("2016", node.getLabel().getValue("fi"));
+        assertEquals("time", node.getDimension().getId());
+    }
     
     @Test
     public void shouldFindNodesByRef() {
