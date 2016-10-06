@@ -163,8 +163,9 @@ VALUES
 	('4', '1', 'region', 'leaf', 'https://sampo.thl.fi/meta/alue/kunta/2016/049'),
 	('5', null, 'time', 'root', 'https://sampo.thl.fi/meta/aika/'),
 	('6', '5', 'time', 'leaf', 'https://sampo.thl.fi/meta/aika/vuosi/2016'),
-	('7', null, 'measure','root', 'https://sampo.thl.fi/meta/test/mittari');
-
+	('7', null, 'measure','root', 'https://sampo.thl.fi/meta/test/mittari'),
+	('8', '7', 'measure','leaf', 'https://sampo.thl.fi/meta/test/mittari/2');
+	
 INSERT INTO amor_test.meta_ref_id_map 
 	(map_id, ref)
 VALUES
@@ -174,7 +175,8 @@ VALUES
 	(4, 'https://sampo.thl.fi/meta/alue/kunta/2016/049'),
 	(5, 'https://sampo.thl.fi/meta/aika/'),
 	(6, 'https://sampo.thl.fi/meta/aika/vuosi/2016'),
-	(7, 'https://sampo.thl.fi/meta/test/mittari');
+	(7, 'https://sampo.thl.fi/meta/test/mittari'),
+	(8, 'https://sampo.thl.fi/meta/test/mittari/2');
 	
 INSERT INTO amor_test.x1003_meta 
 	(ref, tag, lang, data)
@@ -185,7 +187,14 @@ VALUES
 	('https://sampo.thl.fi/meta/alue/kunta/2016/049', 'name', 'fi', 'Espoo'),
 	('https://sampo.thl.fi/meta/aika/', 'name', 'fi', 'Kaikki vuodet'),
 	('https://sampo.thl.fi/meta/aika/vuosi/2016', 'name', 'fi', '2016'),
-	('https://sampo.thl.fi/meta/test/mittari', 'name', 'fi', 'Mittari');
+	('https://sampo.thl.fi/meta/test/mittari', 'name', 'fi', 'Mittari'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/091', 'sort', 'fi', '2'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/092', 'sort', 'fi', '3'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/049', 'sort', 'fi', '1'),
+	('https://sampo.thl.fi/meta/test/mittari', 'decimals', null, '2'),
+	('https://sampo.thl.fi/meta/test/mittari/2', 'decimals', null, 'kaksi');
+	
+	
 
 INSERT INTO  amor_test.amor_summaries 
 	(run_id, subject, hydra, summary_id, title, subject_title)
