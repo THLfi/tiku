@@ -6,25 +6,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,47 +23,11 @@ import fi.thl.pivot.model.Report;
 import fi.thl.pivot.model.Tuple;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { AmorDaoTest.Configuration.class })
+@ContextConfiguration(classes = { HsqlTestConfiguration.class })
 @TestPropertySource(properties = "database.environment.schema=test")
 public class AmorDaoTest {
 
     private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
-    public static class Configuration {
-
-        @Bean
-        @Qualifier("queries")
-        public Properties myProperties() {
-            PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-            propertiesFactoryBean.setLocation(new ClassPathResource("/sql.xml"));
-            Properties properties = null;
-            try {
-                propertiesFactoryBean.afterPropertiesSet();
-                properties = propertiesFactoryBean.getObject();
-
-            } catch (IOException e) {
-                System.err.println("Cannot load properties file.");
-            }
-            return properties;
-        }
-
-        @Bean
-        public DataSource dataSource() {
-            return new EmbeddedDatabaseBuilder().addScript("classpath:create-table-hsql.sql").build();
-        }
-
-        @Bean
-        @Autowired
-        public JdbcTemplate template(DataSource dataSource) {
-            return new JdbcTemplate(dataSource);
-        }
-
-        @Bean
-        public AmorDao dao() {
-            return new AmorDao();
-        }
-
-    }
 
     @Autowired
     private AmorDao dao;

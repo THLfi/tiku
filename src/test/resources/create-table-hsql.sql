@@ -80,8 +80,8 @@ CREATE TABLE amor_test.x1003_meta (
 
 CREATE TABLE amor_test.x1003_tree (
 	key text,
-	parent text,
-	dimension text,
+	parent_key text,
+	dim text,
 	stage text,
 	ref text
 );
@@ -154,7 +154,39 @@ VALUES
 	('https://sampo.thl.fi/pivot/prod/fi/a-subject/test-hydra/fact', 'password', null, 'Test password');
 	
 	
+INSERT INTO amor_test.x1003_tree
+	(key, parent_key, dim, stage, ref)
+VALUES
+	('1', null, 'region', 'root', 'https://sampo.thl.fi/meta/alue/kokomaa'),
+	('2', '1', 'region', 'leaf', 'https://sampo.thl.fi/meta/alue/kunta/2016/091'),
+	('3', '1', 'region', 'leaf', 'https://sampo.thl.fi/meta/alue/kunta/2016/092'),
+	('4', '1', 'region', 'leaf', 'https://sampo.thl.fi/meta/alue/kunta/2016/049'),
+	('5', null, 'time', 'root', 'https://sampo.thl.fi/meta/aika/'),
+	('6', '5', 'time', 'leaf', 'https://sampo.thl.fi/meta/aika/vuosi/2016'),
+	('7', null, 'measure','root', 'https://sampo.thl.fi/meta/test/mittari');
+
+INSERT INTO amor_test.meta_ref_id_map 
+	(map_id, ref)
+VALUES
+	(1, 'https://sampo.thl.fi/meta/alue/kokomaa'),
+	(2, 'https://sampo.thl.fi/meta/alue/kunta/2016/091'),
+	(3, 'https://sampo.thl.fi/meta/alue/kunta/2016/092'),
+	(4, 'https://sampo.thl.fi/meta/alue/kunta/2016/049'),
+	(5, 'https://sampo.thl.fi/meta/aika/'),
+	(6, 'https://sampo.thl.fi/meta/aika/vuosi/2016'),
+	(7, 'https://sampo.thl.fi/meta/test/mittari');
 	
+INSERT INTO amor_test.x1003_meta 
+	(ref, tag, lang, data)
+VALUES 
+	('https://sampo.thl.fi/meta/alue/kokomaa', 'name', 'fi', 'Koko maa'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/091', 'name', 'fi', 'Helsinki'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/092', 'name', 'fi', 'Vantaa'),
+	('https://sampo.thl.fi/meta/alue/kunta/2016/049', 'name', 'fi', 'Espoo'),
+	('https://sampo.thl.fi/meta/aika/', 'name', 'fi', 'Kaikki vuodet'),
+	('https://sampo.thl.fi/meta/aika/vuosi/2016', 'name', 'fi', '2016'),
+	('https://sampo.thl.fi/meta/test/mittari', 'name', 'fi', 'Mittari');
+
 INSERT INTO  amor_test.amor_summaries 
 	(run_id, subject, hydra, summary_id, title, subject_title)
 VALUES
