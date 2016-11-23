@@ -130,7 +130,7 @@ public class JDBCSource extends HydraSource {
         @Override
         public Object processMetaData(DatabaseMetaData dmd) throws SQLException, MetaDataAccessException {
             ResultSet rs = queryForColumnsInFactTable(dmd);
-            listDimensionKeyColumnsInTable(dimensionColumns, rs);
+            listDimensionKeyColumnsInTable(rs);
             rs.close();
             return null;
         }
@@ -139,11 +139,11 @@ public class JDBCSource extends HydraSource {
             String[] tableNameParts = factTable.split("\\.");
             LOG.debug("Fetching metadata for table " + Lists.newArrayList(tableNameParts));
 
-            return dmd.getColumns(null, isSchemaDefined(tableNameParts) ? tableNameParts[0].toUpperCase() : "",
-                    isSchemaDefined(tableNameParts) ? tableNameParts[1].toUpperCase() : tableNameParts[0].toUpperCase(), null);
+            return dmd.getColumns(null, isSchemaDefined(tableNameParts) ? tableNameParts[0].toLowerCase() : "",
+                    isSchemaDefined(tableNameParts) ? tableNameParts[1].toLowerCase() : tableNameParts[0].toLowerCase(), null);
         }
 
-        private void listDimensionKeyColumnsInTable(List<String> dimensionColumns, ResultSet rs) throws SQLException {
+        private void listDimensionKeyColumnsInTable( ResultSet rs) throws SQLException {
             while (rs.next()) {
                 LOG.debug(String.format("Column '%s' detected in fact table", rs.getString("COLUMN_NAME")));
                 if (rs.getString("COLUMN_NAME").toLowerCase().endsWith("_key")) {
