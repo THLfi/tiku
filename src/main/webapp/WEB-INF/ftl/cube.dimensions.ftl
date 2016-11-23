@@ -10,6 +10,9 @@
             "label": "[@label node /]"
             [#if node.level??],"stage": "${node.level.id?json_string}"[/#if]
             [#if node.code??],"code":"${node.code?json_string}"[/#if]
+            [#if node.sort??],"sort":${node.sort}[/#if]
+            [#if node.decimals??],"decimals":${node.decimals}[/#if]
+            [#if node.ref??],"uri":"${node.ref}"[/#if]
             [#if node.properties!?size > 0]
             ,"properties": {
                 [#list node.properties! as p]
