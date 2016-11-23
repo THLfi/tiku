@@ -24,6 +24,8 @@ public class ModifiablePivot implements Pivot {
     private static final boolean ASSERT_ENABLED = ModifiablePivot.class.desiredAssertionStatus();
     private static final Logger LOG = Logger.getLogger(ModifiablePivot.class);
 
+    private PivotCellSentinel sentinel = new PivotCellSentinel(-1, -1);
+    
     private List<PivotLevel> columns = Lists.newArrayList();
     private List<PivotLevel> rows = Lists.newArrayList();
 
@@ -188,9 +190,11 @@ public class ModifiablePivot implements Pivot {
             cellCache.put(cacheKey, cell);
             return cell;
         } else {
-            PivotCell cell = new PivotCellSentinel(row, column);
-            cellCache.put(cacheKey, cell);
-            return cell;
+            //PivotCell cell = new PivotCellSentinel(row, column);
+            //cellCache.put(cacheKey, cell);
+            //return cell;
+            cellCache.put(cacheKey, sentinel);
+            return sentinel;
         }
     }
 
