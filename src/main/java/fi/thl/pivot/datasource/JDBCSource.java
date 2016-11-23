@@ -139,8 +139,21 @@ public class JDBCSource extends HydraSource {
             String[] tableNameParts = factTable.split("\\.");
             LOG.debug("Fetching metadata for table " + Lists.newArrayList(tableNameParts));
 
-            return dmd.getColumns(null, isSchemaDefined(tableNameParts) ? tableNameParts[0].toLowerCase() : "",
-                    isSchemaDefined(tableNameParts) ? tableNameParts[1].toLowerCase() : tableNameParts[0].toLowerCase(), null);
+            String schemaName = isSchemaDefined(tableNameParts) ? tableNameParts[0].toLowerCase() : "";
+            String tableName = isSchemaDefined(tableNameParts) ? tableNameParts[1].toLowerCase() : tableNameParts[0].toLowerCase();
+            
+            
+            ResultSet rs =  dmd.getColumns(null, schemaName, tableName, null);
+            if(rs.next()) {
+                rs.previous();
+                return rs;
+            } else {
+                // Postgres uses lowercase letter in schema and table names by default 
+                // but SQL standard states that they should be in upper case
+                // When testing with HSQLDB or other inmemory database this 
+                // method wont work unless name are transformed to upper case. 
+                return dmd.getColumns(null, schemaName.toUpperCase(), tableName.toUpperCase(), null);
+            }
         }
 
         private void listDimensionKeyColumnsInTable( ResultSet rs) throws SQLException {
