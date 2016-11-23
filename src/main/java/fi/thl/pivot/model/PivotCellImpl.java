@@ -6,9 +6,12 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class PivotCellImpl implements PivotCell {
 
+    private final Pattern NUMBER = Pattern.compile("^-?\\d*([,.]\\d+)?$");
+    
     private String value;
     private int rowNumber;
     private int columnNumber;
@@ -63,7 +66,7 @@ public class PivotCellImpl implements PivotCell {
 
     @Override
     public boolean isNumber() {
-        return null != value && value.matches("^-?\\d*([,.]\\d+)?$");
+        return null != value && NUMBER.matcher(value).matches();
     }
 
     @Override
