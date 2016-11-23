@@ -82,18 +82,24 @@ public class HydraTablePresentation extends TablePresentation {
         }
 
         // Select filter parameters
+        // NOTE: order of parameters must equal the order in CubeRequest.toDataUrl or else
+        // cubes with restricted access via summaries do not work . 
         for (Selection s : getFilters()) {
             if ("measure".equals(s.getDimension())) {
                 url.addColumns();
-            } else {
+                HydraFilter f = ((HydraFilter) s);
+                url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));
+            }
+        }
+        for (Selection s : getFilters()) {
+            if (!"measure".equals(s.getDimension())) {
                 // We do not want extra dimension in the returned JSON-STAT
                 // resource
                 // so we use filters
                 url.addFilters();
+                HydraFilter f = ((HydraFilter) s);
+                url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));
             }
-            HydraFilter f = ((HydraFilter) s);
-            url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));
-
         }
 
         if (delegate.getSuppress()) {

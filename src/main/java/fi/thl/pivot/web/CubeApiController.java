@@ -63,9 +63,11 @@ public class CubeApiController extends AbstractCubeController {
                 resp.setCharacterEncoding("utf-8");
                 new JsonStatExporter().export(model, out);
             } else {
+                LOG.debug("Cube is not created");
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
+            LOG.debug("Cube access is forbidden", e);
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
         }
