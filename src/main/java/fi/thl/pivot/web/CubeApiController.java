@@ -47,7 +47,7 @@ public class CubeApiController extends AbstractCubeController {
     }
 
     @Monitored
-    @RequestMapping(value = "/fact_{cube}.json", produces = "text/javascript")
+    @RequestMapping(value = "/fact_{cube}.json", produces = "application/json")
     public void displayCubeAsJsonStat(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException {
         LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
