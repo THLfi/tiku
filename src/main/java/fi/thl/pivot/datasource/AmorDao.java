@@ -164,7 +164,7 @@ public class AmorDao {
                 }
                 Report r = reports.get(id);
                 r.getTitle().setValue(rs.getString("lang"), rs.getString("title"));
-                r.getSubjectTitle().setValue(rs.getString("lang"), rs.getString("subjectitle"));
+                r.getSubjectTitle().setValue(rs.getString("lang"), rs.getString("subject_title"));
                 return r;
             }
         }, environment, subject);
