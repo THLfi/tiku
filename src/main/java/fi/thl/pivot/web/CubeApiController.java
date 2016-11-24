@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.HydraSource;
+import fi.thl.pivot.export.DimensionTreeExporter;
 import fi.thl.pivot.export.JsonStatExporter;
 
 /**
@@ -47,7 +48,7 @@ public class CubeApiController extends AbstractCubeController {
     }
 
     @Monitored
-    @RequestMapping(value = "/fact_{cube}.json", produces = "application/json")
+    @RequestMapping(value = "/fact_{cube:[^\\.]+}.json", produces = "application/json")
     public void displayCubeAsJsonStat(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException {
         LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
@@ -74,21 +75,26 @@ public class CubeApiController extends AbstractCubeController {
     }
 
     @Monitored
-    @RequestMapping(value = "/fact_{cube}.dimensions.json", produces = "text/javascript")
-    public String displayDimensionsAsJson(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) {
+    @RequestMapping(value = "/fact_{cube}.dimensions.json", headers="Accept=*/*", produces = "text/javascript")
+    public void displayDimensionsAsJson(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException{
         LOG.debug(String.format("ACCESS Cube dimensions requested %s %s", cubeRequest.getEnv(), cubeRequest.getCube()));
 
         HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());
         if (null != source) {
+          
             loadMetadata(source);
             checkLoginRequirements(cubeRequest, model, source);
             model.addAttribute("dimensions", source.getDimensionsAndMeasures());
             model.addAttribute("lang", cubeRequest.getLocale());
-            return "cube.dimensions";
+            
+            resp.setContentType("text/javascript");
+            resp.setCharacterEncoding("utf-8");
+         
+            new DimensionTreeExporter().export(model, out);
+            
         } else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             model.addAttribute("cube", cubeRequest.getCube());
-            return "no-cube-found";
         }
     }
 
