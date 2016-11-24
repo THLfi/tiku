@@ -16,20 +16,7 @@
 [/#function]
 
 [#macro show_filter_values presentation]
-[#--
-  <dl>
-  [#list presentation.filters as filter]
-    [#if filter.visible]
-    <dt>${filter.dimensionEntity.label.getValue(lang)}</dt>
-    <dd>
-      [#list filter.filterStages as filterStage]
-        ${filterStage.selected.label.getValue(lang)}[#if filterStage_has_next],[/#if]
-      [/#list]
-    </dd>
-    [/#if]
-  [/#list]
-  </ul>
---]
+
 [/#macro]
 [#macro summary_hierarchical_option option stages]
   [#if stages?seq_contains(option.level.id)]
@@ -53,9 +40,13 @@
         <div class="form-group">
           <label for="${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
           [#if filter.searchable]
-            <div class="search-group">
-              <input class="form-control search-control" />
-              <span class="glyphicon glyphicon-search"></span>
+            <div class="dropdown">
+              <div class="search-group">
+                <input class="form-control search-control" />
+                <span class="glyphicon glyphicon-search"></span>
+              </div>
+              <ul class="dropdown-menu">
+              </ul>
             </div>
           [/#if]
           <select class="form-control" name="${filter.id}_${filterStage_index}" id="s-${filter.id}-${filterStage_index}" [#if filter.multiple]multiple[/#if]>
@@ -73,7 +64,7 @@
                       [/#list]
                     [/#if]
                 [/#assign]
-                <option value="${option.surrogateId}" "${selected}">
+                <option value="${option.surrogateId}" ${selected}>
                   [#if filter.isCompleteDimension][#list (0..option.level.index) as i]&nbsp;&nbsp;[/#list][/#if][@label option /]
                 </option>
             [/#list]
@@ -309,12 +300,15 @@
       <div>
 
       [#if requireLogin]
-      <div class="btn-group" role="group" aria-label="...">
+      <div class="btn-group" role="group" aria-label="${message("site.logout")}">
           <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
               <button type="submit" class="btn btn-default">${message("site.logout")}</button>
           </form>
       </div>
       [/#if]
+      <div class="btn-group pull-right" role="group" aria-label="...">
+          ${message("site.help")}
+      </div>
       [#--<a href="#">pdf</a>--]
     </div>
     </div>

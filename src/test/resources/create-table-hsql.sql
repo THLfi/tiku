@@ -128,7 +128,7 @@ INSERT INTO amor_test.meta_hydra(
 	to_date('2016-09-02','yyyy-mm-dd')
 );
 
-INSERT INTO amor_test.meta_state 
+INSERT INTO amor_test.meta_state
 	(run_id, state) 
 VALUES 
 	(1000, 'test'),
@@ -136,7 +136,7 @@ VALUES
 	(1003, 'test'),
 	(1002, 'prod');
 	
-INSERT INTO amor_test.meta_table 
+INSERT INTO amor_test.meta_table
 	(run_id, logical_name)
 VALUES 
 	(1000, 'fact'),
@@ -144,7 +144,7 @@ VALUES
 	(1003, 'fact'),
 	(1002, 'fact');
 
-INSERT INTO amor_test.x1003_meta 
+INSERT INTO amor_test.x1003_meta
 	(ref, tag, lang, data)
 VALUES
 	('https://sampo.thl.fi/pivot/prod/fi/a-subject/test-hydra/fact', 'is', null, 'fact'),
@@ -166,7 +166,7 @@ VALUES
 	('7', null, 'measure','root', 'https://sampo.thl.fi/meta/test/mittari'),
 	('8', '7', 'measure','leaf', 'https://sampo.thl.fi/meta/test/mittari/2');
 	
-INSERT INTO amor_test.meta_ref_id_map 
+INSERT INTO amor_test.meta_ref_id_map
 	(map_id, ref)
 VALUES
 	(1, 'https://sampo.thl.fi/meta/alue/kokomaa'),
@@ -178,7 +178,7 @@ VALUES
 	(7, 'https://sampo.thl.fi/meta/test/mittari'),
 	(8, 'https://sampo.thl.fi/meta/test/mittari/2');
 	
-INSERT INTO amor_test.x1003_meta 
+INSERT INTO amor_test.x1003_meta
 	(ref, tag, lang, data)
 VALUES 
 	('https://sampo.thl.fi/meta/alue/kokomaa', 'name', 'fi', 'Koko maa'),
@@ -196,7 +196,7 @@ VALUES
 	
 	
 
-INSERT INTO  amor_test.amor_summaries 
+INSERT INTO  amor_test.amor_summaries
 	(run_id, subject, hydra, summary_id, title, subject_title)
 VALUES
 	(1003, 'a-subject', 'test-hydra', 'summary-1', 'Test summary', 'Test subject'),

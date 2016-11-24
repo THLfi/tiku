@@ -345,7 +345,7 @@ public abstract class HydraSource {
         this.nodes = newNodes;
         this.columns = newDimensionColumns;
         this.nodeIndex = newNodeIndex;
-
+     
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cube name loaded: " + watch.prettyPrint());
         }

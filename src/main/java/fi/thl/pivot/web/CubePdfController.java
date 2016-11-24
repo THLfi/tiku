@@ -62,7 +62,7 @@ public class CubePdfController extends AbstractCubeController {
      * @throws IOException
      */
     @Monitored
-    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.pdf", produces = "application/pdf")
+    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.pdf", headers="Accept=*/*",  produces = "application/pdf")
     public void displayCubeAsPDF(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) throws CubeNotFoundException, IOException {
         LOG.debug(String.format("PDF cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 

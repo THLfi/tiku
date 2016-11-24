@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
@@ -23,7 +24,8 @@ import fi.thl.pivot.util.ThreadRole;
 public class JsonStatExporter {
 
     private static final Logger LOG = Logger.getLogger(JsonStatExporter.class);
-
+    private static final Pattern NUMBER = Pattern.compile("^-?\\d+([,\\.]\\d+)?$");
+    
     public void export(Model model, OutputStream out) throws IOException {
         PrintWriter writer = null;
         Map<String, Object> params = model.asMap();
@@ -144,7 +146,11 @@ public class JsonStatExporter {
     }
 
     private void printValue(PrintWriter writer, int i, String value) {
-        writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
+        if(NUMBER.matcher(value).matches()) {
+            writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
+        } else {
+            writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\"\"")));
+        }
     }
 
     private int exportLevels(PrintWriter writer, Map<String, Object> model, List<String> identifiers, int index, List<PivotLevel> levels) {

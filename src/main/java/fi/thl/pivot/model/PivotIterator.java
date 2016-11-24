@@ -21,7 +21,7 @@ final class PivotIterator implements Iterator<PivotCell> {
     private int currentColumn = 0;
     
     private List<List<Integer>> indices = new ArrayList<>(); 
-
+    
     PivotIterator(Pivot pivot, int rowCount, int columnCount) {
         this.pivot = pivot;
         this.rowCount = rowCount;

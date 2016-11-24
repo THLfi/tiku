@@ -58,7 +58,7 @@
     </div>
     [#if metaLink??]
     <div class="btn-group" role="group" aria-label="...">
-      <a class="btn btn-default" href="${metaLink.getValue(lang)}">${message("summary.more")}</a>
+      <a class="btn btn-default" target="_blank" href="${metaLink.getValue(lang)}">${message("summary.more")}</a>
     </div>
     [/#if]
 

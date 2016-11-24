@@ -329,4 +329,11 @@ public class AmorDao {
 
     }
 
+
+
+    public boolean isProtected(String env, String fact, String runId) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

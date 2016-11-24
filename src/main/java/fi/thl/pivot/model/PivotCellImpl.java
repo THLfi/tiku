@@ -32,6 +32,7 @@ public class PivotCellImpl implements PivotCell {
         if (isNumber() && null != measure) {
             NumberFormat nf = new DecimalFormat("0.#");
             nf.setMaximumFractionDigits(measure.getDecimals());
+            nf.setMinimumFractionDigits(measure.getDecimals());
             nf.setRoundingMode(RoundingMode.HALF_UP);
             return nf.format(getNumberValue());
         }
@@ -42,6 +43,7 @@ public class PivotCellImpl implements PivotCell {
         if (isNumber() && null != measure) {
             NumberFormat nf = new DecimalFormat("#,##0.#", DecimalFormatSymbols.getInstance(new Locale("fi")));
             nf.setMaximumFractionDigits(measure.getDecimals());
+            nf.setMinimumFractionDigits(measure.getDecimals());
             nf.setRoundingMode(RoundingMode.HALF_UP);
             return nf.format(getNumberValue());
         }

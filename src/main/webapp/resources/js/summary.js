@@ -695,10 +695,7 @@ function selectChartType (e) {
            */
           'linechart': function (svg) {
             for (var series = 0; series < opt.series.length; ++series) {
-              // remove null values from dataset
-              var datum = opt.data.filter(function (d, i) {
-                return opt.callback(series, i) != null;
-              });
+              var datum = opt.data
               // Plot lines
               svg
                 .append('path')
@@ -708,10 +705,11 @@ function selectChartType (e) {
                 .attr('fill', 'none')
                 .datum(datum)
                 .attr('d', d3.svg.line()
+                  .y(offsetColumn(series))
+                  .defined(function(d, i) { return null != opt.callback(series, i); })
                   .x(function (d, i) {
                     return ordinalScale(d) + spacing / 2;
                   })
-                  .y(offsetColumn(series))
               )
                 .append('svg:title')
                 .text(function (d, i) {
@@ -728,8 +726,12 @@ function selectChartType (e) {
                 .attr('class', 'series series' + series)
                 .attr('fill', colors[series])
                 .attr('stroke', '#fff')
-                .attr('r', 4)
-                .attr('stroke-width', 4)
+                .attr('r', function(d, i) {
+                  return opt.callback(series, i) == null ? 0 : 4;
+                })
+                .attr('stroke-width', function(d, i) {
+                  return opt.callback(series, i) == null ? 0 : 4;
+                })
                 .attr('cx', function (d, i) {
                   return ordinalScale(d) + spacing / 2;
                 })
@@ -1449,7 +1451,8 @@ function selectChartType (e) {
                   // Multiple series and measure
                   val = dataset.Data([i, series, measure]);
                 }
-                return val && val.value !== null ? +val.value : null;
+                val = val && val.value !== null ? +val.value : null;
+                return isNaN(val) ? null : val;
               },
               width: 800,
               height: 400,
@@ -1474,16 +1477,73 @@ function selectChartType (e) {
       }
     );
 
-    $('.search-control').keyup(function () {
-      var searchValue = new RegExp('^' + this.value.toLowerCase());
-      $(this).closest('.form-group').find('select option').each(function () {
-        var self = $(this);
-        if (searchValue.test(self.text().toLowerCase())) {
-          self.show();
-          self.prop('disabled', false);
+    $('.search-control').each(function () {
+      var search = $(this);
+      var menu = search.closest('.dropdown').find('.dropdown-menu');
+      menu.css('width', '100%');
+      var select = search.closest('.form-group').find('select');
+      var options = select.children();
+
+      if (!select.prop('multiple')) {
+        options.each(function () {
+          var li = $('<li>');
+          var a = $('<a>')
+          .prop('href', '#')
+          .prop('data-val', this.value)
+          .text($(this).text().trim());
+          a.click(function (e) {
+            e.preventDefault();
+            search
+              .closest('.form-group')
+              .find('select')
+              .val(a.prop('data-val'))
+              .change();
+            search.closest('.dropdown').toggleClass('open', false);
+          });
+          li.append(a);
+          menu.append(li);
+        });
+        search.closest('.form-group').find('select').hide();
+      }
+      search.keyup(function (e) {
+        if (!select.prop('multiple')) {
+          search.closest('.dropdown').toggleClass('open', true);
+          switch(e.which) {
+          case 40: // down
+              break;
+          case 13: // select first on enter
+              var a = menu.find('li:visible a');
+              if(a.length > 0) {
+                $(a.get(0)).click();
+              }
+              search.closest('.dropdown').toggleClass('open', false);
+              break;
+          case 27: // hide on esc
+              search.closest('.dropdown').toggleClass('open', false);
+              break;
+          default:
+            var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
+            menu.find('li').each(function () {
+              var self = $(this);
+              if (searchValue.test(self.text().toLowerCase())) {
+                self.show();
+              } else {
+                self.hide();
+              }
+            });
+          }
         } else {
-          self.hide();
-          self.prop('disabled', true);
+          var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
+          options.each(function () {
+            var self = $(this);
+            if (searchValue.test(self.text().trim().toLowerCase())) {
+              self.show();
+              self.prop('disabled', false);
+            } else {
+              self.hide();
+              self.prop('disabled', true);
+            }
+          });
         }
       });
     });

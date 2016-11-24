@@ -28,7 +28,7 @@ public class CubeApiController extends AbstractCubeController {
 
     private static final Logger LOG = Logger.getLogger(CubeApiController.class);
 
-    @RequestMapping(value = "/fact_{cube}.js", produces = "text/javascript")
+    @RequestMapping(value = "/fact_{cube}.js", headers="Accept=*/*", produces = "text/javascript")
     public String displayCubeAsJsonStatP(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) {
         LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
@@ -48,7 +48,7 @@ public class CubeApiController extends AbstractCubeController {
     }
 
     @Monitored
-    @RequestMapping(value = "/fact_{cube:[^\\.]+}.json", produces = "application/json")
+    @RequestMapping(value = "/fact_{cube:[^\\.]+}.json", headers="Accept=*/*", produces = "application/json")
     public void displayCubeAsJsonStat(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException {
         LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
@@ -76,7 +76,7 @@ public class CubeApiController extends AbstractCubeController {
 
     @Monitored
     @RequestMapping(value = "/fact_{cube}.dimensions.json", headers="Accept=*/*", produces = "text/javascript")
-    public void displayDimensionsAsJson(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException{
+    public void displayDimensionsAsJson(@ModelAttribute CubeRequest cubeRequest,         Model model, HttpServletResponse resp, OutputStream out) throws IOException{
         LOG.debug(String.format("ACCESS Cube dimensions requested %s %s", cubeRequest.getEnv(), cubeRequest.getCube()));
 
         HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());

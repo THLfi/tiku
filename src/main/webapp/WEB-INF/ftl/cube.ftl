@@ -85,7 +85,7 @@
                     ${message("cube.error.no-data")}
                 </p>
             [#else]
-                [#include "cube/cube-table.ftl" /]
+            	[#include "cube/cube-table.ftl" /]
             [/#if]
         [/#if]
 

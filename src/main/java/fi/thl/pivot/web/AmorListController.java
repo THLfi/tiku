@@ -110,9 +110,10 @@ public class AmorListController {
         });
     }
 
-    @RequestMapping(value = "/{env}/api/{subject}.json",  produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{env}/api/{subject}.json", produces = "application/json;charset=UTF-8")
     @Monitored
-    public ResponseEntity<String> listAvailableReportsAsJson(@PathVariable String env, @PathVariable final String subject, Model model,
+    public ResponseEntity<String> listAvailableReportsAsJson(@PathVariable String env,
+            @PathVariable final String subject, Model model,
             HttpServletResponse response) {
         Preconditions.checkNotNull(model, "No model injected when calling amor list controller");
         Preconditions.checkNotNull(dao, "No dao injected when calling amor list controller ");
@@ -126,7 +127,8 @@ public class AmorListController {
 
     @Monitored
     @RequestMapping("/{env}/{locale}/{subject}/{hydra}")
-    public String listReportsInHydra(@PathVariable String env, @PathVariable final String subject, @PathVariable final String hydra, Model model) {
+    public String listReportsInHydra(@PathVariable String env, @PathVariable final String subject,
+            @PathVariable final String hydra, Model model) {
         model.addAttribute("showRestrictedView", true);
         model.addAttribute("reports", Collections2.filter(dao.listReports(env), new Predicate<Report>() {
 
@@ -139,8 +141,9 @@ public class AmorListController {
     }
 
     @Monitored
-    @RequestMapping(value="/{env}/api/{subject}/{hydra}.json",  produces = "application/json;charset=UTF-8")
-    public ResponseEntity<String> listReportsInHydraJson(@PathVariable String env, @PathVariable final String subject, @PathVariable final String hydra,
+    @RequestMapping(value = "/{env}/api/{subject}/{hydra}.json", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<String> listReportsInHydraJson(@PathVariable String env, @PathVariable final String subject,
+            @PathVariable final String hydra,
             Model model, HttpServletResponse response) {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -160,7 +163,8 @@ public class AmorListController {
 
     @RequestMapping("/{env}/api/latest")
     @Monitored
-    public ResponseEntity<String> getLatestVersion(@PathVariable String env, @RequestParam String subject, @RequestParam String hydra,
+    public ResponseEntity<String> getLatestVersion(@PathVariable String env, @RequestParam String subject,
+            @RequestParam String hydra,
             @RequestParam String fact) {
         try {
             Preconditions.checkNotNull(dao,
@@ -169,15 +173,22 @@ public class AmorListController {
             Report r = dao.loadLatestReport(env, subject, hydra, fact);
 
             if (null == r) {
-                LOG.error(String.format("Failed to show latest version of cube (%s, %s, %s, %s) - not found", env, subject, hydra, fact));
+                LOG.error(String.format("Failed to show latest version of cube (%s, %s, %s, %s) - not found", env,
+                        subject, hydra, fact));
                 return new ResponseEntity<String>("{\"error\":\"Not found\"}", HttpStatus.NOT_FOUND);
             } else {
-                return new ResponseEntity<String>(String.format("{\"subject\":\"%s\", \"hydra\":\"%s\", \"fact\":\"%s\", \"runid\":\"%s\", \"added\": \"%s\"}",
-                        r.getSubject(), r.getHydra(), r.getFact(), r.getRunId(), df.format(r.getAdded())), HttpStatus.OK);
+                return new ResponseEntity<String>(String.format(
+                        "{\"subject\":\"%s\", \"hydra\":\"%s\", \"fact\":\"%s\", \"runid\":\"%s\", \"added\": \"%s\"}",
+                        r.getSubject(), r.getHydra(), r.getFact(), r.getRunId(), df.format(r.getAdded())),
+                        HttpStatus.OK);
             }
         } catch (Exception e) {
-            LOG.error(String.format("Failed to show latest version of cube (%s, %s, %s, %s)", env, subject, hydra, fact), e);
-            return new ResponseEntity<String>(String.format("{\"error\":\"%s\"}", e.getMessage().replaceAll("\"", "\\\"")), HttpStatus.INTERNAL_SERVER_ERROR);
+            LOG.error(
+                    String.format("Failed to show latest version of cube (%s, %s, %s, %s)", env, subject, hydra, fact),
+                    e);
+            return new ResponseEntity<String>(
+                    String.format("{\"error\":\"%s\"}", e.getMessage().replaceAll("\"", "\\\"")),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -199,7 +210,8 @@ public class AmorListController {
         return filter;
     }
 
-    private ResponseEntity<String> createJsonStatCollection(String env, final String subject, Collection<Report> reports, String label) {
+    private ResponseEntity<String> createJsonStatCollection(String env, final String subject,
+            Collection<Report> reports, String label) {
         JSONObject collection = new JSONObject();
         collection.put("version", "2.0");
         collection.put("class", "collection");
@@ -214,30 +226,34 @@ public class AmorListController {
                 continue;
             }
             boolean isOpenData = false;
+            boolean isProtected = false;
             List<Tuple> metadata = dao.loadCubeMetadata(env, report.getFact(), report.getRunId());
             for (Tuple t : metadata) {
                 if (t.predicate.equals("password")) {
-                    continue reports;
+                    isProtected = true;
+                    break;
                 }
                 if (t.predicate.equals("opendata") && t.object.equals("1")) {
                     isOpenData = true;
                 }
 
             }
-
-            for (Tuple t : metadata) {
-                if (t.predicate.equals("name")) {
-                    JSONObject r = new JSONObject();
-                    r.put("class", "dataset");
-                    r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang, report.getSubject(), report.getHydra(),
-                            report.getFact()));
-                    items.put(r);
-                    r.put("label", t.object);
-                    JSONArray note = new JSONArray();
-                    if(isOpenData) {
-                        note.put("© Terveyden ja hyvinvoinnin laitos 2016, Creative Commons BY 4.0");
-                    } else {
-                        note.put("© Terveyden ja hyvinvoinnin laitos 2016");
+            if (!isProtected) {
+                for (Tuple t : metadata) {
+                    if (t.predicate.equals("name")) {
+                        JSONObject r = new JSONObject();
+                        r.put("class", "dataset");
+                        r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang,
+                                report.getSubject(), report.getHydra(),
+                                report.getFact()));
+                        items.put(r);
+                        r.put("label", t.object);
+                        JSONArray note = new JSONArray();
+                        if (isOpenData) {
+                            note.put("© Terveyden ja hyvinvoinnin laitos 2016, Creative Commons BY 4.0");
+                        } else {
+                            note.put("© Terveyden ja hyvinvoinnin laitos 2016");
+                        }
                     }
                 }
             }

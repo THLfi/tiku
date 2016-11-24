@@ -25,7 +25,7 @@ public class CubeXlsxController extends AbstractCubeController {
     private MessageSource messageSource;
 
     @Monitored
-    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.xlsx", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.xlsx", headers="Accept=*/*", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     public void displayCubeAsXLSX(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) throws CubeNotFoundException, IOException {
         LOG.debug(String.format("XLSX cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 

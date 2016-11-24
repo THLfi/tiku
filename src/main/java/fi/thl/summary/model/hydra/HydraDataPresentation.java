@@ -64,6 +64,7 @@ public class HydraDataPresentation extends DataPresentation {
         url.addRows();
         appendDimensionNodes(url);
         appendMeasureItems(url);
+      
         appendFilters(url);
         if (delegate.getSuppress()) {
             url.suppress();

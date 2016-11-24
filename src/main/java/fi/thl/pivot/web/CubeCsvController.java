@@ -20,7 +20,7 @@ public class CubeCsvController extends AbstractCubeController {
     private static final Logger LOG = Logger.getLogger(CubeCsvController.class);
 
     @Monitored
-    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.csv", produces = "text/csv;charset=UTF-8")
+    @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.csv", headers="Accept=*/*", produces = "text/csv;charset=UTF-8")
     public void displayCubeAsCSV(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) throws IOException {
         LOG.debug(String.format("ACCESS CSV cube requested %s %s %s ", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
