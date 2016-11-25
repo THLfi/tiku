@@ -92,7 +92,9 @@ left join amor_%2$s.meta_ref_id_map using (ref)
     ]]>
 	</entry>
 	<entry key="list-reports"><![CDATA[
-	with cubes as (
+	
+	select subject, hydra, added_meta_hydra, run_id, logical_name, view_type from
+	(
 	select 
 	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, 'cube' as view_type
 	from amor_%1$s.meta_hydra as h
@@ -105,9 +107,8 @@ left join amor_%2$s.meta_ref_id_map using (ref)
 	where 
 	   logical_name like 'fact%%' 
 	   and state = ?
-	),
-	summaries as (
-	select 
+	union all
+		select 
 	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id, 'summary' as view_type
        from amor_%1$s.amor_summaries summary
        join amor_%1$s.meta_hydra h on
@@ -117,12 +118,6 @@ left join amor_%2$s.meta_ref_id_map using (ref)
 		h.hydra = meta_state.hydra and
 		h.run_id = meta_state.run_id 
        where state = ?
-	)
-	select subject, hydra, added_meta_hydra, run_id, logical_name, view_type from
-	(
-		select subject, hydra, added_meta_hydra, run_id, logical_name, view_type from cubes
-		union all
-		select subject, hydra, added_meta_hydra, run_id, summary_id as logical_name, view_type from summaries
 	) d
 	order by subject, hydra, logical_name, added_meta_hydra desc
 	]]></entry>
