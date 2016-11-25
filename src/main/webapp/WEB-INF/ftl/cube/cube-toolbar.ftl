@@ -13,6 +13,13 @@
       <li class="hide-empty-action" [#if RequestParameters.fz??]disabled[/#if] role="presentation"><a role="menuitem"><span class="glyphicon"></span> [#if RequestParameters.fo??]${message("cube.filter-empty.off")}[#else]${message("cube.filter-empty.on")}[/#if]</a></li>
       <li class="show-codes-action" role="presentation"><a role="menuitem"><span class="glyphicon"></span> [#if RequestParameters.sc??]${message("cube.codes.off")}[#else]${message("cube.codes.on")}[/#if]</a></li>
 
+      [#if views?size > 0]
+         <li role="separator" class="divider"></li>
+         [#list views as view]
+         <li role="presentation"><a role="menuitem" href="?${view.url}">${view.label.getValue(lang)!"n/a"}</a></li>
+         [/#list]
+      [/#if]
+
       </ul>
 
     </div>

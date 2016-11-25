@@ -70,7 +70,7 @@ public class CubeController extends AbstractCubeController {
             model.addAttribute("target", cubeRequest.getTarget());
             
             model.addAttribute("metaLink", cs.getSource().getPredicates().get("meta:link"));
-
+            model.addAttribute("views", cs.getSource().getNamedViews());
             return "cube";
         } else {
             model.addAttribute("cube", cubeRequest.getCube());

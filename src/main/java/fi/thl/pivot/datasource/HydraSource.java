@@ -781,4 +781,8 @@ public abstract class HydraSource {
         return findNodeByNameInLevel(level.getChildLevel(), item, language);
     }
 
+    public final Set<NamedView> getNamedViews() {
+        return Collections.unmodifiableSet(namedViews);
+    }
+
 }
