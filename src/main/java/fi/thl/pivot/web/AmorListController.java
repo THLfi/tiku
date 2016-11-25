@@ -221,43 +221,46 @@ public class AmorListController {
         JSONObject link = new JSONObject();
         JSONArray items = new JSONArray();
 
-        reports: for (Report report : reports) {
+        for (Report report : reports) {
             if (report.getType() == ReportType.SUMMARY) {
                 continue;
             }
             boolean isOpenData = false;
-            boolean isProtected = false;
+            boolean isCubeAccessDenied = false;
+
+            if (dao.isProtected(env, report.getFact(), report.getRunId())) {
+                continue;
+            }
             List<Tuple> metadata = dao.loadCubeMetadata(env, report.getFact(), report.getRunId());
             for (Tuple t : metadata) {
-                if (t.predicate.equals("password")) {
-                    isProtected = true;
-                    break;
-                }
                 if (t.predicate.equals("opendata") && t.object.equals("1")) {
                     isOpenData = true;
                 }
-
+                if(t.predicate.equals("deny") && t.object.equals("1")) {
+                    isCubeAccessDenied = true;
+                }
             }
-            if (!isProtected) {
-                for (Tuple t : metadata) {
-                    if (t.predicate.equals("name")) {
-                        JSONObject r = new JSONObject();
-                        r.put("class", "dataset");
-                        r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang,
-                                report.getSubject(), report.getHydra(),
-                                report.getFact()));
-                        items.put(r);
-                        r.put("label", t.object);
-                        JSONArray note = new JSONArray();
-                        if (isOpenData) {
-                            note.put("© Terveyden ja hyvinvoinnin laitos 2016, Creative Commons BY 4.0");
-                        } else {
-                            note.put("© Terveyden ja hyvinvoinnin laitos 2016");
-                        }
+            if(isCubeAccessDenied) {
+                continue;
+            }
+
+            for (Tuple t : metadata) {
+                if (t.predicate.equals("name")) {
+                    JSONObject r = new JSONObject();
+                    r.put("class", "dataset");
+                    r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang,
+                            report.getSubject(), report.getHydra(),
+                            report.getFact()));
+                    items.put(r);
+                    r.put("label", t.object);
+                    JSONArray note = new JSONArray();
+                    if (isOpenData) {
+                        note.put("© Terveyden ja hyvinvoinnin laitos 2016, Creative Commons BY 4.0");
+                    } else {
+                        note.put("© Terveyden ja hyvinvoinnin laitos 2016");
                     }
                 }
             }
-
         }
         link.put("item", items);
         collection.put("link", link);

@@ -331,9 +331,14 @@ public class AmorDao {
 
 
 
-    public boolean isProtected(String env, String fact, String runId) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean isProtected(String environment, String fact, String runId) {
+        Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment");
+        Preconditions.checkNotNull(fact, "No fact specified");
+        Preconditions.checkNotNull(runId, "No run id specified");
+
+        return 0 < jdbcTemplate.queryForObject(
+                String.format(queries.getProperty("is-protected"), "amor_" + schema + ".x" + runId + "_meta"),
+                Integer.class);
     }
 
 }

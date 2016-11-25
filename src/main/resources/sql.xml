@@ -9,6 +9,14 @@ select
 from 
     %1$s
  ]]></entry>
+ 	<entry key="is-protected"><![CDATA[
+select 
+    count(*)
+from 
+    %1$s
+where
+    tag = 'password'
+ ]]></entry>
 	<entry key="load-cube-name"><![CDATA[
 select 
     ref,
