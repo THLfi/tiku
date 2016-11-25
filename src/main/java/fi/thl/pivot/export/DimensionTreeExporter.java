@@ -106,7 +106,7 @@ public class DimensionTreeExporter {
             }
             writer.print("]");
         } else {
-            writer.println(",\n\t\"children\": []");
+            writer.println(",\n\t\"children\": []");
         }
         writer.print("\n}");
         first = false;
