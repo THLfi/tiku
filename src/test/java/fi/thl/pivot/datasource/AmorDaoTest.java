@@ -34,25 +34,25 @@ public class AmorDaoTest {
 
     @Test
     public void shouldListReportsInDifferentStates() {
-        assertEquals(5, dao.listReports("test").size());
+        assertEquals(4, dao.listReports("test").size());
         assertEquals(1, dao.listReports("prod").size());
     }
 
     @Test
     public void shouldListReportsInOrder() {
         List<Report> reports = dao.listReports("test");
-        assertEquals(5, reports.size());
+        assertEquals(4, reports.size());
 
         // Fact versions
         assertEquals("1003", reports.get(0).getRunId());
-        assertEquals("1001", reports.get(1).getRunId());
+    // ("1001", reports.get(1).getRunId());
 
         // Summaries
+        assertEquals("1003", reports.get(1).getRunId());
         assertEquals("1003", reports.get(2).getRunId());
-        assertEquals("1003", reports.get(3).getRunId());
 
         // Second fact
-        assertEquals("1000", reports.get(4).getRunId());
+        assertEquals("1000", reports.get(3).getRunId());
     }
 
     @Test
@@ -77,11 +77,12 @@ public class AmorDaoTest {
 
     @Test
     public void shouldLoadSpecificSourceVersion() {
-        HydraSource source = dao.loadSource("test", "a-subject.test-hydra.fact.1001");
+        // WARNING: Support for older versions deprecated
+        HydraSource source = dao.loadSource("test", "a-subject.test-hydra.fact.1003");
         assertNotNull("No source found", source);
-        assertEquals("1001", source.getRunid());
-        assertEquals("2016-09-03", df.format(source.getRunDate().getTime()));
-        assertEquals("a-subject.test-hydra.fact.1001", source.getFactSource());
+        assertEquals("1003", source.getRunid());
+        assertEquals("2016-09-04", df.format(source.getRunDate().getTime()));
+        assertEquals("a-subject.test-hydra.fact.1003", source.getFactSource());
     }
 
     @Test

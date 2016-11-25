@@ -92,42 +92,65 @@ left join amor_%2$s.meta_ref_id_map using (ref)
     ]]>
 	</entry>
 	<entry key="list-reports"><![CDATA[
-	select * from (
+	with cubes as (
 	select 
-	   subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type
-	from amor_%1$s.meta_hydra 
-	join amor_%1$s.meta_table using (run_id) 
-	join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, 'cube' as view_type
+	from amor_%1$s.meta_hydra as h
+	join amor_%1$s.meta_table as t on
+		h.run_id = t.run_id
+	join amor_%1$s.meta_state_current as cube_state on 
+		h.subject = cube_state.subject and
+		h.hydra = cube_state.hydra and
+		h.run_id = cube_state.run_id 
 	where 
 	   logical_name like 'fact%%' 
 	   and state = ?
-	union all
+	),
+	summaries as (
 	select 
-	   subject, hydra, added_meta_hydra, run_id, summary_id, 'summary'
-       from amor_%1$s.amor_summaries
-       join amor_%1$s.meta_hydra using (run_id)
-       join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id, 'summary' as view_type
+       from amor_%1$s.amor_summaries summary
+       join amor_%1$s.meta_hydra h on
+       		summary.run_id = h.run_id
+       join amor_%1$s.meta_state_current as meta_state on 
+		h.subject = meta_state.subject and
+		h.hydra = meta_state.hydra and
+		h.run_id = meta_state.run_id 
        where state = ?
-    ) d
+	)
+	select subject, hydra, added_meta_hydra, run_id, logical_name, view_type from
+	(
+		select subject, hydra, added_meta_hydra, run_id, logical_name, view_type from cubes
+		union all
+		select subject, hydra, added_meta_hydra, run_id, summary_id as logical_name, view_type from summaries
+	) d
 	order by subject, hydra, logical_name, added_meta_hydra desc
 	]]></entry>
 	<entry key="list-reports-with-subject"><![CDATA[
 	select * from (
 	select 
-	   subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type
-	from amor_%1$s.meta_hydra 
-	join amor_%1$s.meta_table using (run_id) 
-	join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, 'cube' as view_type
+	from amor_%1$s.meta_hydra as h
+	join amor_%1$s.meta_table as t on
+		h.run_id = t.run_id
+	join amor_%1$s.meta_state_current as cube_state on 
+		h.subject = cube_state.subject and
+		h.hydra = cube_state.hydra and
+		h.run_id = cube_state.run_id 
 	where 
 	   logical_name like 'fact%%' 
 	   and subject = ?
 	   and state = ?
 	union all
 	select 
-	   subject, hydra, added_meta_hydra, run_id, summary_id, 'summary'
-       from amor_%1$s.amor_summaries
-       join amor_%1$s.meta_hydra using (run_id)
-       join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id, 'summary' as view_type
+       from amor_%1$s.amor_summaries summary
+       join amor_%1$s.meta_hydra h on
+       		summary.run_id = h.run_id
+       join amor_%1$s.meta_state_current as meta_state on 
+		h.subject = meta_state.subject and
+		h.hydra = meta_state.hydra and
+		h.run_id = meta_state.run_id 
        where 
          subject = ?
          and state = ?
@@ -137,16 +160,24 @@ left join amor_%2$s.meta_ref_id_map using (ref)
 	<entry key="load-latest-report"><![CDATA[
     select * from (
 	    select 
-	       subject, hydra, added_meta_hydra, run_id, logical_name, 'cube' as view_type, state
-	    from amor_%1$s.meta_hydra 
-	    join amor_%1$s.meta_table using (run_id) 
-	    join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, 'cube' as view_type, state
+	from amor_%1$s.meta_hydra as h
+	join amor_%1$s.meta_table as t on
+		h.run_id = t.run_id
+	join amor_%1$s.meta_state_current as cube_state on 
+		h.subject = cube_state.subject and
+		h.hydra = cube_state.hydra and
+		h.run_id = cube_state.run_id 
 	    union all
-	    select 
-	       subject, hydra, added_meta_hydra, run_id, summary_id, 'summary', state
-	       from amor_%1$s.amor_summaries
-	       join amor_%1$s.meta_hydra using (run_id)
-           join amor_%1$s.meta_state_current using (subject, hydra, run_id)
+	  select 
+	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id, 'summary' as view_type, state
+       from amor_%1$s.amor_summaries summary
+       join amor_%1$s.meta_hydra h on
+       		summary.run_id = h.run_id
+       join amor_%1$s.meta_state_current as meta_state on 
+		h.subject = meta_state.subject and
+		h.hydra = meta_state.hydra and
+		h.run_id = meta_state.run_id 
     ) d
     where 
        subject = ?

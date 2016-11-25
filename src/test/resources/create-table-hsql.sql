@@ -19,6 +19,14 @@ CREATE TABLE amor_test.meta_state (
 	state text
 );
 
+CREATE VIEW amor_test.meta_state_current AS 
+ SELECT subject, hydra, state, max(run_id) AS run_id
+   FROM amor_test.meta_hydra
+   JOIN amor_test.meta_state on 
+   	meta_hydra.run_id = meta_state.run_id
+  GROUP BY  subject, hydra, state;
+
+
 -- NOTE: This should be a view in production enviroment 
 --       and generated from summary xml definitions
 CREATE TABLE amor_test.amor_summaries (
@@ -92,6 +100,7 @@ CREATE TABLE amor_test.x1003_fact (
 	measure_key text,
 	val text
 );
+
 
 -- -------------
 --
