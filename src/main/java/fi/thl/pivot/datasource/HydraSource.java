@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.StopWatch;
@@ -27,6 +29,7 @@ import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
+import fi.thl.pivot.model.NamedView;
 import fi.thl.pivot.model.Query;
 import fi.thl.pivot.model.Tuple;
 import fi.thl.pivot.util.Constants;
@@ -48,6 +51,7 @@ import fi.thl.pivot.util.Constants;
  */
 public abstract class HydraSource {
 
+    private static final String PREDICATE_NAMED_VIEW_PREFIX = "meta:namedview";
     private static final ImmutableList<String> GRAPH_PREDICATES = ImmutableList.of(Constants.CONFIDENCE_INTERVAL_LOWER_LIMIT,
             Constants.CONFIDENCE_INTERVAL_UPPER_LIMIT, Constants.SAMPLE_SIZE);
     private static final String PREDICATE_DENY_ACCESS_TO_CUBE = "deny";
@@ -60,6 +64,7 @@ public abstract class HydraSource {
     private static final String PREDICATE_SORT = "sort";
     private static final String PREDICATE_CODE = "code";
     private static final String PREDICATE_DECIMALS = "decimals";
+    private static final Pattern NAMED_VIEW_PATTERN = Pattern.compile("meta:namedview(\\d+)(_(.*))?");
 
     /**
      * This callback handler is used when traversing the hydra metadata tree.
@@ -189,6 +194,7 @@ public abstract class HydraSource {
 
     private static final Logger LOG = Logger.getLogger(HydraSource.class);
 
+    private Set<NamedView> namedViews = new TreeSet<>();
     private Map<String, Dimension> dimensions;
     private Dataset dataSet;
     private Map<String, DimensionNode> nodes;
@@ -367,6 +373,8 @@ public abstract class HydraSource {
                 this.isOpenData = false;
             } else if (PREDICATE_DENY_ACCESS_TO_CUBE.equals(t.predicate) && PREDICATE_VALUE_TRUE.equals(t.object)) {
                 this.denyCubeAccess = true;
+            } else if (t.predicate.startsWith(PREDICATE_NAMED_VIEW_PREFIX)) {
+                assignNamedView(t);
             } else {
                 if (!this.predicates.containsKey(t.predicate)) {
                     this.predicates.put(t.predicate, new Label());
@@ -375,6 +383,44 @@ public abstract class HydraSource {
             }
 
         }
+    }
+
+    private void assignNamedView(Tuple t) {
+        Matcher m = NAMED_VIEW_PATTERN.matcher(t.predicate);
+        if(m.find()) {
+            String viewPredicate = m.group(3);
+            NamedView view = findOrAddNamedView(Integer.parseInt(m.group(1)));
+            if("name".equals(viewPredicate)) {
+                view.getLabel().setValue(t.lang, t.object);;
+            } else if("default".equals(viewPredicate)) {
+               view.setDefault(true);
+            } else if ("bind_to_password".equals(viewPredicate)) {
+                view.setDefaultForPassword(t.object);
+            } else if (null == viewPredicate) {
+                view.setUrl(t.object);
+            }
+        }
+    }
+
+    
+    
+    private NamedView findOrAddNamedView(int index) {
+        NamedView view = null;
+        for(NamedView v : namedViews) {
+            if(v.getId() == index) {
+                view = v;
+                break;
+            }
+            if(v.getId() > index) {
+                break;
+            }
+        }
+        if(null == view) {
+            view = new NamedView();
+            view.setId(index);
+            namedViews.add(view);
+        }
+        return view;
     }
 
     protected abstract List<Tuple> loadFactMetadata();
@@ -428,6 +474,25 @@ public abstract class HydraSource {
         return nodes.get(id);
     }
 
+    public final String getDefaultView(String password) {
+        if(null == password) {
+            password = "";
+        }
+        NamedView view = null;
+        for(NamedView v : namedViews) {
+            if(view == null) {
+                view = v;
+            } else if (v.isDefaultForPassword(password)) {
+                view = v;
+            } else if (v.isDefault() && !v.isDefaultForPassword(password)) {
+                view = v;
+            }
+        }
+        return null == view? null : view.getUrl();
+    }
+    
+
+    
     protected final List<String> getColumns() {
         return columns;
     }

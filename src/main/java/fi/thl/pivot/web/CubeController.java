@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fi.thl.pivot.annotation.Monitored;
+import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.exception.CubeAccessDeniedException;
 import fi.thl.pivot.exception.CubeNotFoundException;
 
@@ -34,7 +35,18 @@ public class CubeController extends AbstractCubeController {
             throws CubeNotFoundException, CubeAccessDeniedException {
         LOG.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
+        // Redirect to default view if no parameters set
+        if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
+            HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());
+            source.loadMetadata();
+            String url = source.getDefaultView(password(cubeRequest));
+            if(null != url) {
+                return String.format("redirect:/%s/%s/%s/%s/%s?%s", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject(), cubeRequest.getHydra(), cubeRequest.getCubeId(), url);
+            }
+        }
+        
         CubeService cs = createCube(cubeRequest, resolveSearchType(cubeRequest.getSearchType()), model);
+        
         if (cs.isCubeCreated()) {
 
             if (cs.isCubeAccessDenied()) {
@@ -64,6 +76,10 @@ public class CubeController extends AbstractCubeController {
             model.addAttribute("cube", cubeRequest.getCube());
             throw new CubeNotFoundException();
         }
+    }
+
+    private String password(CubeRequest cubeRequest) {
+        return (String) session.getAttribute(sessionAttributeName(cubeRequest.getEnv(), cubeRequest.getCube()));
     }
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)

@@ -205,7 +205,7 @@ public abstract class AbstractController {
         LOG.debug("metadata loaded");
     }
 
-    private String sessionAttributeName(String env, String cube) {
+    protected final String sessionAttributeName(String env, String cube) {
         return env + "/" + cube;
     }
 }

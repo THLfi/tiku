@@ -254,9 +254,9 @@ public class AmorDao {
         id = id.replaceAll("latest", latestRunId);
 
         HydraSource cached = sourceCache.getIfPresent(id);
-        if (null != cached) {
-            return cached;
-        }
+     //   if (null != cached) {
+      //      return cached;
+      //  }
 
         List<HydraSource> sources = jdbcTemplate.query(String.format(queries.getProperty("list-sources"), schema),
                 new ResultSetToSource(), params[0],

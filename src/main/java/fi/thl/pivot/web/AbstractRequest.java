@@ -89,6 +89,10 @@ public class AbstractRequest {
     public String getCube() {
         return Joiner.on(".").join(subject, hydra, cube, runId);
     }
+    
+    public String getCubeId() {
+        return cube;
+    }
 
     public void setCube(String cube) {
         this.cube = cube;
