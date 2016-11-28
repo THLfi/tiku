@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
@@ -23,14 +25,14 @@ public class DimensionTreeExporter {
         PrintWriter writer = null;
         Map<String, Object> params = model.asMap();
         try {
-            writer = new PrintWriter(new BufferedOutputStream(out));
+            writer = new PrintWriter(new BufferedOutputStream(out, 8192));
             // if (isSet(params, "jsonp")) {
             writer.println("thl.pivot.loadDimensions(");
             // }
 
-            writer.println("[");
+            writer.println('[');
             exportMetadata(writer, params);
-            writer.println("]");
+            writer.println(']');
 
             // if (isSet(params, "jsonp")) {
             writer.println(");");
@@ -56,9 +58,9 @@ public class DimensionTreeExporter {
 
     private void exportDimension(PrintWriter writer, Dimension dimension, boolean first, String language) {
         if (!first) {
-            writer.println(",");
+            writer.println(',');
         }
-        writer.println("{");
+        writer.println('{');
         boolean isCommaNeeded = false;
         isCommaNeeded = attribute(writer, "id", dimension.getId(), isCommaNeeded);
         isCommaNeeded = attribute(writer, "label", label(dimension.getLabel().getValue(language)), isCommaNeeded);
@@ -74,9 +76,9 @@ public class DimensionTreeExporter {
 
     private void exportNode(PrintWriter writer, DimensionNode node, boolean first, String language) {
         if (!first) {
-            writer.println(",");
+            writer.println(',');
         }
-        writer.println("{");
+        writer.println('{');
         boolean isCommaNeeded = false;
         isCommaNeeded = attribute(writer, "id", node.getId(), isCommaNeeded);
         isCommaNeeded = attribute(writer, "sid", node.getSurrogateId(), isCommaNeeded);
@@ -87,24 +89,26 @@ public class DimensionTreeExporter {
         isCommaNeeded = attribute(writer, "decimals", node.getDecimals(), isCommaNeeded);
         isCommaNeeded = attribute(writer, "uri", node.getReference(), isCommaNeeded);
 
-        if (node.getProperties() != null && !node.getProperties().isEmpty()) {
+        Set<Entry<String, Label>> properties = node.getProperties();
+        if (properties != null && !properties.isEmpty()) {
             writer.println(",\n\t\"properties\": {");
             boolean isPropertyCommaNeeded = false;
-            for (Map.Entry<String, Label> p : node.getProperties()) {
+            for (Map.Entry<String, Label> p : properties) {
                 isPropertyCommaNeeded = attribute(writer, p.getKey(), p.getValue().getValue(language),
                         isPropertyCommaNeeded);
             }
             writer.print("\n\t}");
         }
 
-        if (!node.getChildren().isEmpty()) {
+        Collection<DimensionNode> children = node.getChildren();
+        if (!children.isEmpty()) {
             writer.println(",\n\t\"children\": [");
             boolean firstNode = true;
-            for (DimensionNode child : node.getChildren()) {
+            for (DimensionNode child : children) {
                 exportNode(writer, child, firstNode, language);
                 firstNode = false;
             }
-            writer.print("]");
+            writer.print(']');
         } else {
             writer.println(",\n\t\"children\": []");
         }
@@ -115,9 +119,16 @@ public class DimensionTreeExporter {
     private boolean attribute(PrintWriter writer, String attribute, String value, boolean isCommaNeeded) {
         if (null != value) {
             if (isCommaNeeded) {
-                writer.println(",");
+                writer.println(',');
             }
-            writer.printf("\t\"%s\":%s", attribute, quote(escape(value)));
+            writer.print('\t');
+            writer.print('"');
+            writer.print(attribute);
+            writer.print('"');
+            writer.print(':');
+            writer.print('"');
+            escape(writer, value);
+            writer.print('"');
             return true;
         }
         return isCommaNeeded;
@@ -126,9 +137,14 @@ public class DimensionTreeExporter {
     private boolean attribute(PrintWriter writer, String attribute, Number value, boolean isCommaNeeded) {
         if (null != value) {
             if (isCommaNeeded) {
-                writer.println(",");
+                writer.println(',');
             }
-            writer.printf("\t\"%s\":%s", attribute, value);
+            writer.print('\t');
+            writer.print('"');
+            writer.print(attribute);
+            writer.print('"');
+            writer.print(':');
+            writer.print(value);
             return true;
         }
         return isCommaNeeded;
@@ -138,15 +154,21 @@ public class DimensionTreeExporter {
         return label == null ? "n/a" : label;
     }
 
-    private String quote(String value) {
-        return String.format("\"%s\"", value);
-    }
-
-    private String escape(String value) {
+    private void escape(PrintWriter writer, String value) {
         if (null == value) {
-            return "";
+            return;
         }
-        return value.replaceAll("\"", "\\\"");
+        for(char c : value.toCharArray()) {
+            switch(c) {
+            case '"':
+                writer.print('"');
+                writer.print('"');
+                break;
+            default:
+                writer.print('"');
+                break;
+            }
+        }
     }
 
     private void close(PrintWriter writer) {
