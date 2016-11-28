@@ -57,7 +57,7 @@
 				<prop key="datetime_format">dd.mm.yyyy</prop>
 				<prop key="number_format">#</prop>
 				<prop key="whitespace_stripping">true</prop>
-				<prop key="cache_storage">freemarker.cache.NullCacheStorage</prop>
+				<prop key="cache_storage">freemarker.cache.StrongCacheStorage</prop>
 			</props>
 		</property>
 		<property name="freemarkerVariables">
