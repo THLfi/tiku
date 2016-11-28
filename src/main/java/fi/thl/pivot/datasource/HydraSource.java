@@ -470,7 +470,7 @@ public abstract class HydraSource {
     }
 
     public final DimensionNode getNode(String id) {
-        Preconditions.checkNotNull(id, "Node id must not be null");
+        assert null != Preconditions.checkNotNull(id, "Node id must not be null");
         return nodes.get(id);
     }
 

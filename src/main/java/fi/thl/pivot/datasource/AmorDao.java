@@ -130,6 +130,8 @@ public class AmorDao {
 
     private Cache<String, HydraSource> sourceCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
             .build();
+    private Cache<String, String> versionCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
 
     @AuditedMethod
     public List<Report> listReports(String environment) {
@@ -137,8 +139,6 @@ public class AmorDao {
         return jdbcTemplate.query(String.format(queries.getProperty("list-reports"), schema), new ReportMapper(),
                 environment, environment);
     }
-
-   
 
     /**
      * Lists reports within the given amor subject. Used to provide a quick way
@@ -276,8 +276,13 @@ public class AmorDao {
     private String determineReportVersion(final String environment, String[] params) {
         String latestRunId;
         if (params.length < 4 || "latest".equals(params[3])) {
-            Report r = loadLatestReport(environment, params[0], params[1], params[2]);
-            latestRunId = r == null ? "0" : r.getRunId();
+            String key = String.format("%s.%s.%s.%s", environment, params[0],params[1], params[2]);
+            latestRunId = versionCache.getIfPresent(key);
+            if(null == latestRunId) {
+                Report r = loadLatestReport(environment, params[0], params[1], params[2]);
+                latestRunId = r == null ? "0" : r.getRunId();
+                versionCache.put(key, latestRunId);
+            }
         } else {
             latestRunId = params[3];
         }
@@ -305,7 +310,6 @@ public class AmorDao {
         return Lists.transform(listReports(environment), new ReportToSource());
     }
 
-
     private boolean checkEnvironment(String environment) {
         return Constants.VALID_ENVIRONMENTS.contains(environment);
     }
@@ -328,8 +332,6 @@ public class AmorDao {
         }
 
     }
-
-
 
     public boolean isProtected(String environment, String fact, String runId) {
         Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment");

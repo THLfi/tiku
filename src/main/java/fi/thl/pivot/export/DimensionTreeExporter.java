@@ -165,7 +165,7 @@ public class DimensionTreeExporter {
                 writer.print('"');
                 break;
             default:
-                writer.print('"');
+                writer.print(c);
                 break;
             }
         }

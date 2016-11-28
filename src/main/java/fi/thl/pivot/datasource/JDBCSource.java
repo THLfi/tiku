@@ -230,14 +230,16 @@ public class JDBCSource extends HydraSource {
     @Override
     protected Dataset loadDataInner() {
         final Dataset newDataSet = new Dataset();
+        final int columns = getColumns().size();
+
         jdbcTemplate.query(buildFactQuery(), new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                DimensionNode[] keys = new DimensionNode[getColumns().size()];
-                for (int i = 1; i <= getColumns().size(); ++i) {
-                    keys[i - 1] = getNode(rs.getString(i));
+                List<DimensionNode> keys = new ArrayList<>(columns);
+                for (int i = 1; i <= columns; ++i) {
+                    keys.add(getNode(rs.getString(i)));
                 }
-                newDataSet.put(rs.getString(getColumns().size() + 1), Arrays.asList(keys));
+                newDataSet.put(rs.getString(columns + 1), keys);
 
             }
         });

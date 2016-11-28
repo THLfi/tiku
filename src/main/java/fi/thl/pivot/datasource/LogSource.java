@@ -3,6 +3,9 @@ package fi.thl.pivot.datasource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
@@ -68,21 +71,34 @@ public class LogSource {
     }
 
     private JdbcTemplate jdbcTemplate;
+    private ExecutorService executorService;
 
     @Autowired
     public LogSource(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.executorService = Executors.newFixedThreadPool(3);
     }
 
-    public void logDisplayEvent(String cube, String env, final CubeService cs, String view) {
+    public void logDisplayEvent(final String cube, final String env, final CubeService cs, final String view) {
+        final HttpServletRequest req = ((ServletRequestAttributes) (RequestContextHolder
+                .currentRequestAttributes())).getRequest();
         try {
-            final String id = Hashing.md5().hashBytes((cube + System.currentTimeMillis()).getBytes()).toString();
-            HttpServletRequest req = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-            String c[] = cube.split("\\.");
-            jdbcTemplate.update(String.format(USAGE_TEMPLATE, env), id, c[0], c[1], c[2], c.length > 4 ? c[3] : "latest", req.getLocalAddr(), req.getRemoteAddr(),
-                    req.getSession().getId(), view, cs.isZeroValuesFiltered() ? "t" : "f", cs.isEmptyValuesFiltered() ? "t" : "f");
+            executorService.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    final String id = Hashing.md5().hashBytes((cube + System.currentTimeMillis()).getBytes())
+                            .toString();
+                    String c[] = cube.split("\\.");
+                    jdbcTemplate.update(String.format(USAGE_TEMPLATE, env), id, c[0], c[1], c[2],
+                            c.length > 4 ? c[3] : "latest", req.getLocalAddr(), req.getRemoteAddr(),
+                            req.getSession().getId(), view, cs.isZeroValuesFiltered() ? "t" : "f",
+                            cs.isEmptyValuesFiltered() ? "t" : "f");
 
-            logSelectedValues(env, cs, id);
+                    logSelectedValues(env, cs, id);
+
+                    return null;
+                }
+            });
         } catch (Exception e) {
             LOG.warn("Could not log event " + e.getMessage());
         }
@@ -90,8 +106,11 @@ public class LogSource {
 
     @Transactional
     private void logSelectedValues(String env, final CubeService cs, final String id) {
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env), new SelectionBatchSetter(id, cs.getColumnNodes(), "c"));
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env), new SelectionBatchSetter(id, cs.getRowNodes(), "r"));
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env), new SelectionBatchSetter(id, cs.getFilterNodes(), "f"));
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+                new SelectionBatchSetter(id, cs.getColumnNodes(), "c"));
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+                new SelectionBatchSetter(id, cs.getRowNodes(), "r"));
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+                new SelectionBatchSetter(id, cs.getFilterNodes(), "f"));
     }
 }
