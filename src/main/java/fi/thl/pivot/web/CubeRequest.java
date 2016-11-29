@@ -134,6 +134,9 @@ public class CubeRequest extends AbstractRequest {
         if (null != getFilterZeroes()) {
             sb.append("&fz");
         }
+        if(null != getShowCodes()) {
+            sb.append("&sc");
+        }
         if (null != sortNode) {
             sb.append("&sort=").append(sortNode);
             sb.append("&mode=").append(sortMode);
