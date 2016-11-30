@@ -29,7 +29,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private List<PivotLevel> filteredRows = null;
     private List<PivotLevel> filteredColumns = null;
-
+    
     private long totalTimeSpent;
     private List<Integer> rowIndices;
     private List<Integer> columnIndices;
@@ -224,22 +224,22 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private void applyFiltersForSingleDimensionCubes(List<Predicate<PivotCell>> filters, int max, boolean isRow, Set<Integer> nodes) {
-        for (int row = 0; row < max; ++row) {
-            PivotCellImpl cell = isRow ? createSentinelCell(row, 0) : createSentinelCell(0, row);
+        PivotCellImpl cell = new PivotCellImpl("..");
+        for (int index = 0; index < max; ++index) {
+            if(isRow) {
+                cell.setRowNumber(index);
+                cell.setColumnNumber(0);
+            } else {
+                cell.setRowNumber(0);
+                cell.setColumnNumber(index);
+            }
             for (Predicate<PivotCell> filter : filters) {
                 if (!filter.apply(cell)) {
-                    nodes.remove(row);
+                    nodes.remove(index);
                     break;
                 }
             }
         }
-    }
-
-    private PivotCellImpl createSentinelCell(int row, int column) {
-        PivotCellImpl cell = new PivotCellImpl("..");
-        cell.setRowNumber(row);
-        cell.setColumnNumber(column);
-        return cell;
     }
 
     public void filterHiearachy() {
