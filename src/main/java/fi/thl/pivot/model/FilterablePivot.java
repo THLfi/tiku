@@ -16,10 +16,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import fi.thl.pivot.util.Functions;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class FilterablePivot extends AbstractPivotForwarder {
@@ -107,6 +106,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
         IntSet filteredRows = Functions.setUpto(getRowCount());
         IntSet filteredColumns = Functions.setUpto(getColumnCount());
 
+        System.out.println("Setup: " + filteredRows.getClass());
+        
         // goes through the whole multidimensional table
         // and applies the filter for each cell
         applyFiltersForEachCell(filters, filteredRows, filteredColumns);
@@ -119,12 +120,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private void updateFilteredHeaderCounts(IntCollection filteredRows, IntCollection filteredColumns) {
         // Update row indices and row count to match the
         // number of shown rows af filteration
-        // rowIndices.removeAll(filteredRows);
-        List<Integer> r = new IntArrayList(filteredRows);
-        Collections.sort(r);
-        Collections.reverse(r);
-        for (int i : r) {
-            int row = rowIndices.remove(i);
+        IntLinkedOpenHashSet r = (IntLinkedOpenHashSet) filteredRows;
+        while(!r.isEmpty()) {
+            int row = rowIndices.removeInt(r.removeLastInt());
             for(int column = 0; column < delegate.getColumnCount(); ++column) {
                 delegate.filterCellAt(row, column);
             }
@@ -132,11 +130,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         // Update column indices and column count to match the
         // number of shown rows af filteration
-        List<Integer> c = new IntArrayList(filteredColumns);
-        Collections.sort(c);
-        Collections.reverse(c);
-        for (int i : c) {
-            int column = columnIndices.remove(i);
+        IntLinkedOpenHashSet c = (IntLinkedOpenHashSet) filteredRows;
+        while(!c.isEmpty()) {
+           int column = columnIndices.removeInt(c.removeLastInt());
             for(int row = 0; row < delegate.getRowCount(); ++row) {
                 delegate.filterCellAt(row, column);
             }
@@ -252,7 +248,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private IntSet filterHieararchyInRows() {
-        IntSet newFilteredRows = new IntOpenHashSet();
+        IntSet newFilteredRows = new IntLinkedOpenHashSet();
         List<PivotLevel> someRows = getRows();
 
         Multimap<Dimension, Integer> dims = determineDimensionInRow(someRows);
@@ -269,7 +265,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private IntSet filterHieararchyInColumns() {
-        IntSet newFilteredColumns = new IntOpenHashSet();
+        IntSet newFilteredColumns = new IntLinkedOpenHashSet();
         List<PivotLevel> someColumns = getColumns();
 
         Multimap<Dimension, Integer> dims = determineDimensionInColumn(someColumns);
