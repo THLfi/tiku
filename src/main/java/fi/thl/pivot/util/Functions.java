@@ -1,11 +1,9 @@
 package fi.thl.pivot.util;
 
-import java.util.Set;
-
-import com.google.common.collect.ContiguousSet;
-import com.google.common.collect.DiscreteDomain;
-import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class Functions {
 
@@ -17,13 +15,21 @@ public class Functions {
      *            maximum value of range
      * @return a contiguous modifiable set of integer between 0 and maxvalue
      */
-    public static Set<Integer> upto(int maxValue) {
-        // The range must be inserted to a new collection
-        // as contiguous set is immutable and thus prevents
-        // filtering in place. We could also construct new
-        // sets in applyFilterForEach-method but that would
-        // require us to use output parameters
-        return Sets.newLinkedHashSet(ContiguousSet.create(Range.open(-1, maxValue), DiscreteDomain.integers()));
+    public static IntSet setUpto(int maxValue) {
+        IntSet set = new IntLinkedOpenHashSet(maxValue);
+        for(int i = 0; i < maxValue; ++i) {
+            set.add(i);
+        }
+        return set; 
+    }
+    
+    public static IntList listUpto(int maxValue) {
+        
+        IntList list = new IntArrayList(maxValue);
+        for(int i = 0; i < maxValue; ++i) {
+            list.add(i);
+        }
+        return list; 
     }
 
 }

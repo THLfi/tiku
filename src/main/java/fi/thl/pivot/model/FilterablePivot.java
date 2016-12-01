@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -15,9 +14,13 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import fi.thl.pivot.util.Functions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class FilterablePivot extends AbstractPivotForwarder {
 
@@ -31,15 +34,15 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private List<PivotLevel> filteredColumns = null;
     
     private long totalTimeSpent;
-    private List<Integer> rowIndices;
-    private List<Integer> columnIndices;
+    private IntList rowIndices;
+    private IntList columnIndices;
     private List<PivotLevel> rows;
     private List<PivotLevel> columns;
 
     public FilterablePivot(Pivot delegate) {
         super(delegate);
-        this.rowIndices = new ArrayList<>(Functions.upto(delegate.getRowCount()));
-        this.columnIndices = new ArrayList<>(Functions.upto(delegate.getColumnCount()));
+        this.rowIndices = Functions.listUpto(delegate.getRowCount());
+        this.columnIndices = Functions.listUpto(delegate.getColumnCount());
         this.rows = delegate.getRows();
         this.columns = delegate.getColumns();
     }
@@ -101,8 +104,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
         //
         // Note that the method may be called more
         // than once
-        Set<Integer> filteredRows = Functions.upto(getRowCount());
-        Set<Integer> filteredColumns = Functions.upto(getColumnCount());
+        IntSet filteredRows = Functions.setUpto(getRowCount());
+        IntSet filteredColumns = Functions.setUpto(getColumnCount());
 
         // goes through the whole multidimensional table
         // and applies the filter for each cell
@@ -113,11 +116,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
         filteredColumns = null;
     }
 
-    private void updateFilteredHeaderCounts(Set<Integer> filteredRows, Set<Integer> filteredColumns) {
+    private void updateFilteredHeaderCounts(IntCollection filteredRows, IntCollection filteredColumns) {
         // Update row indices and row count to match the
         // number of shown rows af filteration
         // rowIndices.removeAll(filteredRows);
-        List<Integer> r = new ArrayList<>(filteredRows);
+        List<Integer> r = new IntArrayList(filteredRows);
         Collections.sort(r);
         Collections.reverse(r);
         for (int i : r) {
@@ -129,7 +132,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         // Update column indices and column count to match the
         // number of shown rows af filteration
-        List<Integer> c = new ArrayList<>(filteredColumns);
+        List<Integer> c = new IntArrayList(filteredColumns);
         Collections.sort(c);
         Collections.reverse(c);
         for (int i : c) {
@@ -193,7 +196,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
      * @param filteredColumns
      *            hidden column indices
      */
-    private void applyFiltersForEachCell(List<Predicate<PivotCell>> filter, Set<Integer> filteredRows, Set<Integer> filteredColumns) {
+    private void applyFiltersForEachCell(List<Predicate<PivotCell>> filter, IntSet filteredRows, IntSet filteredColumns) {
         if (columnIndices.size() == 0) {
             applyFiltersForSingleDimensionCubes(filter, rowIndices.size(), true, filteredRows);
         } else if (rowIndices.size() == 0) {
@@ -203,7 +206,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
     }
 
-    private void applyFiltersForAllCells(List<Predicate<PivotCell>> filters, Set<Integer> filteredRows, Set<Integer> filteredColumns) {
+    private void applyFiltersForAllCells(List<Predicate<PivotCell>> filters, IntSet filteredRows, IntSet filteredColumns) {
         long i = 0L;
         for (int column = 0; column < columnIndices.size(); ++column) {
             for (int row = 0; row < rowIndices.size(); ++row) {
@@ -223,7 +226,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
     }
 
-    private void applyFiltersForSingleDimensionCubes(List<Predicate<PivotCell>> filters, int max, boolean isRow, Set<Integer> nodes) {
+    private void applyFiltersForSingleDimensionCubes(List<Predicate<PivotCell>> filters, int max, boolean isRow, IntSet nodes) {
         PivotCellImpl cell = new PivotCellImpl("..");
         for (int index = 0; index < max; ++index) {
             if(isRow) {
@@ -248,8 +251,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
         filteredColumns = null;
     }
 
-    private Set<Integer> filterHieararchyInRows() {
-        Set<Integer> newFilteredRows = Sets.newHashSet();
+    private IntSet filterHieararchyInRows() {
+        IntSet newFilteredRows = new IntOpenHashSet();
         List<PivotLevel> someRows = getRows();
 
         Multimap<Dimension, Integer> dims = determineDimensionInRow(someRows);
@@ -265,8 +268,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
         return newFilteredRows;
     }
 
-    private Set<Integer> filterHieararchyInColumns() {
-        Set<Integer> newFilteredColumns = Sets.newHashSet();
+    private IntSet filterHieararchyInColumns() {
+        IntSet newFilteredColumns = new IntOpenHashSet();
         List<PivotLevel> someColumns = getColumns();
 
         Multimap<Dimension, Integer> dims = determineDimensionInColumn(someColumns);

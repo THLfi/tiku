@@ -73,8 +73,8 @@ public class OrderablePivot extends AbstractPivotForwarder {
         this.sortMode = sortMode;
 
         clearCurrentSortOrder();
-        List<Integer> newColumnOrder = Lists.newArrayList(Functions.upto(getColumnCount()));
-        List<Integer> newRowOrder = Lists.newArrayList(Functions.upto(getRowCount()));
+        List<Integer> newColumnOrder = Lists.newArrayList(Functions.setUpto(getColumnCount()));
+        List<Integer> newRowOrder = Lists.newArrayList(Functions.setUpto(getRowCount()));
         applySort(sortBy, newColumnOrder, newRowOrder);
         setSortOrder(newColumnOrder, newRowOrder);
 

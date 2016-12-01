@@ -18,6 +18,7 @@ import com.google.common.collect.Sets;
 import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.util.CumulativeStopWatch;
 import fi.thl.pivot.util.Functions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 public class ModifiablePivot implements Pivot {
 
@@ -37,8 +38,8 @@ public class ModifiablePivot implements Pivot {
 
     private Set<DimensionNode> constants = Sets.newLinkedHashSet();
 
-    private List<Integer> rowIndices = Lists.newArrayList();
-    private List<Integer> columnIndices = Lists.newArrayList();
+    private List<Integer> rowIndices =  new IntArrayList();
+    private List<Integer> columnIndices =  new IntArrayList();
 
     int columnCount;
     int rowCount;
@@ -88,8 +89,7 @@ public class ModifiablePivot implements Pivot {
 
         columnCount = calculateHeaderCount(columnCount, nodes);
         fullColumnCount = columnCount;
-        columnIndices.clear();
-        columnIndices.addAll(Functions.upto(columnCount));
+        columnIndices = Functions.listUpto(columnCount);
 
         columnCount = removeTotals(columns, columnIndices);
     }
@@ -100,8 +100,7 @@ public class ModifiablePivot implements Pivot {
         rows.add(nodes);
 
         rowCount = calculateHeaderCount(rowCount, nodes);
-        rowIndices.clear();
-        rowIndices.addAll(Functions.upto(rowCount));
+        rowIndices = Functions.listUpto(rowCount);
 
         rowCount = removeTotals(rows, rowIndices);
     }

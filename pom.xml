@@ -117,7 +117,6 @@
 			<artifactId>aspectjweaver</artifactId>
 			<version>${org.aspectj.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
@@ -142,6 +141,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>18.0</version>
+		</dependency>
+		<dependency>
+			<groupId>it.unimi.dsi</groupId>
+			<artifactId>fastutil</artifactId>
+			<version>7.0.13</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.supercsv</groupId>
