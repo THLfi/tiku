@@ -37,8 +37,10 @@ public abstract class AbstractCubeController extends AbstractController {
             @RequestParam(value = "column", required = false, defaultValue = "") List<String> columnHeaders,
             @RequestParam(value = "filter", required = false, defaultValue = "") List<String> filterValues,
             @RequestParam(value = "measure", required = false, defaultValue = "") List<String> measureValues,
-            @RequestParam(value = "search", required = false, defaultValue = "su") String searchType, @RequestParam(required = false) String fo,
-            @RequestParam(required = false) String fz, @RequestParam(value = "sort", required = false) String sortNode,
+            @RequestParam(value = "search", required = false, defaultValue = "su") String searchType, 
+            @RequestParam(required = false) String fo,
+            @RequestParam(required = false) String fz, 
+            @RequestParam(value = "sort", required = false) String sortNode,
             @RequestParam(value = "mode", required = false, defaultValue = "desc") String sortMode,
             @RequestParam(value = "sc", required = false, defaultValue = "") String showCodes,
             @RequestParam(value = "ci", required=false) String ci, @RequestParam(value="n", required=false) String n) {

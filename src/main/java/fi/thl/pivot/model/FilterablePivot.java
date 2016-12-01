@@ -105,12 +105,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
         // than once
         IntSet filteredRows = Functions.setUpto(getRowCount());
         IntSet filteredColumns = Functions.setUpto(getColumnCount());
-
-        System.out.println("Setup: " + filteredRows.getClass());
-        
+ 
         // goes through the whole multidimensional table
         // and applies the filter for each cell
         applyFiltersForEachCell(filters, filteredRows, filteredColumns);
+        
         updateFilteredHeaderCounts(filteredRows, filteredColumns);
 
         filteredRows = null;
@@ -130,7 +129,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         // Update column indices and column count to match the
         // number of shown rows af filteration
-        IntLinkedOpenHashSet c = (IntLinkedOpenHashSet) filteredRows;
+        IntLinkedOpenHashSet c = (IntLinkedOpenHashSet) filteredColumns;
         while(!c.isEmpty()) {
            int column = columnIndices.removeInt(c.removeLastInt());
             for(int row = 0; row < delegate.getRowCount(); ++row) {
