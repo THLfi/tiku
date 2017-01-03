@@ -32,13 +32,13 @@
           </a>
       </li>
 
-      [#if node.parent?? && node.level.childLevel??]
+      [#if node.parent?? && node.level.childLevel?? && node.level.childLevel.nodes?size > 0]
       <li>
           <a href="#" data-ref="${node.level.childLevel.nodes[0].surrogateId}" class="add-level">
               <span class="glyphicon [#if type == "row"]glyphicon-arrow-right[#else]glyphicon-arrow-down[/#if]"></span> ${message("cube.dimension.expand")}
           </a>
       </li>
-      [#elseif node.level.childLevel?? && node.level.childLevel.childLevel??]
+      [#elseif node.level.childLevel?? && node.level.childLevel.childLevel??  && node.level.childLevel.nodes?size > 0]
       <li>
           <a href="#" data-ref="${node.level.childLevel.childLevel.nodes[0].surrogateId}" class="add-level">
               <span class="glyphicon [#if type == "row"]glyphicon-arrow-right[#else]glyphicon-arrow-down[/#if]"></span> ${message("cube.dimension.expand")}
