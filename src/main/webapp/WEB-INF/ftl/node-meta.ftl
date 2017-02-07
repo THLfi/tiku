@@ -64,8 +64,10 @@
       <dd>[@label node.dimension /] / [@label node.level /]</dd>
       <dt>${message("meta.id")}<dt>
       <dd>${node.id}</dd>
+      [#if node.code??]
       <dt>${message("meta.code")}</dt>
       <dd>${node.code}</dd>
+      [/#if]
       <dt>${message("meta.uri")}</dt>
       <dd>${node.reference}</dd>
     </dl>
