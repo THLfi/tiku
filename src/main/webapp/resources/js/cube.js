@@ -472,17 +472,25 @@
         $('#pivot').submit();
       });
 
+    var metadataCallback = function (href) {
+      var w = window.open(href, 'tikumetadata', 'scrollbars=1,menubar=0,resizable=1,status=0,location=0,width=650,height=450,screenX=250,screenY=350');
+      if (window.focus) {
+        w.focus();
+      }
+    };
     $('th .info').click(function (e) {
       e.preventDefault();
       var target = $(this).closest('.row-target, .column-target');
       var ref = target.find('a').first().attr('data-ref');
       var i = ref.lastIndexOf('-');
-      console.log(thl.url + ref.substring(i + 1));
-      var w = window.open(location.protocol + '//' + location.host + thl.url + ref.substring(i + 1), 'tikumetadata', 'scrollbars=1,menubar=0,resizable=1,status=0,location=0,width=650,height=450,screenX=250,screenY=350');
-      if (window.focus) {
-          w.focus();
-      }
+      metadataCallback(window.location.protocol + '//' + window.location.host + thl.url + ref.substring(i + 1));
     });
+
+    $('#measure-meta').click(function (e) {
+      e.preventDefault();
+      metadataCallback(this.href);
+    });
+
     $('th .rowhide').click(function () {
       var target = $(this).closest('.row-target, .column-target');
       var level = target.attr('data-level');
