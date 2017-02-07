@@ -119,6 +119,6 @@ public class HydraSourceTest {
         assertEquals(2, node.getDecimals());
         
         DimensionNode second = source.findNodeByRef("https://sampo.thl.fi/meta/test/mittari/2");
-        assertEquals("decimals set even though illegal metadata value", 0, second.getDecimals());
+        assertEquals("decimals set even though illegal metadata value", -1, second.getDecimals());
     }
 }
