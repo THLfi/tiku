@@ -26,11 +26,11 @@ public class PivotCellForwarder implements PivotCell {
     public int getActualRowNumber() {
         return delegate.getRowNumber();
     }
-    
+
     public int getColumnNumber() {
         return column;
     }
-    
+
     public int getActualColumnNumber() {
         return delegate.getRowNumber();
     }
@@ -73,6 +73,11 @@ public class PivotCellForwarder implements PivotCell {
 
     public String getI18nValue() {
         return delegate.getI18nValue();
+    }
+
+    @Override
+    public int determineDecimals() {
+        return delegate.determineDecimals();
     }
 
 }

@@ -90,4 +90,9 @@ public class PivotCellSentinel implements PivotCell {
         return null;
     }
 
+    @Override
+    public int determineDecimals() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }
