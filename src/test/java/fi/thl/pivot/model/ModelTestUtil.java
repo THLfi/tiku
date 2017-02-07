@@ -14,7 +14,11 @@ final class ModelTestUtil {
     private static int sequence;
 
     static DimensionNode mockNode(String label) {
-        return mockNode(label, mockDimension("MOCK"));
+        return mockNode(label, "MOCK");
+    }
+    
+    static DimensionNode mockNode(String label, String dimension) {
+        return mockNode(label, mockDimension(dimension));
     }
 
     static DimensionNode mockNode(String label, Dimension d1) {
@@ -30,7 +34,7 @@ final class ModelTestUtil {
 
     static Dimension mockDimension(String label) {
         Dimension d1 = Mockito.mock(Dimension.class);
-        Mockito.when(d1.getId()).thenReturn("MOCK");
+        Mockito.when(d1.getId()).thenReturn(label);
         return d1;
     }
 

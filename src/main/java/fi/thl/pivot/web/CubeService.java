@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.impl.xb.xsdschema.impl.ListDocumentImpl;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
 
@@ -123,6 +124,7 @@ public class CubeService {
         sw.start("apply filters");
         FilterablePivot fPivot = new FilterablePivot(mPivot);
         applyFilters(fPivot);
+  
         this.pivot = fPivot;
         sw.stop();
 

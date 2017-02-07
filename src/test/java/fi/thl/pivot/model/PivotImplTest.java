@@ -119,10 +119,13 @@ public class PivotImplTest {
         assertEquals("3.3", label(pivot.getRowAt(0, 2)));
     }
 
+  
     @Test
     public void shouldApplyConstantDimensionValues() {
-        addTestDimensions(mockNode("4"), mockNode("5"));
+        addTestDimensions(mockNode("4", "4"), mockNode("5", "5"));
 
+        assertEquals(3, pivot.getRowCount());
+        assertEquals(6, pivot.getColumnCount());
         assertEquals("1.1;2.1;3.1;4;5", pivot.getCellAt(0, 0).getValue());
         assertEquals("1.2;2.1;3.2;4;5", pivot.getCellAt(1, 3).getValue());
         assertEquals("1.2;2.3;3.3;4;5", pivot.getCellAt(2, 5).getValue());

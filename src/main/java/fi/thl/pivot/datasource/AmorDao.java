@@ -22,6 +22,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -128,14 +130,20 @@ public class AmorDao {
     @Qualifier("queries")
     private Properties queries;
 
-    private Cache<String, HydraSource> sourceCache = CacheBuilder.newBuilder()
+    private LoadingCache<String, HydraSource> sourceCache = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
             .refreshAfterWrite(60, TimeUnit.MINUTES)
-            .build();
+            .build(new CacheLoader<String, HydraSource>() {
+
+                @Override
+                public HydraSource load(String key) throws Exception {
+                    return loadSource(key);
+                }
+                
+            });
     private Cache<String, String> versionCache = CacheBuilder
             .newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
-            .refreshAfterWrite(10, TimeUnit.MINUTES)
             .build();
 
     @AuditedMethod
@@ -257,24 +265,26 @@ public class AmorDao {
 
         String latestRunId = determineReportVersion(environment, params);
         id = id.replaceAll("latest", latestRunId);
+        id += "." + environment;
 
-        HydraSource cached = sourceCache.getIfPresent(id);
-        if (null != cached) {
-            return cached;
+        try {
+            return sourceCache.get(id);
+        } catch (Exception e) {
+            return null;
         }
+    }
 
+    private HydraSource loadSource(String id) {
+        String[] params = id.split(ID_SEPARATOR);
         List<HydraSource> sources = jdbcTemplate.query(String.format(queries.getProperty("list-sources"), schema),
                 new ResultSetToSource(), params[0],
-                params[1], params[2], Long.parseLong(latestRunId), environment);
+                params[1], params[2], Long.parseLong(params[3]), params[4]);
 
         if (sources.size() == 1) {
-            sourceCache.put(id, sources.get(0));
-            sources.get(0).setRunId(latestRunId);
-            return sources.get(0);
+            HydraSource source = sources.get(0);
+            source.setRunId(params[3]);
+            return source;
         }
-
-        LOG.warn("Could not find cube " + id);
-
         return null;
     }
 

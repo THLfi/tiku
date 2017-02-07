@@ -304,7 +304,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private boolean sameNodeUsedTwiceInRows(int i, int a, int b) {
         return rows.get(a).getLastNode().getSurrogateId() == getRowAt(a, i).getSurrogateId() 
                 && rows.get(b).getLastNode().getSurrogateId() != getRowAt(b, i).getSurrogateId()
-                && rows.get(a).getLastNode() == rows.get(b).getLastNode().getParent();
+                && rows.get(a).getLastNode() == rows.get(b).getLastNode();
     }
 
     private boolean determineIfColumnShouldBeFiltered(Map<Dimension, Collection<Integer>> asMap, int i) {
@@ -331,9 +331,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private boolean sameNodeUsedTwiceInColumns(int i, int a, int b) {
         return columns.get(a).getLastNode() == getColumnAt(a, i) 
                 && columns.get(b).getLastNode() != (getColumnAt(b, i))
-                && rows.get(a).getLastNode() == rows.get(b).getLastNode().getParent();
+                && rows.get(a).getLastNode() == rows.get(b).getLastNode();
     }
-
 
     private Multimap<Dimension, Integer> determineDimensionInRow(List<PivotLevel> rows) {
         Multimap<Dimension, Integer> dims = ArrayListMultimap.create();

@@ -1,7 +1,6 @@
 package fi.thl.pivot.model;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +16,7 @@ import com.google.common.collect.Sets;
 
 import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.util.CumulativeStopWatch;
-import fi.thl.pivot.util.Functions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ModifiablePivot implements Pivot {
 
@@ -104,7 +101,6 @@ public class ModifiablePivot implements Pivot {
 
         skippedRowRindices = removeTotals(rows);
         rowCount = rowCount - skippedRowRindices.size();
-        System.out.println(skippedRowRindices);
     }
 
     private IntArrayList removeTotals(List<PivotLevel> levels) {
@@ -158,7 +154,6 @@ public class ModifiablePivot implements Pivot {
     public PivotCell getCellAt(int row, int column) {
 
         int cacheKey = createCacheKey(row, column);
-
         if (cellCache.containsKey(cacheKey)) {
             return cellCache.get(cacheKey);
         }
@@ -171,7 +166,6 @@ public class ModifiablePivot implements Pivot {
         }
         SortedSet<Integer> key = cellKeyGenerator.createCellKey(row, column);
         String datum = dataset.getWithIds(key);
-
         if (null != datum) {
             PivotCellImpl cell = null;
             DimensionNode measure = cellKeyGenerator.getMeasure();
