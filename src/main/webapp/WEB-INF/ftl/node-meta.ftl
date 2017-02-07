@@ -46,7 +46,7 @@
     </ul>
 
     [#if node.getProperty("meta:description")?? || node.getProperty("meta:comment")??]
-      <h2>Kuvaus</h2>
+      <h2>${message("meta.description")}</h2>
       [#if node.getProperty("meta:description")??]
         <p>
           ${node.getProperty("meta:description").getValue(lang)!}
@@ -58,21 +58,21 @@
         </p>
       [/#if]
     [/#if]
-    <h2>Tekniset metatiedot</h2>
+    <h2>${message("meta.technicalmetadata")}</h2>
     <dl>
-      <dt>Dimensio</dt>
+      <dt>${message("meta.dimension")}</dt>
       <dd>[@label node.dimension /] / [@label node.level /]</dd>
-      <dt>Tunniste<dt>
+      <dt>${message("meta.id")}<dt>
       <dd>${node.id}</dd>
-      <dt>Koodiarvo</dt>
+      <dt>${message("meta.code")}</dt>
       <dd>${node.code}</dd>
-      <dt>URI</dt>
+      <dt>${message("meta.uri")}</dt>
       <dd>${node.reference}</dd>
     </dl>
 
 
     [#if node.children?size > 0]
-    <h2>Alakäsitteet</h2>
+    <h2>${message("meta.children")}</h2>
       <ul>
         [#list node.children as child]
         <li><a href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${child.surrogateId}">[@label child /]</a></li>
