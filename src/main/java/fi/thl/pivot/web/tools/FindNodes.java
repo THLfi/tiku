@@ -63,11 +63,7 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         String nodeId = identifier.substring(dimensionIdentifierIndex(identifier) + 1, identifier.length() - 1);
         DimensionNode node = findNodeUsingSelectedSearchType(nodeId);
         if (null != node && node.canAccess()) {
-            if (node.getLevel().getChildLevel() == null) {
-                nodes.addAll(node.getLevel().getNodes());
-            } else {
-                nodes.addAll(node.getLevel().getNodes());
-            }
+            nodes.addAll(node.getLevel().getNodes());
         }
         Collections.sort(nodes);
     }

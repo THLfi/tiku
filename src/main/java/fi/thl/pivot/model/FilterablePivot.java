@@ -302,7 +302,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private boolean sameNodeUsedTwiceInRows(int i, int a, int b) {
-        return rows.get(a).getLastNode() == getRowAt(a, i) && rows.get(b).getLastNode() != (getRowAt(b, i));
+        return rows.get(a).getLastNode().getSurrogateId() == getRowAt(a, i).getSurrogateId() 
+                && rows.get(b).getLastNode().getSurrogateId() != getRowAt(b, i).getSurrogateId()
+                && rows.get(a).getLastNode() == rows.get(b).getLastNode().getParent();
     }
 
     private boolean determineIfColumnShouldBeFiltered(Map<Dimension, Collection<Integer>> asMap, int i) {
