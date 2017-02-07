@@ -128,9 +128,14 @@ public class AmorDao {
     @Qualifier("queries")
     private Properties queries;
 
-    private Cache<String, HydraSource> sourceCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
+    private Cache<String, HydraSource> sourceCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .refreshAfterWrite(60, TimeUnit.MINUTES)
             .build();
-    private Cache<String, String> versionCache = CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES)
+    private Cache<String, String> versionCache = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .refreshAfterWrite(10, TimeUnit.MINUTES)
             .build();
 
     @AuditedMethod
