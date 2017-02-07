@@ -260,7 +260,7 @@ function selectChartType (e) {
               hasValue = true;
               row.append($('<td>').text(
                 ('' + val.value)
-                  .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use space as a thousands separator
+                  .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
                   .replace(/\./g, ','))); // Use comma as a decimal separator
             }
             i += 1;
