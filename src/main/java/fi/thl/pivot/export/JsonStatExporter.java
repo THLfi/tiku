@@ -146,11 +146,14 @@ public class JsonStatExporter {
     }
 
     private void printValue(PrintWriter writer, int i, String value) {
-        if(NUMBER.matcher(value).matches()) {
-            writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
-        } else {
+        // All values are handled as text to preserve accuracy of 
+        // values e.g. if handled as numbers then 0,0 would be reduced 0 
+        
+//        if(NUMBER.matcher(value).matches()) {
+//            writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
+//        } else {
             writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\"\"")));
-        }
+//        }
     }
 
     private int exportLevels(PrintWriter writer, Map<String, Object> model, List<String> identifiers, int index, List<PivotLevel> levels) {
