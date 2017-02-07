@@ -19,6 +19,7 @@ import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.util.CumulativeStopWatch;
 import fi.thl.pivot.util.Functions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ModifiablePivot implements Pivot {
 
@@ -38,9 +39,9 @@ public class ModifiablePivot implements Pivot {
 
     private Set<DimensionNode> constants = Sets.newLinkedHashSet();
 
-    private List<Integer> rowIndices =  new IntArrayList();
-    private List<Integer> columnIndices =  new IntArrayList();
-
+    private IntArrayList skippedRowRindices = new IntArrayList();
+    private IntArrayList skippedColumnIndices = new IntArrayList();
+     
     int columnCount;
     int rowCount;
 
@@ -89,9 +90,9 @@ public class ModifiablePivot implements Pivot {
 
         columnCount = calculateHeaderCount(columnCount, nodes);
         fullColumnCount = columnCount;
-        columnIndices = Functions.listUpto(columnCount);
 
-        columnCount = removeTotals(columns, columnIndices);
+        skippedColumnIndices = removeTotals(columns);
+        columnCount = columnCount - skippedColumnIndices.size();
     }
 
     public void appendRow(PivotLevel nodes) {
@@ -100,13 +101,14 @@ public class ModifiablePivot implements Pivot {
         rows.add(nodes);
 
         rowCount = calculateHeaderCount(rowCount, nodes);
-        rowIndices = Functions.listUpto(rowCount);
 
-        rowCount = removeTotals(rows, rowIndices);
+        skippedRowRindices = removeTotals(rows);
+        rowCount = rowCount - skippedRowRindices.size();
+        System.out.println(skippedRowRindices);
     }
 
-    private int removeTotals(List<PivotLevel> levels, List<Integer> indices) {
-        Set<Integer> removable = new HashSet<>();
+    private IntArrayList removeTotals(List<PivotLevel> levels) {
+        IntArrayList skippedIndices = new IntArrayList();
         int repeatCount = 1;
         int levelNumber = 0;
         for (PivotLevel level : levels) {
@@ -115,16 +117,14 @@ public class ModifiablePivot implements Pivot {
             } else {
                 if (level.isTotalIncluded()) {
                     for (int i = 0; i < repeatCount - 1; ++i) {
-                        removable.add(level.size() - 1 + level.size() * i);
+                        skippedIndices.add(level.size() - 1 + level.size() * i);
                     }
                     repeatCount *= level.size();
                 }
             }
             ++levelNumber;
         }
-
-        indices.removeAll(removable);
-        return indices.size();
+        return skippedIndices;
     }
 
     public void appendConstant(DimensionNode node) {
@@ -230,8 +230,9 @@ public class ModifiablePivot implements Pivot {
             Preconditions.checkArgument(level >= 0 && level < columns.size(), String.format("Column level is out of bounds %d / %d", level, columns.size()));
             checkColumnBounds(column);
         }
-        return getNodeAt(columns, level, columnIndices.get(column));
+        return getNodeAt(columns, level, mapIndex(column, skippedColumnIndices));
     }
+
 
     @Override
     public DimensionNode getRowAt(int level, int row) {
@@ -239,8 +240,20 @@ public class ModifiablePivot implements Pivot {
             Preconditions.checkArgument(level >= 0 && level < rows.size(), String.format("Row level is out of bounds %d / %d", level, rows.size()));
             checkRowBounds(row);
         }
-        return getNodeAt(rows, level, rowIndices.get(row));
+         return getNodeAt(rows, level, mapIndex(row, skippedRowRindices));
     }
+    
+    private int mapIndex(int index, IntArrayList skippedIndices) {
+        int offset = 0;
+        for(int i = 0; i < skippedIndices.size(); ++i) {
+            if(skippedIndices.get(i) > index + offset) {
+                break;
+            }
+            ++ offset;
+        }
+        return index + offset;
+    }
+
 
     /**
      * 
