@@ -74,7 +74,8 @@ public class XlsxExporter {
         headerLastRowStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
         headerLastRowStyle.setBorderBottom((short) 1);
 
-        Sheet sheet = wb.createSheet(WorkbookUtil.createSafeSheetName(((Label) params.get("cubeLabel")).getValue(language)));
+        Sheet sheet = wb
+                .createSheet(WorkbookUtil.createSafeSheetName(((Label) params.get("cubeLabel")).getValue(language)));
 
         Pivot pivot = (Pivot) params.get("pivot");
         int rowNumber = 0;
@@ -156,12 +157,14 @@ public class XlsxExporter {
         int rowNumber = initialRowNumber + 1;
         Boolean isOpenData = (Boolean) params.get("isOpenData");
         Cell c1 = sheet.createRow(++rowNumber).createCell(0);
-        c1.setCellValue(String.format("%1$s %2$te.%2$tm.%2$tY", message("cube.updated", "date"), params.get("updated")));
+        c1.setCellValue(
+                String.format("%1$s %2$te.%2$tm.%2$tY", message("cube.updated", "date"), params.get("updated")));
         c1.setCellStyle(defaultStyle);
 
         Cell c2 = sheet.createRow(++rowNumber).createCell(0);
-        c2.setCellValue(String.format("(c) %s %d %s", message("site.company", "THL"), Calendar.getInstance().get(Calendar.YEAR),
-                isOpenData != null && isOpenData ? ", " + message("site.license.dd", "CC BY 4.0") : ""));
+        c2.setCellValue(
+                String.format("(c) %s %d %s", message("site.company", "THL"), Calendar.getInstance().get(Calendar.YEAR),
+                        isOpenData != null && isOpenData ? ", " + message("site.license.dd", "CC BY 4.0") : ""));
         c2.setCellStyle(defaultStyle);
 
     }
@@ -198,10 +201,12 @@ public class XlsxExporter {
         }
         Cell c = row.createCell(dataColumnNumber + pivot.getRows().size());
         if (cell.isNumber()) {
-            double decimals = Math.pow(10, cell.getMeasure().getDecimals());
+            int d = cell.determineDecimals();
+            double decimals = Math.pow(10, d);
             long value = Math.round(cell.getNumberValue() * decimals);
             c.setCellValue(value / decimals);
-            c.setCellStyle(measureStyle(c.getSheet().getWorkbook(), cell.getMeasure().getDecimals()));
+            c.setCellStyle(measureStyle(c.getSheet().getWorkbook(), d));
+           
         } else {
             c.setCellValue(cell.getValue());
             c.setCellStyle(defaultStyle);
@@ -217,7 +222,8 @@ public class XlsxExporter {
         }
         CellStyle style = wb.createCellStyle();
         style.cloneStyleFrom(numberStyle);
-        style.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat(String.format("#,##0.%0" + decimals + "d", 0)));
+        style.setDataFormat(
+                wb.getCreationHelper().createDataFormat().getFormat(String.format("#,##0.%0" + decimals + "d", 0)));
         decimalStyles.put(decimals, style);
         return style;
 
@@ -255,13 +261,15 @@ public class XlsxExporter {
                     } else {
                         cell.setCellStyle(headerStyle);
                     }
-                    mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset, lastColumnWithSameHeader + columnOffset);
+                    mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset,
+                            lastColumnWithSameHeader + columnOffset);
                     firstColumnWithSameHeader = column;
                     lastColumnWithSameHeader = column;
                     lastNodeId = node.getSurrogateId();
                 }
             }
-            mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset, lastColumnWithSameHeader + columnOffset);
+            mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset,
+                    lastColumnWithSameHeader + columnOffset);
             ++rowNumber;
         }
         return rowNumber;
@@ -271,15 +279,18 @@ public class XlsxExporter {
         return columnLevel + 1 == pivot.getColumns().size();
     }
 
-    private void mergeInColumn(Sheet sheet, int rowNumber, int firstColumnWithSameHeader, int lastColumnWithSameHeader) {
+    private void mergeInColumn(Sheet sheet, int rowNumber, int firstColumnWithSameHeader,
+            int lastColumnWithSameHeader) {
         if (lastColumnWithSameHeader - firstColumnWithSameHeader > 0) {
-            sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, firstColumnWithSameHeader, lastColumnWithSameHeader));
+            sheet.addMergedRegion(
+                    new CellRangeAddress(rowNumber, rowNumber, firstColumnWithSameHeader, lastColumnWithSameHeader));
         }
     }
 
     private void mergeInRow(Sheet sheet, int columnNumber, int firstRowWithSameHeader, int lastRowWithSameHeader) {
         if (lastRowWithSameHeader - firstRowWithSameHeader > 0) {
-            sheet.addMergedRegion(new CellRangeAddress(firstRowWithSameHeader, lastRowWithSameHeader, columnNumber, columnNumber));
+            sheet.addMergedRegion(
+                    new CellRangeAddress(firstRowWithSameHeader, lastRowWithSameHeader, columnNumber, columnNumber));
         }
     }
 }

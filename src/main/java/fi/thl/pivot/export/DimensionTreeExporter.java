@@ -86,7 +86,9 @@ public class DimensionTreeExporter {
         isCommaNeeded = attribute(writer, "stage", node.getLevel().getId(), isCommaNeeded);
         isCommaNeeded = attribute(writer, "code", node.getCode(), isCommaNeeded);
         isCommaNeeded = attribute(writer, "sort", node.getSort(), isCommaNeeded);
-        isCommaNeeded = attribute(writer, "decimals", node.getDecimals(), isCommaNeeded);
+        if(node.isDecimalsSet()) {
+            isCommaNeeded = attribute(writer, "decimals", node.getDecimals(), isCommaNeeded);
+        }
         isCommaNeeded = attribute(writer, "uri", node.getReference(), isCommaNeeded);
 
         Set<Entry<String, Label>> properties = node.getProperties();

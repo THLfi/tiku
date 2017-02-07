@@ -33,7 +33,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
 
     private Map<String, Long> sort = new HashMap<>();
     private String code;
-    private int decimals;
+    private int decimals = -1;
     private Map<String, Label> properties = new HashMap<>();
     private int surrogateId;
     private int hashCode;
@@ -303,6 +303,23 @@ public class DimensionNode implements Comparable<DimensionNode> {
 
     public DimensionNode getSampleSizeNode() {
         return edges.get(Constants.SAMPLE_SIZE);
+    }
+
+    public boolean isDecimalsSet() {
+       return 0 <= decimals;
+    }
+    /**
+     * If no decimals metadata is provided then accuracy of 
+     * value must be determined dynamically
+     * @return
+     */
+    public int determineDecimals(String value) {
+        if (isDecimalsSet()) {
+            return decimals;
+        } else {
+            int separatorIndex = value.replace(",",".").indexOf('.');
+            return separatorIndex >= 0 ? value.length() - separatorIndex - 1: 0;
+        }
     }
 
 }

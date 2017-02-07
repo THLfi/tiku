@@ -27,4 +27,6 @@ public interface PivotCell extends Comparable<PivotCell> {
     int getPosition();
 
     String getI18nValue();
+
+    int determineDecimals();
 }

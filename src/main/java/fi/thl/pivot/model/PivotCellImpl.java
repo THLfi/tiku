@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class PivotCellImpl implements PivotCell {
 
     private final Pattern NUMBER = Pattern.compile("^-?\\d*([,.]\\d+)?$");
-    
+
     private String value;
     private int rowNumber;
     private int columnNumber;
@@ -31,23 +31,29 @@ public class PivotCellImpl implements PivotCell {
     public String getValue() {
         if (isNumber() && null != measure) {
             NumberFormat nf = new DecimalFormat("0.#");
-            nf.setMaximumFractionDigits(measure.getDecimals());
-            nf.setMinimumFractionDigits(measure.getDecimals());
-            nf.setRoundingMode(RoundingMode.HALF_UP);
-            return nf.format(getNumberValue());
+            return format(nf);
         }
         return value;
+    }
+
+    public int determineDecimals() {
+        return measure.determineDecimals(value);
     }
 
     public String getI18nValue() {
         if (isNumber() && null != measure) {
             NumberFormat nf = new DecimalFormat("#,##0.#", DecimalFormatSymbols.getInstance(new Locale("fi")));
-            nf.setMaximumFractionDigits(measure.getDecimals());
-            nf.setMinimumFractionDigits(measure.getDecimals());
-            nf.setRoundingMode(RoundingMode.HALF_UP);
-            return nf.format(getNumberValue());
+            return format(nf);
         }
         return value;
+    }
+
+    private String format(NumberFormat nf) {
+        int decimals = measure.determineDecimals(value);
+        nf.setMaximumFractionDigits(decimals);
+        nf.setMinimumFractionDigits(decimals);
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        return nf.format(getNumberValue());
     }
 
     public int getRowNumber() {
@@ -111,9 +117,10 @@ public class PivotCellImpl implements PivotCell {
     }
 
     public void setFullKey(int[] fullKey) {
-        this.fullKey = fullKey;;
+        this.fullKey = fullKey;
+        ;
     }
-    
+
     public int[] getKey() {
         return key;
     }
@@ -172,10 +179,9 @@ public class PivotCellImpl implements PivotCell {
 
     @Override
     public String toString() {
-        return "PivotCellImpl [value=" + value + ", rowNumber=" + rowNumber + ", columnNumber=" + columnNumber + ", ciLower=" + ciLower + ", ciUpper=" + ciUpper
+        return "PivotCellImpl [value=" + value + ", rowNumber=" + rowNumber + ", columnNumber=" + columnNumber
+                + ", ciLower=" + ciLower + ", ciUpper=" + ciUpper
                 + ", sampleSize=" + sampleSize + "]";
     }
-
- 
 
 }
