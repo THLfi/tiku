@@ -1,33 +1,88 @@
 [#ftl][#setting locale="fi"]
+<!DOCTYPE html>
+<html lang="${lang}">
+[#function message code]
+    [#if rc.getMessage(code)??]
+        [#return rc.getMessage(code, "[${code}]") /]
+    [/#if]
+    [#return "- ${code} - " /]
+[/#function]
 [#macro label e][#if e?? && e.label??]${(e.label.getValue(lang)!"n/a")?json_string}[#else]???[/#if][/#macro]
-{
+[#macro breadcrumb e leaf = false]
+  [#if e.parent??]
+    [@breadcrumb e.parent /]
+  [/#if]
+  [#if leaf]
+    <li>[@label e /]</li>
+  [#else]
+    <li><a href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${e.surrogateId}">[@label e /]</a></li>
+  [/#if]
+[/#macro]
 [#if nodes??]
 [#list nodes as node]
-        "id": "${node.id?json_string}",
-        "sid": [#if node.surrogateId??]${node.surrogateId?json_string}[#else]-1[/#if],
-        "label": "[@label node /]",
-        "uri": "${node.reference?json_string}"
-        [#if node.dimension??],"dimension": "[@label node.dimension /]"[/#if]
-        [#if node.level??],"stage": "[@label node.level /]"[/#if]
-        [#if node.code??],"code":"${node.code?json_string}"[/#if]
-        [#if node.sort??],"sort":${node.sort}[/#if]
-        [#if node.decimals??],"decimals":${node.decimals}[/#if]
-        [#if node.properties!?size > 0]
-        ,"properties": {
-            [#list node.properties! as p]
-            [#if p_index > 0],[/#if]"${p.key?json_string}": "${p.value?json_string}"
-            [/#list]
-        }[/#if]
-        [#if node.parent??]
-          ,"parent": "https://sampo.thl.fi${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${node.parent.surrogateId}"
-        [/#if]
-        [#if node.children?size > 0]
-          ,"children": [
-            [#list node.children as child]
-            [#if child_index > 0],[/#if]"https://sampo.thl.fi${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${child.surrogateId}"
-            [/#list]
-          ]
-        [/#if]
+<head>
+
+  <title>[@label node /] - [#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if] - ${message("site.title")}</title>
+  <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
+  <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css" />
+
+  <style>
+    h1 { margin-left: 0px; border-bottom: 1px solid #ccc; }
+    h2 { font-size: 24px; }
+    dd { margin-left: 15px; margin-bottom: 15px;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="${rc.contextPath}/resources/js/html5shiv.js"></script>
+    <script src="${rc.contextPath}/resources/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+  <div class="container">
+
+    <h1>[@label node /]</h1>
+    <ul class="breadcrumb">
+      [@breadcrumb node true /]
+    </ul>
+
+    [#if node.getProperty("meta:description")?? || node.getProperty("meta:comment")??]
+      <h2>Kuvaus</h2>
+      [#if node.getProperty("meta:description")??]
+        <p>
+          ${node.getProperty("meta:description").getValue(lang)!}
+        </p>
+      [/#if]
+      [#if node.getProperty("meta:comment")??]
+        <p>
+          ${node.getProperty("meta:comment").getValue("fi")!}
+        </p>
+      [/#if]
+    [/#if]
+    <h2>Tekniset metatiedot</h2>
+    <dl>
+      <dt>Dimensio</dt>
+      <dd>[@label node.dimension /] / [@label node.level /]</dd>
+      <dt>Tunniste<dt>
+      <dd>${node.id}</dd>
+      <dt>Koodiarvo</dt>
+      <dd>${node.code}</dd>
+      <dt>URI</dt>
+      <dd>${node.reference}</dd>
+    </dl>
+
+
+    [#if node.children?size > 0]
+    <h2>Alakäsitteet</h2>
+      <ul>
+        [#list node.children as child]
+        <li><a href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${child.surrogateId}">[@label child /]</a></li>
+        [/#list]
+      </ul>
+    [/#if]
+
+  </div>
+
+</body>
 [/#list]
 [/#if]
-}
+</html>

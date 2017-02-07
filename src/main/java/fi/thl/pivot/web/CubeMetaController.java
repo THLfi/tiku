@@ -31,10 +31,31 @@ public class CubeMetaController extends AbstractCubeController {
     @RequestMapping(value = "/{id}", produces = "application/javascript;charset=UTF-8", method = RequestMethod.GET)
     public String displayMetaData(@PathVariable String cube, @PathVariable String id, @ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, HttpServletResponse resp, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
-        LOG.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
-        
-        LOG.debug(String.format("ACCESS Cube dimensions requested %s %s", cubeRequest.getEnv(), cubeRequest.getCube()));
 
+        String contentType = "text/html;charset=UTF-8";
+        String view = "node-meta";
+       
+        
+        return displayNodeMetadata(cube, id, cubeRequest, request, resp, model, contentType, view);
+        
+       
+    }
+    @Monitored
+    @RequestMapping(value = "/{id}.json", produces = "application/javascript;charset=UTF-8", method = RequestMethod.GET)
+    public String displayMetaDataJson(@PathVariable String cube, @PathVariable String id, @ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, HttpServletResponse resp, Model model)
+            throws CubeNotFoundException, CubeAccessDeniedException {
+
+        String contentType = "application/javascript";
+        String view = "node-meta-json";
+       
+        
+        return displayNodeMetadata(cube, id, cubeRequest, request, resp, model, contentType, view);
+        
+       
+    }
+
+    private String displayNodeMetadata(String cube, String id, CubeRequest cubeRequest, HttpServletRequest request,
+            HttpServletResponse resp, Model model, String contentType, String view) {
         HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());
         if (null != source) {
             loadMetadata(source);
@@ -54,15 +75,13 @@ public class CubeMetaController extends AbstractCubeController {
             model.addAttribute("subject", cubeRequest.getSubject());
             model.addAttribute("server", request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 ? "" : ":" + request.getServerPort()));
             model.addAttribute("cube", "fact_" + cube);
+            model.addAttribute("cubeLabel", source.getName());
             
-            
-            resp.setContentType("application/javascript");
-            return "node-meta";
+            resp.setContentType(contentType);
+            return view;
         } else {
             throw new CubeNotFoundException();
         }
-        
-       
     }
 
 }

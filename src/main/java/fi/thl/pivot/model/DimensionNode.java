@@ -212,9 +212,10 @@ public class DimensionNode implements Comparable<DimensionNode> {
             properties.get(predicate).setValue(language, value);
         } else {
             Label property = new Label();
-            label.setValue(language, value);
+            property.setValue(language, value);
             properties.put(predicate, property);
         }
+    
     }
 
     @Override
@@ -322,4 +323,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
         }
     }
 
+    public Label getProperty(String property) {
+        return properties.get(property);
+    }
 }
