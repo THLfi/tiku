@@ -1,5 +1,6 @@
 (function ($, thl) {
   $(document).ready(function () {
+
     function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {
         inputElement = $(inputElement);
@@ -29,7 +30,7 @@
                 .attr('dim-ref', dimension)
                 .attr('node-ref', node.children[n].sid)
                 .append(node.children[n].label)
-          );
+            );
           if (node.children[n].children.length > 0) {
             li.find('span').append($('<span>').addClass('caret caret-right'));
             li.append(traverseDimensionTree(dimension, node.children[n]));
@@ -436,12 +437,14 @@
       dropdownMenu = $('<ul class="dropdown-menu">'),
       dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>'),
       dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>'),
-      dropdownMenuHide = $('<li><a role="menuitem" class="rowhide">' + thl.messages['cube.dimension.hide'] + '</a></li>');
+      dropdownMenuHide = $('<li><a role="menuitem" class="rowhide">' + thl.messages['cube.dimension.hide'] + '</a></li>'),
+      dropdownMenuMeta = $('<li><a role="menuitem" class="info">' + thl.messages['cube.dimension.info'] + '</a></li>');
 
     dropdownMenu
       .append(dropdownMenuSortAsc)
       .append(dropdownMenuSortDesc)
-      .append(dropdownMenuHide);
+      .append(dropdownMenuHide)
+      .append(dropdownMenuMeta);
 
     dropdown
       .append(dropdownToggle)
@@ -469,6 +472,17 @@
         $('#pivot').submit();
       });
 
+    $('th .info').click(function (e) {
+      e.preventDefault();
+      var target = $(this).closest('.row-target, .column-target');
+      var ref = target.find('a').first().attr('data-ref');
+      var i = ref.lastIndexOf('-');
+      console.log(thl.url + ref.substring(i + 1));
+      var w = window.open(location.protocol + '//' + location.host + thl.url + ref.substring(i + 1), 'tikumetadata', 'scrollbars=1,menubar=0,resizable=1,status=0,location=0,width=650,height=450,screenX=250,screenY=350');
+      if (window.focus) {
+          w.focus();
+      }
+    });
     $('th .rowhide').click(function () {
       var target = $(this).closest('.row-target, .column-target');
       var level = target.attr('data-level');

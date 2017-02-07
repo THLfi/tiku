@@ -1,9 +1,11 @@
 [#ftl]
 var thl = {
+    url: '${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/',
     messages: {
       'cube.dimension.sort.asc': '${message("cube.dimension.sort.asc")?js_string}',
       'cube.dimension.sort.desc': '${message("cube.dimension.sort.desc")?js_string}',
-      'cube.dimension.hide': '${message("cube.dimension.hide")?js_string}'
+      'cube.dimension.hide': '${message("cube.dimension.hide")?js_string}',
+      'cube.dimension.info': '${message("cube.dimension.info")?js_string}'
     },
     pivot : {
         loadDimensions: function (dim) {

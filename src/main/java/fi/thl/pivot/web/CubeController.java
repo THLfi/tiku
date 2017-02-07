@@ -57,6 +57,7 @@ public class CubeController extends AbstractCubeController {
 
             model.addAttribute("env", cubeRequest.getEnv());
             model.addAttribute("cube", cubeRequest.getCube());
+            model.addAttribute("cubeId", cubeRequest.getCubeId());
             model.addAttribute("rowParams", cubeRequest.getRowHeaders());
             model.addAttribute("colParams", cubeRequest.getColumnHeaders());
 
