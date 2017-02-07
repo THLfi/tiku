@@ -118,7 +118,6 @@ public class PivotCellImpl implements PivotCell {
 
     public void setFullKey(int[] fullKey) {
         this.fullKey = fullKey;
-        ;
     }
 
     public int[] getKey() {

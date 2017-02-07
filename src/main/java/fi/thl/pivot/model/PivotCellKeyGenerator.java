@@ -78,7 +78,7 @@ class PivotCellKeyGenerator {
         this.constants = constants.toArray(new DimensionNode[constants.size()]);
         this.dimensions = new DimensionNode[total];
         this.key = new int[total];
-        this.fullKey = new int [rows + columns];
+        this.fullKey = new int[rows + columns];
     }
 
     public DimensionNode getMeasure() {
@@ -116,7 +116,7 @@ class PivotCellKeyGenerator {
     public int[] getKey() {
         return k;
     }
-    
+
     public int[] getFullKey() {
         return Arrays.copyOf(fullKey, fullKey.length);
     }
@@ -171,6 +171,9 @@ class PivotCellKeyGenerator {
                 for (int i = 0; i < lastKeyIndex; ++i) {
                     if (key[i] == oldId) {
                         key[i] = id;
+                        if (node.isMeasure()) {
+                            measure = node;
+                        }
                         return;
                     }
                 }
@@ -197,7 +200,7 @@ class PivotCellKeyGenerator {
             // if it is
             for (int i = 0; i < lastDimensionIndex; ++i) {
                 DimensionNode d = dimensions[i];
-                if (d.getDimension() == nd) {
+                if (d.getDimension().getId().equals(nd.getId())) {
                     // Note that the continue is targetted to
                     // the outer loop that loops through constants!
                     continue outer;
