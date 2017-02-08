@@ -93,6 +93,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     public void applyFilters(List<Predicate<PivotCell>> filters) {
         LOG.debug("Applying filters " + filters + " table size [" + rowIndices.size() + ", " + columnIndices.size() + "]");
+        filterHiearachy();
         if (filters.isEmpty()) {
             return;
         }
@@ -204,12 +205,16 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private void applyFiltersForAllCells(List<Predicate<PivotCell>> filters, IntSet filteredRows, IntSet filteredColumns) {
         long i = 0L;
         for (int column = 0; column < columnIndices.size(); ++column) {
+            boolean isColumnIncluded = false;
             for (int row = 0; row < rowIndices.size(); ++row) {
+                PivotCell cell = getCellAt(row, column);
                 for (Predicate<PivotCell> filter : filters) {
-                    PivotCell cell = getCellAt(row, column);
                     if (!filter.apply(cell)) {
                         filteredRows.remove(row);
-                        filteredColumns.remove(column);
+                        if(!isColumnIncluded) {
+                            filteredColumns.remove(column);
+                            isColumnIncluded = true;
+                        }
                         break;
                     }
                 }

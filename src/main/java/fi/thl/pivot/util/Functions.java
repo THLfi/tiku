@@ -23,9 +23,9 @@ public class Functions {
         return set; 
     }
     
-    public static IntList listUpto(int maxValue) {
+    public static IntArrayList listUpto(int maxValue) {
         
-        IntList list = new IntArrayList(maxValue);
+        IntArrayList list = new IntArrayList(maxValue);
         for(int i = 0; i < maxValue; ++i) {
             list.add(i);
         }

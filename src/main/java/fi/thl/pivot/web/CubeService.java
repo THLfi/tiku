@@ -400,7 +400,6 @@ public class CubeService {
             LOG.debug(String.format("Filtered pivot empty (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
         }
 
-        fPivot.filterHiearachy();
         fPivot.applyFilters(filters);
 
     }
