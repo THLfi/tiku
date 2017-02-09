@@ -19,11 +19,9 @@ import com.google.common.collect.Multimap;
 
 import fi.thl.pivot.util.Functions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class FilterablePivot extends AbstractPivotForwarder {
@@ -102,16 +100,13 @@ public class FilterablePivot extends AbstractPivotForwarder {
         rowIndices = new IntArrayList();
         columnIndices = new IntArrayList();
 
-        System.out.println("Including columns");
         // Prepare headers for filteration
         includeColumns();
 
-        System.out.println("Including rows");
         includeRows();
 
         long i = 0L;
 
-        System.out.println(rows.size() + ", " + columns.size());
         IntLinkedOpenHashSet included = new IntLinkedOpenHashSet();
         for (int column = getColumnCount() - 1; column >= 0; --column) {
             boolean columnIncluded = false;
@@ -161,18 +156,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
             sizes.add(e.getValue().size());
         }
         
-        long start = System.currentTimeMillis();
         if (rowDimensionsAsMap.size() != someRows.size()) {
             for (int i = 0; i < delegate.getRowCount(); ++i) {
                 boolean filtered = determineIfRowShouldBeFiltered(sizes, i);
                 if (!filtered) {
                     rowIndices.add(i);
-                }
-                if (i > 0 && i % 100000 == 0) {
-                    System.out.println("iterated over " + i + " rows, included " + rowIndices.size() + " rows in " + ((System.currentTimeMillis() - start)/1000.0) + " seconds");
-//                    if(i % 500000 == 0) {
-//                        return;
-//                    }
                 }
             }
         } else {
