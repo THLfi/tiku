@@ -15,8 +15,8 @@ public class Functions {
      *            maximum value of range
      * @return a contiguous modifiable set of integer between 0 and maxvalue
      */
-    public static IntSet setUpto(int maxValue) {
-        IntSet set = new IntLinkedOpenHashSet(maxValue);
+    public static IntLinkedOpenHashSet setUpto(int maxValue) {
+        IntLinkedOpenHashSet set = new IntLinkedOpenHashSet(maxValue);
         for(int i = 0; i < maxValue; ++i) {
             set.add(i);
         }

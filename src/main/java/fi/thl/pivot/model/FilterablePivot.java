@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -16,9 +18,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import fi.thl.pivot.util.Functions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class FilterablePivot extends AbstractPivotForwarder {
@@ -31,7 +36,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private List<PivotLevel> filteredRows = null;
     private List<PivotLevel> filteredColumns = null;
-    
+
     private long totalTimeSpent;
     private IntList rowIndices;
     private IntList columnIndices;
@@ -92,7 +97,109 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     public void applyFilters(List<Predicate<PivotCell>> filters) {
-        LOG.debug("Applying filters " + filters + " table size [" + rowIndices.size() + ", " + columnIndices.size() + "]");
+
+        // Start with empty coordinate indices
+        rowIndices = new IntArrayList();
+        columnIndices = new IntArrayList();
+
+        System.out.println("Including columns");
+        // Prepare headers for filteration
+        includeColumns();
+
+        System.out.println("Including rows");
+        includeRows();
+
+        long i = 0L;
+
+        System.out.println(rows.size() + ", " + columns.size());
+        IntLinkedOpenHashSet included = new IntLinkedOpenHashSet();
+        for (int column = getColumnCount() - 1; column >= 0; --column) {
+            boolean columnIncluded = false;
+            for (int row = getRowCount() - 1; row >= 0; --row) {
+
+                PivotCell cell = getCellAt(row, column);
+
+                // Row and column should be included
+                // if no filters apply to the current cell
+
+                boolean includeCell = true;
+                for (Predicate<PivotCell> filter : filters) {
+                    if (filter.apply(cell)) {
+                        includeCell = false;
+                        break;
+                    }
+                }
+
+                if (includeCell) {
+                    columnIncluded = true;
+                    included.add(row);
+                }
+                if (++i % 100000 == 0) {
+                    LOG.debug("Filter applied to " + i + " cells / " + (columnIndices.size() * rowIndices.size()));
+                    LOG.debug(totalTimeSpent);
+                }
+            }
+            if (!columnIncluded) {
+                columnIndices.remove(column);
+            }
+        }
+
+        for (int rem = rowIndices.size() - 1; rem >= 0; --rem) {
+            if (!included.contains(rem)) {
+                rowIndices.remove(rem);
+            }
+        }
+
+    }
+
+    private void includeRows() {
+        List<PivotLevel> someRows = delegate.getRows();
+        Multimap<Dimension, Integer> rowDimensions = determineDimensionInRow(someRows);
+        Set<Entry<Dimension, Collection<Integer>>> rowDimensionsAsMap = rowDimensions.asMap().entrySet();
+        List<Integer> sizes = new ArrayList<>();
+        for(Map.Entry<Dimension, Collection<Integer>> e: rowDimensions.asMap().entrySet()) {
+            sizes.add(e.getValue().size());
+        }
+        
+        long start = System.currentTimeMillis();
+        if (rowDimensionsAsMap.size() != someRows.size()) {
+            for (int i = 0; i < delegate.getRowCount(); ++i) {
+                boolean filtered = determineIfRowShouldBeFiltered(sizes, i);
+                if (!filtered) {
+                    rowIndices.add(i);
+                }
+                if (i > 0 && i % 100000 == 0) {
+                    System.out.println("iterated over " + i + " rows, included " + rowIndices.size() + " rows in " + ((System.currentTimeMillis() - start)/1000.0) + " seconds");
+//                    if(i % 500000 == 0) {
+//                        return;
+//                    }
+                }
+            }
+        } else {
+            rowIndices = Functions.listUpto(delegate.getRowCount());
+        }
+    }
+
+    private void includeColumns() {
+        List<PivotLevel> someColumns = delegate.getColumns();
+        Multimap<Dimension, Integer> columnDimensions = determineDimensionInColumn(someColumns);
+        Map<Dimension, Collection<Integer>> columnDimensionsAsMap = columnDimensions.asMap();
+
+        if (columnDimensionsAsMap.size() != someColumns.size()) {
+            for (Integer i = 0; i < delegate.getColumnCount(); ++i) {
+                boolean filtered = determineIfColumnShouldBeFiltered(columnDimensionsAsMap, i);
+                if (!filtered) {
+                    columnIndices.add(i);
+                }
+            }
+        } else {
+            columnIndices = Functions.listUpto(delegate.getColumnCount());
+        }
+    }
+
+    public void applyFiltersByExclusion(List<Predicate<PivotCell>> filters) {
+        LOG.debug("Applying filters " + filters + " table size [" + rowIndices.size() + ", " + columnIndices.size()
+                + "]");
         filterHiearachy();
         if (filters.isEmpty()) {
             return;
@@ -106,11 +213,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
         // than once
         IntSet filteredRows = Functions.setUpto(getRowCount());
         IntSet filteredColumns = Functions.setUpto(getColumnCount());
- 
+
         // goes through the whole multidimensional table
         // and applies the filter for each cell
         applyFiltersForEachCell(filters, filteredRows, filteredColumns);
-        
+
         updateFilteredHeaderCounts(filteredRows, filteredColumns);
 
         filteredRows = null;
@@ -121,9 +228,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
         // Update row indices and row count to match the
         // number of shown rows af filteration
         IntLinkedOpenHashSet r = (IntLinkedOpenHashSet) filteredRows;
-        while(!r.isEmpty()) {
+        while (!r.isEmpty()) {
             int row = rowIndices.removeInt(r.removeLastInt());
-            for(int column = 0; column < delegate.getColumnCount(); ++column) {
+            for (int column = 0; column < delegate.getColumnCount(); ++column) {
                 delegate.filterCellAt(row, column);
             }
         }
@@ -131,9 +238,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
         // Update column indices and column count to match the
         // number of shown rows af filteration
         IntLinkedOpenHashSet c = (IntLinkedOpenHashSet) filteredColumns;
-        while(!c.isEmpty()) {
-           int column = columnIndices.removeInt(c.removeLastInt());
-            for(int row = 0; row < delegate.getRowCount(); ++row) {
+        while (!c.isEmpty()) {
+            int column = columnIndices.removeInt(c.removeLastInt());
+            for (int row = 0; row < delegate.getRowCount(); ++row) {
                 delegate.filterCellAt(row, column);
             }
         }
@@ -192,7 +299,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
      * @param filteredColumns
      *            hidden column indices
      */
-    private void applyFiltersForEachCell(List<Predicate<PivotCell>> filter, IntSet filteredRows, IntSet filteredColumns) {
+    private void applyFiltersForEachCell(List<Predicate<PivotCell>> filter, IntSet filteredRows,
+            IntSet filteredColumns) {
         if (columnIndices.size() == 0) {
             applyFiltersForSingleDimensionCubes(filter, rowIndices.size(), true, filteredRows);
         } else if (rowIndices.size() == 0) {
@@ -202,18 +310,20 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
     }
 
-    private void applyFiltersForAllCells(List<Predicate<PivotCell>> filters, IntSet filteredRows, IntSet filteredColumns) {
+    private void applyFiltersForAllCells(List<Predicate<PivotCell>> filters, IntSet filteredRows,
+            IntSet filteredColumns) {
         long i = 0L;
         for (int column = 0; column < columnIndices.size(); ++column) {
-            boolean isColumnIncluded = false;
+            boolean columnIncluded = false;
             for (int row = 0; row < rowIndices.size(); ++row) {
                 PivotCell cell = getCellAt(row, column);
+
                 for (Predicate<PivotCell> filter : filters) {
                     if (!filter.apply(cell)) {
                         filteredRows.remove(row);
-                        if(!isColumnIncluded) {
+                        if (!columnIncluded) {
                             filteredColumns.remove(column);
-                            isColumnIncluded = true;
+                            columnIncluded = true;
                         }
                         break;
                     }
@@ -226,10 +336,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
     }
 
-    private void applyFiltersForSingleDimensionCubes(List<Predicate<PivotCell>> filters, int max, boolean isRow, IntSet nodes) {
+    private void applyFiltersForSingleDimensionCubes(List<Predicate<PivotCell>> filters, int max, boolean isRow,
+            IntSet nodes) {
         PivotCellImpl cell = new PivotCellImpl("..");
         for (int index = 0; index < max; ++index) {
-            if(isRow) {
+            if (isRow) {
                 cell.setRowNumber(index);
                 cell.setColumnNumber(0);
             } else {
@@ -286,30 +397,35 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private boolean determineIfRowShouldBeFiltered(Map<Dimension, Collection<Integer>> asMap, int i) {
-        for (Map.Entry<Dimension, Collection<Integer>> e : asMap.entrySet()) {
-            List<Integer> l = new ArrayList<>(e.getValue());
-            for (int a = 0; a < l.size() - 1; ++a) {
-                for (int b = a + 1; b < l.size(); ++b) {
-                    if (sameNodeUsedTwiceInRows(i, a, b)) {
+        List<Integer> sizes = new ArrayList<>();
+        for(Map.Entry<Dimension, Collection<Integer>> e: asMap.entrySet()) {
+            sizes.add(e.getValue().size());
+        }
+        return determineIfRowShouldBeFiltered(sizes, i);
+    }
+
+    private boolean determineIfRowShouldBeFiltered(List<Integer> sizes,
+            int i) {
+        for (int size : sizes) {
+            for (int a = 0; a < size - 1; ++a) {
+                DimensionNode aNode = delegate.getRowAt(a, i);
+                DimensionNode aLastNode = rows.get(a).getLastNode();
+               
+                for (int b = a + 1; b < size; ++b) {
+                    DimensionNode bNode = delegate.getRowAt(b, i);
+                    DimensionNode bLastNode = rows.get(b).getLastNode();
+                    if (aLastNode == bLastNode
+                            && aLastNode.getSurrogateId() == aNode.getSurrogateId()
+                            && bLastNode.getSurrogateId() != bNode.getSurrogateId()) {
                         return true;
                     }
-                    if (invalidRowHiearachy(i, a, b)) {
+                    if (!aNode.ancestorOf(bNode) && !bNode.ancestorOf(aNode)) {
                         return true;
                     }
                 }
             }
         }
         return false;
-    }
-
-    private boolean invalidRowHiearachy(int i, int a, int b) {
-        return !getRowAt(a, i).ancestorOf(getRowAt(b, i)) && !getRowAt(b, i).ancestorOf(getRowAt(a, i));
-    }
-
-    private boolean sameNodeUsedTwiceInRows(int i, int a, int b) {
-        return rows.get(a).getLastNode().getSurrogateId() == getRowAt(a, i).getSurrogateId() 
-                && rows.get(b).getLastNode().getSurrogateId() != getRowAt(b, i).getSurrogateId()
-                && rows.get(a).getLastNode() == rows.get(b).getLastNode();
     }
 
     private boolean determineIfColumnShouldBeFiltered(Map<Dimension, Collection<Integer>> asMap, int i) {
@@ -328,22 +444,23 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
         return false;
     }
-    
+
     private boolean invalidColumnHiearachy(int i, int a, int b) {
-        return !getColumnAt(a, i).ancestorOf(getColumnAt(b, i)) && !getColumnAt(b, i).ancestorOf(getColumnAt(a, i));
+        return !delegate.getColumnAt(a, i).ancestorOf(delegate.getColumnAt(b, i))
+                && !delegate.getColumnAt(b, i).ancestorOf(delegate.getColumnAt(a, i));
     }
 
     private boolean sameNodeUsedTwiceInColumns(int i, int a, int b) {
-        return columns.get(a).getLastNode() == getColumnAt(a, i) 
-                && columns.get(b).getLastNode() != (getColumnAt(b, i))
+        return columns.get(a).getLastNode() == delegate.getColumnAt(a, i)
+                && columns.get(b).getLastNode() != delegate.getColumnAt(b, i)
                 && rows.get(a).getLastNode() == rows.get(b).getLastNode();
     }
 
     private Multimap<Dimension, Integer> determineDimensionInRow(List<PivotLevel> rows) {
         Multimap<Dimension, Integer> dims = ArrayListMultimap.create();
-        if (rowIndices.size() > 1) {
+        if (delegate.getRowCount() > 1) {
             for (int i = 0; i < rows.size(); ++i) {
-                DimensionNode rowHeader = getRowAt(i, 0);
+                DimensionNode rowHeader = delegate.getRowAt(i, 0);
                 dims.put(rowHeader.getDimension(), i);
             }
         }
@@ -352,9 +469,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private Multimap<Dimension, Integer> determineDimensionInColumn(List<PivotLevel> column) {
         Multimap<Dimension, Integer> dims = ArrayListMultimap.create();
-        if (columnIndices.size() > 1) {
+        if (delegate.getColumnCount() > 1) {
             for (int i = 0; i < column.size(); ++i) {
-                DimensionNode columnHeader = getColumnAt(i, 0);
+                DimensionNode columnHeader = delegate.getColumnAt(i, 0);
                 dims.put(columnHeader.getDimension(), i);
             }
         }

@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 
 public class PivotLevel implements Iterable<DimensionNode> {
 
+    private static final boolean ASSERT_ENABLED = PivotLevel.class.desiredAssertionStatus();
+    
     private static final Logger LOG = Logger.getLogger(PivotLevel.class);
     private Dimension dimension;
     private List<DimensionNode> nodes = Lists.newArrayList();
@@ -18,6 +20,7 @@ public class PivotLevel implements Iterable<DimensionNode> {
     boolean isSubsetLevel;
     private boolean includeTotal;
     private DimensionNode selectedNode;
+    private int repetitionFactor;
 
     public PivotLevel() {
     }
@@ -82,9 +85,11 @@ public class PivotLevel implements Iterable<DimensionNode> {
     }
 
     public DimensionNode get(int i) {
-        if (i < 0 || i >= nodes.size()) {
-            LOG.warn(String.format("User attempted to access node in %d but only %d nodes available", i, nodes.size()));
-            return null;
+        if(ASSERT_ENABLED) {
+            if (i < 0 || i >= nodes.size()) {
+                LOG.warn(String.format("User attempted to access node in %d but only %d nodes available", i, nodes.size()));
+                return null;
+            }
         }
         return nodes.get(i);
     }
@@ -113,13 +118,30 @@ public class PivotLevel implements Iterable<DimensionNode> {
     public Boolean isTotalIncluded() {
         return includeTotal;
     }
-    
+
     public DimensionNode getSelectedNode() {
         return selectedNode;
     }
-    
+
     public void setSelectedNode(DimensionNode selectedNode) {
         this.selectedNode = selectedNode;
+    }
+
+    public int getRepetitionFactor(List<PivotLevel> levels, int level) {
+        if (this.repetitionFactor == 0) {
+            if (levels.size() - 1 == level) {
+                this.repetitionFactor = 1;
+            } else {
+                PivotLevel parent = levels.get(level + 1);
+                this.repetitionFactor = parent.size() * parent.getRepetitionFactor(levels, level + 1);
+            }
+        }
+        return this.repetitionFactor;
+    }
+
+    public DimensionNode getElement(List<PivotLevel> levels, int level, int element) {
+        int repetitionFactor = getRepetitionFactor(levels, level);
+        return nodes.get((element / repetitionFactor) % nodes.size());
     }
 
 }

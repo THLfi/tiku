@@ -234,18 +234,19 @@ public class ModifiablePivot implements Pivot {
             Preconditions.checkArgument(level >= 0 && level < rows.size(), String.format("Row level is out of bounds %d / %d", level, rows.size()));
             checkRowBounds(row);
         }
-         return getNodeAt(rows, level, mapIndex(row, skippedRowRindices));
+        return getNodeAt(rows, level, mapIndex(row, skippedRowRindices));
     }
     
     private int mapIndex(int index, IntArrayList skippedIndices) {
-        int offset = 0;
-        for(int i = 0; i < skippedIndices.size(); ++i) {
-            if(skippedIndices.get(i) > index + offset) {
+        int[] array = skippedIndices.elements();
+        int max = skippedIndices.size();
+        for(int i = 0; i < max; ++i) {
+            if(array[i] > index) {
                 break;
             }
-            ++ offset;
+            ++ index;
         }
-        return index + offset;
+        return index;
     }
 
 
@@ -269,12 +270,7 @@ public class ModifiablePivot implements Pivot {
      *            List of row and column headers for requested cell
      */
     private DimensionNode getNodeAt(List<PivotLevel> nodes, int level, int element) {
-        PivotLevel pivotLevel = nodes.get(level);
-        int repetitionFactor = 1;
-        for (int i = nodes.size() - 1; i > level; --i) {
-            repetitionFactor *= nodes.get(i).size();
-        }
-        return pivotLevel.get((element / repetitionFactor) % pivotLevel.size());
+       return nodes.get(level).getElement(nodes, level, element);
     }
 
     /**
