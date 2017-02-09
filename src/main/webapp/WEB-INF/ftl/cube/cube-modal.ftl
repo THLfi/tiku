@@ -21,9 +21,9 @@
             </div>
 
              <div class="form-group">
-                <select class="form-control" multiple>
+                <div class="form-control options">
 
-                </select>
+                </div>
             </div>
             <button type="button" class="btn btn-default">${message("cube.dimension.customize.select-all")}</button>
 
@@ -40,9 +40,9 @@
             </div>
 
              <div class="form-group">
-                <select class="form-control" multiple>
+                <div class="form-control options">
 
-                </select>
+                </div>
             </div>
             <button type="button" class="btn btn-default">${message("cube.dimension.customize.remove-all")}</button>
 

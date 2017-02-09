@@ -61,6 +61,13 @@ h1 {
   padding-top: 0px;
 }
 
+.options.form-control {
+	height: 100px;
+	overflow-y: auto;
+}
+.options div:hover {
+	background: #ccc;
+}
 
 .filter-control {
 	padding: 0 20px;
@@ -334,17 +341,17 @@ ul.tree-browser {
 	padding-right: 30px;
 }
 
-option.l1 { text-indent: 5px; }
-option.l2 { text-indent: 10px; font-style: italic;}
-option.l3 { text-indent: 15px; }
-option.l4 { text-indent: 20px; font-style: italic;}
-option.l5 { text-indent: 25px; }
-option.l6 { text-indent: 30px; font-style: italic;}
-option.l7 { text-indent: 35px; }
-option.l8 { text-indent: 40px; font-style: italic;}
-option.l9 { text-indent: 45px; }
-option.l10 { text-indent: 50px; font-style: italic;}
-option.l::before { content: "- "; }
+.options .l1 { text-indent: 5px; }
+.options .l2 { text-indent: 10px; font-style: italic;}
+.options .l3 { text-indent: 15px; }
+.options .l4 { text-indent: 20px; font-style: italic;}
+.options .l5 { text-indent: 25px; }
+.options .l6 { text-indent: 30px; font-style: italic;}
+.options .l7 { text-indent: 35px; }
+.options .l8 { text-indent: 40px; font-style: italic;}
+.options .l9 { text-indent: 45px; }
+.options .l10 { text-indent: 50px; font-style: italic;}
+.options .l::before { content: "- "; }
 
 .environment {
 	position: absolute;

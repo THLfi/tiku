@@ -162,8 +162,8 @@
       $('#subset-selector h4 span').text(dim.label);
 
       /* Clear previous dialog values */
-      selectable.find('option').remove();
-      selected.find('option').remove();
+      selectable.find('div').remove();
+      selected.find('div').remove();
 
       var sort = 0, // Determines the current sort order in dimension
         nodeOptions = {}, // hash index for options for quicker handling
@@ -173,9 +173,9 @@
          */
         traverse = function (nodes, level) {
           $.each(nodes, function (i, v) {
-            var option = $('<option></option>')
+            var option = $('<div></div>')
               .text(v.label)
-              .val(v.sid)
+              .attr('data-val', v.sid)
               .attr('data-sort', ++sort)
               .addClass('l' + level);
 
@@ -186,7 +186,6 @@
             selectable.append(option);
             nodeOptions[v.sid] = option;
             traverse(v.children, level + 1);
-
           });
         };
 
@@ -201,7 +200,7 @@
 
       /* wire remove all button */
       selected.closest('.form-group').siblings('.btn').click(function () {
-        selected.find('option').remove();
+        selected.find('div').remove();
       });
 
       /* wire select all button */
@@ -210,55 +209,54 @@
         .siblings('.btn')
         .click(function () {
           /* clear selected list so that we don't have to check for duplicates */
-          selected.find('option').remove();
+          selected.find('div').remove();
           /* clone all selectable nodes and add them to the selected list */
           selectable
-            .find('option:not(:disabled)')
+            .find('div:not(.disabled)')
             .clone()
             .click(function () { $(this).remove(); })
             .appendTo(selected);
         });
 
       /* wire removal of single selected node to click event */
-      selected.click(function () { selected.find('option:selected').remove(); });
+      selected.find('div').click(function () { $(this).remove(); });
 
       /* Add option to selected list on click */
-      selectable.click(
+      selectable.find('div').click(
         function () {
-          selectable.find('option:selected').each(function () {
-            /* Only add option once */
-            if (selected.find('option[value=' + this.value + ']').length > 0) {
-              return;
+          /* Only add option once */
+
+          var option = $(this).clone();
+          if (selected.find('div[data-val=' + option.attr('data-val') + ']').length > 0) {
+            return;
+          }
+
+          var sort = parseInt(option.attr('data-sort'), 10);
+          var isAdded = false;
+
+          /* Remove option onclick */
+          option.click(function () { $(this).remove(); });
+
+          /* add option to selected list in it's place */
+          selected.find('div').each(function () {
+            if (parseInt($(this).attr('data-sort'), 10) > sort) {
+              $(this).before(option);
+              isAdded = true;
+              return false;
             }
-
-            var option = $(this).clone();
-            var sort = parseInt(option.attr('data-sort'), 10);
-            var isAdded = false;
-
-            /* Remove option onclick */
-            option.click(function () { $(this).remove(); });
-
-            /* add option to selected list in it's place */
-            selected.find('option').each(function () {
-              if (parseInt($(this).attr('data-sort'), 10) > sort) {
-                $(this).before(option);
-                isAdded = true;
-                return false;
-              }
-              return true;
-            });
-            if (!isAdded) {
-              selected.append(option);
-              selected.scrollTop(option.scrollTop());
-            }
+            return true;
           });
+          if (!isAdded) {
+            selected.append(option);
+            selected.scrollTop(option.scrollTop());
+          }
         });
 
       /* create row or column subset http parameter value and reload cube */
       $('#subset-selector .save').click(function () {
         var values = [];
-        selected.find('option').each(function () {
-          values.push(this.value);
+        selected.find('div').each(function () {
+          values.push($(this).attr('data-val'));
         });
         // We have to add the extra separator in case only one item has been selected
         changeView(input, dim.id + thl.separator + values.join(thl.subsetSeparator) + thl.subsetSeparator);
@@ -271,17 +269,17 @@
       var previousValue = '';
       filter.keydown(function () {
         var re = new RegExp(this.value, 'i'),
-          options = self.find('option');
+          options = self.find('div');
         if (this.value.length < previousValue.length) {
           options.show();
-          options.prop('disabled', false);
+          options.toggleClass('disabled', false);
         }
         previousValue = this.value;
         options
           .filter(function () {
             return !re.test($(this).text());
           })
-          .prop('disabled', true)
+          .toggleClass('disabled', true)
           .hide();
       });
     });
@@ -289,8 +287,8 @@
     $('.column.dropdown-menu .select-subset').click(function (e) {
       var level = $(this).closest('.dropdown').attr('data-level'),
         dim = 0,
-        selectable = $('#subset-selector .selectable select'),
-        selected = $('#subset-selector .selected select'),
+        selectable = $('#subset-selector .selectable .options'),
+        selected = $('#subset-selector .selected .options'),
         options = thl.columns[level].nodes,
         input = $('.column-selection').get(level);
 
@@ -304,8 +302,8 @@
     $('.row.dropdown-menu .select-subset').click(function (e) {
       var level = $(this).closest('.dropdown').attr('data-level'),
         dim = 0,
-        selectable = $('#subset-selector .selectable select'),
-        selected = $('#subset-selector .selected select'),
+        selectable = $('#subset-selector .selectable .options'),
+        selected = $('#subset-selector .selected .options'),
         options = thl.rows[level].nodes,
         input = $('.row-selection').get(level);
 
