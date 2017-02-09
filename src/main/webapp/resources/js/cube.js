@@ -267,9 +267,9 @@
       var self = $(this),
         filter = self.find('input');
       var previousValue = '';
-      filter.keydown(function () {
+      filter.keyup(function () {
         var re = new RegExp(this.value, 'i'),
-          options = self.find('div');
+          options = self.find('.options').children();
         if (this.value.length < previousValue.length) {
           options.show();
           options.toggleClass('disabled', false);
