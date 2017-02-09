@@ -450,12 +450,7 @@ public abstract class HydraSource {
     }
 
     private void sort(DimensionNode node) {
-        node.sortChildren(new Comparator<DimensionNode>() {
-            @Override
-            public int compare(DimensionNode o1, DimensionNode o2) {
-                return o1.getSort().compareTo(o2.getSort());
-            }
-        });
+        node.sortChildren();
         for (DimensionNode child : node.getChildren()) {
             sort(child);
         }

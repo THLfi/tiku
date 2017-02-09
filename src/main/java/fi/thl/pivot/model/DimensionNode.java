@@ -1,11 +1,12 @@
 package fi.thl.pivot.model;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ import fi.thl.pivot.util.ThreadRole;
  */
 public class DimensionNode implements Comparable<DimensionNode> {
 
+    private static final Collator COLLATOR = Collator.getInstance(new Locale("fi"));
     private static final String DEFAULT = "default";
     private final DimensionLevel level;
     private String id;
@@ -112,8 +114,8 @@ public class DimensionNode implements Comparable<DimensionNode> {
         return new ArrayList<>(getChildren()).get(0);
     }
 
-    public void sortChildren(Comparator<DimensionNode> comparator) {
-        Collections.sort(children, comparator);
+    public void sortChildren() {
+        Collections.sort(children);
     }
 
     void setParent(final DimensionNode node) {
@@ -220,7 +222,13 @@ public class DimensionNode implements Comparable<DimensionNode> {
 
     @Override
     public int compareTo(DimensionNode o) {
-        return getSort().compareTo(o.getSort());
+        if(!this.sort.isEmpty()) {
+            String s1 = getLabel().getValue(ThreadRole.getLanguage());
+            String s2 = o.getLabel().getValue(ThreadRole.getLanguage());
+            return COLLATOR.compare(s1, s2);
+        } else {
+            return getSort().compareTo(o.getSort());
+        }
     }
 
     public void setSurrogateId(Integer surrogateId) {
