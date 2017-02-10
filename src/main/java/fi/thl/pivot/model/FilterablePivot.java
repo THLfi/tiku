@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -148,24 +146,61 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private void includeRows() {
-        List<PivotLevel> someRows = delegate.getRows();
-        Multimap<Dimension, Integer> rowDimensions = determineDimensionInRow(someRows);
-        Set<Entry<Dimension, Collection<Integer>>> rowDimensionsAsMap = rowDimensions.asMap().entrySet();
-        List<Integer> sizes = new ArrayList<>();
-        for(Map.Entry<Dimension, Collection<Integer>> e: rowDimensions.asMap().entrySet()) {
-            sizes.add(e.getValue().size());
+        includeRows(delegate.getRows(), 0, 0);
+       
+    }
+
+    private int includeRows(List<PivotLevel> levels, int level, int index) {
+        if (level == levels.size() - 1) {
+            return includeLeafLevel(levels, level, index);
+        } else {
+            return includeLevel(levels, level, index);
         }
-        
-        if (rowDimensionsAsMap.size() != someRows.size()) {
-            for (int i = 0; i < delegate.getRowCount(); ++i) {
-                boolean filtered = determineIfRowShouldBeFiltered(sizes, i);
-                if (!filtered) {
-                    rowIndices.add(i);
+    }
+
+    private int includeLevel(List<PivotLevel> levels, int level, int index) {
+        for (@SuppressWarnings("unused") DimensionNode node : levels.get(level)) {
+            if (!determineIfRowShouldBeFiltered(level, index)) {
+                index = includeRows(levels, level + 1, index);
+            } else {
+                index += levels.get(level).getRepetitionFactor(levels, level + 1);
+            }
+        }
+        return index;
+    }
+
+    private int includeLeafLevel(List<PivotLevel> levels, int level, int index) {
+        for (@SuppressWarnings("unused") DimensionNode node : levels.get(level)) {
+            if (determineIfRowShouldBeFiltered(level, index)) {
+                ++index;
+            } else {
+                rowIndices.add(index);
+                index++;
+            }
+        }
+        return index;
+    }
+
+    private boolean determineIfRowShouldBeFiltered(int level,
+            int i) {
+        for (int a = 0; a < level; ++a) {
+            DimensionNode aNode = delegate.getRowAt(a, i);
+            DimensionNode aLastNode = rows.get(a).getLastNode();
+
+            for (int b = a + 1; b < level + 1; ++b) {
+                DimensionNode bNode = delegate.getRowAt(b, i);
+                DimensionNode bLastNode = rows.get(b).getLastNode();
+                if (aLastNode == bLastNode
+                        && aLastNode.getSurrogateId() == aNode.getSurrogateId()
+                        && bLastNode.getSurrogateId() != bNode.getSurrogateId()) {
+                    return true;
+                }
+                if (!aNode.ancestorOf(bNode) && !bNode.ancestorOf(aNode)) {
+                    return true;
                 }
             }
-        } else {
-            rowIndices = Functions.listUpto(delegate.getRowCount());
         }
+        return false;
     }
 
     private void includeColumns() {
@@ -386,7 +421,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private boolean determineIfRowShouldBeFiltered(Map<Dimension, Collection<Integer>> asMap, int i) {
         List<Integer> sizes = new ArrayList<>();
-        for(Map.Entry<Dimension, Collection<Integer>> e: asMap.entrySet()) {
+        for (Map.Entry<Dimension, Collection<Integer>> e : asMap.entrySet()) {
             sizes.add(e.getValue().size());
         }
         return determineIfRowShouldBeFiltered(sizes, i);
@@ -398,7 +433,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
             for (int a = 0; a < size - 1; ++a) {
                 DimensionNode aNode = delegate.getRowAt(a, i);
                 DimensionNode aLastNode = rows.get(a).getLastNode();
-               
+
                 for (int b = a + 1; b < size; ++b) {
                     DimensionNode bNode = delegate.getRowAt(b, i);
                     DimensionNode bLastNode = rows.get(b).getLastNode();

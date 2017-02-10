@@ -222,7 +222,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
 
     @Override
     public int compareTo(DimensionNode o) {
-        if(!this.sort.isEmpty()) {
+        if(this.sort.isEmpty()) {
             String s1 = getLabel().getValue(ThreadRole.getLanguage());
             String s2 = o.getLabel().getValue(ThreadRole.getLanguage());
             return COLLATOR.compare(s1, s2);
