@@ -111,7 +111,7 @@ public class ModifiablePivot implements Pivot {
             if (levelNumber == 0) {
                 repeatCount = level.size();
             } else {
-                if (!level.isTotalIncluded()) {
+                if (level.isTotalIncluded()) {
                     for (int i = 0; i < repeatCount - 1; ++i) {
                         skippedIndices.add(level.size() - 1 + level.size() * i);
                     }
