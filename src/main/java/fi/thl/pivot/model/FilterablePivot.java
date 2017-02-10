@@ -91,10 +91,15 @@ public class FilterablePivot extends AbstractPivotForwarder {
         rowIndices = new IntArrayList();
         columnIndices = new IntArrayList();
 
+        
         // Prepare headers for filteration
         include(new ColumnStrategy(), 0, 0);
         include(new RowStrategy(), 0, 0);
 
+        filter(filters);
+    }
+
+    private void filter(List<Predicate<PivotCell>> filters) {
         long i = 0L;
 
         IntLinkedOpenHashSet included = new IntLinkedOpenHashSet();
@@ -134,7 +139,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
                 rowIndices.remove(rem);
             }
         }
-
     }
 
     private int include(IncludeStrategy strategy, int level, int index) {
@@ -163,7 +167,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
             if (shouldFilter(strategy, level, index)) {
                 ++index;
             } else {
-                rowIndices.add(index);
+                strategy.add(index);
                 index++;
             }
         }
@@ -178,6 +182,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
             for (int b = a + 1; b < level + 1; ++b) {
                 DimensionNode bNode = strategy.getNode(b, i);
+                
+                if(aNode.getDimension() != bNode.getDimension()) {
+                    continue;
+                }
+                
                 DimensionNode bLastNode = strategy.get(b).getLastNode();
                 if (aLastNode == bLastNode
                         && aLastNode.getSurrogateId() == aNode.getSurrogateId()
@@ -236,6 +245,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         abstract List<PivotLevel> getLevels();
 
+        abstract void add(int index);
+
         abstract DimensionNode getNode(int level, int index);
 
         public PivotLevel get(int level) {
@@ -263,6 +274,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
             return delegate.getRowAt(level, index);
         }
 
+        @Override
+        void add(int index) {
+            rowIndices.add(index);
+        }
+
     }
 
     private class ColumnStrategy extends  IncludeStrategy {
@@ -275,6 +291,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
         @Override
         public DimensionNode getNode(int level, int index) {
             return delegate.getColumnAt(level, index);
+        }
+        
+        @Override
+        void add(int index) {
+            columnIndices.add(index);
         }
 
     }

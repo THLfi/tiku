@@ -90,7 +90,8 @@ public class PivotImplTest {
 
         addTestDimensions();
 
-        List<String> expected = Lists.newArrayList("1.1;2.1;3.1", "1.1;2.2;3.1", "1.1;2.3;3.1", "1.2;2.1;3.1", "1.2;2.2;3.1", "1.2;2.3;3.1",
+        List<String> expected = Lists.newArrayList("1.1;2.1;3.1", "1.1;2.2;3.1", "1.1;2.3;3.1", "1.2;2.1;3.1",
+                "1.2;2.2;3.1", "1.2;2.3;3.1",
 
                 "1.1;2.1;3.2", "1.1;2.2;3.2", "1.1;2.3;3.2", "1.2;2.1;3.2", "1.2;2.2;3.2", "1.2;2.3;3.2",
 
@@ -119,7 +120,6 @@ public class PivotImplTest {
         assertEquals("3.3", label(pivot.getRowAt(0, 2)));
     }
 
-  
     @Test
     public void shouldApplyConstantDimensionValues() {
         addTestDimensions(mockNode("4", "4"), mockNode("5", "5"));
@@ -199,21 +199,23 @@ public class PivotImplTest {
         assertEquals("3.3", label(pivot.getRowAt(0, 1)));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldFilterNone() {
 
         addTestDimensions();
-        pivot = new FilterablePivot(pivot);
-        ((FilterablePivot) pivot).applyFilter(new Predicate<PivotCell>() {
+        FilterablePivot fpivot = new FilterablePivot(pivot);
+        fpivot.applyFilters(Lists.newArrayList(new Predicate<PivotCell>() {
 
             @Override
             public boolean apply(PivotCell input) {
                 return false;
             }
-        });
-
+        }));
         assertEquals(3, pivot.getRowCount());
         assertEquals(6, pivot.getColumnCount());
+        assertEquals(3, fpivot.getRowCount());
+        assertEquals(6, fpivot.getColumnCount());
 
     }
 
