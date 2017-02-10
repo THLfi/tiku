@@ -232,21 +232,26 @@ public class FilterablePivot extends AbstractPivotForwarder {
         return filtered;
     }
 
-    private static interface IncludeStrategy {
+    private static abstract class IncludeStrategy {
 
-        List<PivotLevel> getLevels();
+        abstract List<PivotLevel> getLevels();
 
-        int getRepetitionFactory(int i);
+        abstract DimensionNode getNode(int level, int index);
 
-        PivotLevel get(int level);
+        public PivotLevel get(int level) {
+            return getLevels().get(level);
+        }
 
-        int size();
+        public int getRepetitionFactory(int i) {
+            return get(i).getRepetitionFactor(getLevels(), i + 1);
+        }
 
-        DimensionNode getNode(int level, int index);
-
+        public int size() {
+            return getLevels().size();
+        }
     }
 
-    private class RowStrategy implements IncludeStrategy {
+    private class RowStrategy extends IncludeStrategy {
 
         @Override
         public List<PivotLevel> getLevels() {
@@ -258,23 +263,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
             return delegate.getRowAt(level, index);
         }
 
-        @Override
-        public PivotLevel get(int level) {
-            return rows.get(level);
-        }
-
-        @Override
-        public int getRepetitionFactory(int i) {
-            return get(i).getRepetitionFactor(rows, i + 1);
-        }
-
-        @Override
-        public int size() {
-            return rows.size();
-        }
     }
 
-    private class ColumnStrategy implements IncludeStrategy {
+    private class ColumnStrategy extends  IncludeStrategy {
 
         @Override
         public List<PivotLevel> getLevels() {
@@ -286,20 +277,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
             return delegate.getColumnAt(level, index);
         }
 
-        @Override
-        public PivotLevel get(int level) {
-            return columns.get(level);
-        }
-
-        @Override
-        public int getRepetitionFactory(int i) {
-            return get(i).getRepetitionFactor(columns, i + 1);
-        }
-
-        @Override
-        public int size() {
-            return columns.size();
-        }
     }
 
 }
