@@ -26,7 +26,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private List<PivotLevel> filteredRows = null;
     private List<PivotLevel> filteredColumns = null;
 
-    private long totalTimeSpent;
     private IntList rowIndices;
     private IntList columnIndices;
     private List<PivotLevel> rows;
@@ -91,7 +90,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
         rowIndices = new IntArrayList();
         columnIndices = new IntArrayList();
 
-        
         // Prepare headers for filteration
         include(new ColumnStrategy(), 0, 0);
         include(new RowStrategy(), 0, 0);
@@ -100,8 +98,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private void filter(List<Predicate<PivotCell>> filters) {
-        long i = 0L;
-
         IntLinkedOpenHashSet included = new IntLinkedOpenHashSet();
         for (int column = getColumnCount() - 1; column >= 0; --column) {
             boolean columnIncluded = false;
@@ -124,10 +120,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
                     columnIncluded = true;
                     included.add(row);
                 }
-                if (++i % 100000 == 0) {
-                    LOG.debug("Filter applied to " + i + " cells / " + (columnIndices.size() * rowIndices.size()));
-                    LOG.debug(totalTimeSpent);
-                }
+                
             }
             if (!columnIncluded) {
                 columnIndices.remove(column);
@@ -155,21 +148,24 @@ public class FilterablePivot extends AbstractPivotForwarder {
             if (!shouldFilter(strategy, level, index)) {
                 index = include(strategy, level + 1, index);
             } else {
-                index += strategy.getRepetitionFactory(level + 1);
+                index += strategy.getRepetitionFactory(level);
             }
         }
         return index;
     }
 
     private int includeLeafLevel(IncludeStrategy strategy, int level, int index) {
+        int levelIndex = 0;
+        int levelSize = strategy.get(level).size();
+        if(strategy.get(level).isTotalIncluded()) {
+            levelSize -= 1;
+        }
         for (@SuppressWarnings("unused")
         DimensionNode node : strategy.get(level)) {
-            if (shouldFilter(strategy, level, index)) {
-                ++index;
-            } else {
+            if(++levelIndex <= levelSize && !shouldFilter(strategy, level, index)) {
                 strategy.add(index);
-                index++;
             }
+            ++index;
         }
         return index;
     }
@@ -182,8 +178,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
             for (int b = a + 1; b < level + 1; ++b) {
                 DimensionNode bNode = strategy.getNode(b, i);
-                
-                if(aNode.getDimension() != bNode.getDimension()) {
+   
+                if(!aNode.getDimension().equals(bNode.getDimension())) {
                     continue;
                 }
                 
@@ -193,6 +189,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
                         && bLastNode.getSurrogateId() != bNode.getSurrogateId()) {
                     return true;
                 }
+                
                 if (!aNode.ancestorOf(bNode) && !bNode.ancestorOf(aNode)) {
                     return true;
                 }

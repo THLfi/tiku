@@ -16,7 +16,6 @@ import com.google.common.collect.Sets;
 
 import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.util.CumulativeStopWatch;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 public class ModifiablePivot implements Pivot {
 
@@ -24,7 +23,7 @@ public class ModifiablePivot implements Pivot {
     private static final Logger LOG = Logger.getLogger(ModifiablePivot.class);
 
     private PivotCellSentinel sentinel = new PivotCellSentinel(-1, -1);
-    
+
     private List<PivotLevel> columns = Lists.newArrayList();
     private List<PivotLevel> rows = Lists.newArrayList();
 
@@ -36,9 +35,6 @@ public class ModifiablePivot implements Pivot {
 
     private Set<DimensionNode> constants = Sets.newLinkedHashSet();
 
-    private IntArrayList skippedRowRindices = new IntArrayList();
-    private IntArrayList skippedColumnIndices = new IntArrayList();
-     
     int columnCount;
     int rowCount;
 
@@ -87,9 +83,6 @@ public class ModifiablePivot implements Pivot {
 
         columnCount = calculateHeaderCount(columnCount, nodes);
         fullColumnCount = columnCount;
-
-        skippedColumnIndices = removeTotals(columns);
-        columnCount = columnCount - skippedColumnIndices.size();
     }
 
     public void appendRow(PivotLevel nodes) {
@@ -98,29 +91,6 @@ public class ModifiablePivot implements Pivot {
         rows.add(nodes);
 
         rowCount = calculateHeaderCount(rowCount, nodes);
-
-        skippedRowRindices = removeTotals(rows);
-        rowCount = rowCount - skippedRowRindices.size();
-    }
-
-    private IntArrayList removeTotals(List<PivotLevel> levels) {
-        IntArrayList skippedIndices = new IntArrayList();
-        int repeatCount = 1;
-        int levelNumber = 0;
-        for (PivotLevel level : levels) {
-            if (levelNumber == 0) {
-                repeatCount = level.size();
-            } else {
-                if (level.isTotalIncluded()) {
-                    for (int i = 0; i < repeatCount - 1; ++i) {
-                        skippedIndices.add(level.size() - 1 + level.size() * i);
-                    }
-                }
-                repeatCount *= level.size();
-            }
-            ++levelNumber;
-        }
-        return skippedIndices;
     }
 
     public void appendConstant(DimensionNode node) {
@@ -143,7 +113,7 @@ public class ModifiablePivot implements Pivot {
     public int getRowCount() {
         return rowCount;
     }
-    
+
     @Override
     public void filterCellAt(int row, int column) {
         int cacheKey = createCacheKey(row, column);
@@ -179,13 +149,13 @@ public class ModifiablePivot implements Pivot {
 
             setConfidenceInterval(key, measure, cell);
             setSampleSize(key, measure, cell);
-            
+
             cellCache.put(cacheKey, cell);
             return cell;
         } else {
-            //PivotCell cell = new PivotCellSentinel(row, column);
-            //cellCache.put(cacheKey, cell);
-            //return cell;
+            // PivotCell cell = new PivotCellSentinel(row, column);
+            // cellCache.put(cacheKey, cell);
+            // return cell;
             cellCache.put(cacheKey, sentinel);
             return sentinel;
         }
@@ -198,15 +168,18 @@ public class ModifiablePivot implements Pivot {
 
     private void setSampleSize(SortedSet<Integer> key, DimensionNode measure, PivotCellImpl cell) {
         if (null != measure && measure.getSampleSizeNode() != null) {
-            cell.setSampleSize(getValueWithModifiedKey(key, measure.getSurrogateId(), measure.getSampleSizeNode().getSurrogateId()));
+            cell.setSampleSize(getValueWithModifiedKey(key, measure.getSurrogateId(),
+                    measure.getSampleSizeNode().getSurrogateId()));
         }
     }
 
     private void setConfidenceInterval(SortedSet<Integer> key, DimensionNode measure, PivotCellImpl cell) {
         if (null != measure && measure.getConfidenceLowerLimitNode() != null) {
-            cell.setConfidenceLowerLimit(getValueWithModifiedKey(key, measure.getSurrogateId(), measure.getConfidenceLowerLimitNode().getSurrogateId()));
-            cell.setConfidenceUpperLimit(getValueWithModifiedKey(key, measure.getConfidenceLowerLimitNode().getSurrogateId(),
-                    measure.getConfidenceUpperLimitNode().getSurrogateId()));
+            cell.setConfidenceLowerLimit(getValueWithModifiedKey(key, measure.getSurrogateId(),
+                    measure.getConfidenceLowerLimitNode().getSurrogateId()));
+            cell.setConfidenceUpperLimit(
+                    getValueWithModifiedKey(key, measure.getConfidenceLowerLimitNode().getSurrogateId(),
+                            measure.getConfidenceUpperLimitNode().getSurrogateId()));
             key.remove(measure.getConfidenceUpperLimitNode().getSurrogateId());
             key.add(measure.getSurrogateId());
         }
@@ -221,34 +194,22 @@ public class ModifiablePivot implements Pivot {
     @Override
     public DimensionNode getColumnAt(int level, int column) {
         if (ASSERT_ENABLED) {
-            Preconditions.checkArgument(level >= 0 && level < columns.size(), String.format("Column level is out of bounds %d / %d", level, columns.size()));
+            Preconditions.checkArgument(level >= 0 && level < columns.size(),
+                    String.format("Column level is out of bounds %d / %d", level, columns.size()));
             checkColumnBounds(column);
         }
-        return getNodeAt(columns, level, mapIndex(column, skippedColumnIndices));
+        return getNodeAt(columns, level, column);
     }
-
 
     @Override
     public DimensionNode getRowAt(int level, int row) {
         if (ASSERT_ENABLED) {
-            Preconditions.checkArgument(level >= 0 && level < rows.size(), String.format("Row level is out of bounds %d / %d", level, rows.size()));
+            Preconditions.checkArgument(level >= 0 && level < rows.size(),
+                    String.format("Row level is out of bounds %d / %d", level, rows.size()));
             checkRowBounds(row);
         }
-        return getNodeAt(rows, level, mapIndex(row, skippedRowRindices));
+        return getNodeAt(rows, level, row);
     }
-    
-    private int mapIndex(int index, IntArrayList skippedIndices) {
-        int[] array = skippedIndices.elements();
-        int max = skippedIndices.size();
-        for(int i = 0; i < max; ++i) {
-            if(array[i] > index) {
-                break;
-            }
-            ++ index;
-        }
-        return index;
-    }
-
 
     /**
      * 
@@ -270,7 +231,7 @@ public class ModifiablePivot implements Pivot {
      *            List of row and column headers for requested cell
      */
     private DimensionNode getNodeAt(List<PivotLevel> nodes, int level, int element) {
-       return nodes.get(level).getElement(nodes, level, element);
+        return nodes.get(level).getElement(nodes, level, element);
     }
 
     /**
@@ -297,11 +258,13 @@ public class ModifiablePivot implements Pivot {
     }
 
     private void checkRowBounds(int row) {
-        Preconditions.checkArgument(row >= 0 && row < rowCount, String.format("Row index out of bounds %d / %d", row, rowCount));
+        Preconditions.checkArgument(row >= 0 && row < rowCount,
+                String.format("Row index out of bounds %d / %d", row, rowCount));
     }
 
     private void checkColumnBounds(int column) {
-        Preconditions.checkArgument(column >= 0 && column < columnCount, String.format("Column index out of bounds %d / %d", column, columnCount));
+        Preconditions.checkArgument(column >= 0 && column < columnCount,
+                String.format("Column index out of bounds %d / %d", column, columnCount));
     }
 
     public void setDefaultMeasure(DimensionNode defaultMeasure) {
