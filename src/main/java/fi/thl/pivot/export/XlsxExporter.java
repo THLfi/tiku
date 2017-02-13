@@ -79,9 +79,10 @@ public class XlsxExporter {
 
         Pivot pivot = (Pivot) params.get("pivot");
         int rowNumber = 0;
+        boolean showCodes = params.containsKey("sc");
 
-        rowNumber = createColumnHeaders(pivot, sheet);
-        rowNumber = printData(sheet, pivot, rowNumber);
+        rowNumber = createColumnHeaders(pivot, sheet, showCodes);
+        rowNumber = printData(sheet, pivot, rowNumber, showCodes);
         mergeRowHeaders(sheet, pivot);
         rowNumber = printFilters(params, sheet, rowNumber);
         printCopyrightNotice(sheet, rowNumber, params);
@@ -114,13 +115,13 @@ public class XlsxExporter {
         }
     }
 
-    private int printData(Sheet sheet, Pivot pivot, int rowNumber) {
+    private int printData(Sheet sheet, Pivot pivot, int rowNumber, boolean showCodes) {
         Row row = null;
         int dataRowNumber = 0;
         int dataColumnNumber = 0;
         for (PivotCell cell : pivot) {
             if (cell.getColumnNumber() == 0) {
-                row = createRow(pivot, cell, sheet, rowNumber++, dataRowNumber++);
+                row = createRow(pivot, cell, sheet, rowNumber++, dataRowNumber++, showCodes);
                 dataColumnNumber = 0;
             }
             setCellValue(pivot, row, cell, dataColumnNumber++);
@@ -206,7 +207,7 @@ public class XlsxExporter {
             long value = Math.round(cell.getNumberValue() * decimals);
             c.setCellValue(value / decimals);
             c.setCellStyle(measureStyle(c.getSheet().getWorkbook(), d));
-           
+
         } else {
             c.setCellValue(cell.getValue());
             c.setCellStyle(defaultStyle);
@@ -229,17 +230,23 @@ public class XlsxExporter {
 
     }
 
-    private Row createRow(Pivot pivot, PivotCell cell, Sheet sheet, int rowNumber, int dataRowNumber) {
+    private Row createRow(Pivot pivot, PivotCell cell, Sheet sheet, int rowNumber, int dataRowNumber,
+            boolean showCodes) {
         Row row = sheet.createRow(rowNumber);
         for (int rowLevel = 0; rowLevel < pivot.getRows().size(); ++rowLevel) {
             Cell c = row.createCell(rowLevel);
-            c.setCellValue(pivot.getRowAt(rowLevel, dataRowNumber).getLabel().getValue(language));
+            DimensionNode node = pivot.getRowAt(rowLevel, dataRowNumber);
+            if (showCodes) {
+                c.setCellValue(node.getCode() + " - " + node.getLabel().getValue(language));
+            } else {
+                c.setCellValue(node.getLabel().getValue(language));
+            }
             c.setCellStyle(headerStyle);
         }
         return row;
     }
 
-    private int createColumnHeaders(Pivot pivot, Sheet sheet) {
+    private int createColumnHeaders(Pivot pivot, Sheet sheet, boolean showCodes) {
         int rowNumber = 0;
         int columnOffset = pivot.getRows().size();
         for (int columnLevel = 0; columnLevel < pivot.getColumns().size(); ++columnLevel) {
@@ -255,7 +262,11 @@ public class XlsxExporter {
                     ++lastColumnWithSameHeader;
                 } else {
                     Cell cell = row.createCell(column + pivot.getRows().size());
-                    cell.setCellValue(node.getLabel().getValue(language));
+                    if (showCodes) {
+                        cell.setCellValue(node.getCode() + " - " + node.getLabel().getValue(language));
+                    } else {
+                        cell.setCellValue(node.getLabel().getValue(language));
+                    }
                     if (isLastHeaderRow(pivot, columnLevel)) {
                         cell.setCellStyle(headerLastRowStyle);
                     } else {

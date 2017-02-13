@@ -78,7 +78,9 @@ public class CubePdfController extends AbstractCubeController {
 
             model.addAttribute("isOpenData", cs.getSource().isOpenData());
             model.addAttribute("updated", cs.getSource().getRunDate());
-            model.addAttribute("sc", cubeRequest.getShowCodes());
+            if(cubeRequest.getShowCodes().length() > 0) {
+                model.addAttribute("sc", cubeRequest.getShowCodes());
+            }
 
             model.addAttribute("tableBounds", calculateSplitTableBounds(cs));
             model.addAttribute("messageSource", new MessageSourceWrapper(messageSource, "fi"));

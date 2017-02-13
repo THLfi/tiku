@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.supercsv.io.CsvListWriter;
 import org.supercsv.prefs.CsvPreference;
 
+import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Pivot;
 import fi.thl.pivot.model.PivotCell;
 import fi.thl.pivot.model.PivotLevel;
@@ -47,7 +48,7 @@ public class CsvExporter {
             initializeCsvExporter(model);
             createCsvWriter(out);
             writeHeader();
-            writeValues();
+            writeValues(model.asMap().containsKey("sc"));
         } finally {
             closeCsvWriter();
         }
@@ -81,8 +82,7 @@ public class CsvExporter {
         columns.add("val");
     }
 
-    
-    private void writeValues() throws IOException {
+    private void writeValues(boolean showCodes) throws IOException {
         int rowNum = -1;
         int colNum = 0;
         for (PivotCell cell : pivot) {
@@ -91,19 +91,28 @@ public class CsvExporter {
                 rowNum++;
                 colNum = 0;
             }
-            valueRow(rowNum, colNum, cell);
+            valueRow(rowNum, colNum, cell, showCodes);
             writer.write(columns);
             colNum++;
         }
     }
 
-
-    private void valueRow(int rowNum, int colNum, PivotCell cell) {
+    private void valueRow(int rowNum, int colNum, PivotCell cell, boolean showCodes) {
         for (int i = 0; i < columnLevelCount; ++i) {
-            columns.add(pivot.getColumnAt(i, colNum).getLabel().getValue(lang));
+            DimensionNode node = pivot.getColumnAt(i, colNum);
+            if (showCodes) {
+                columns.add(node.getCode() + " - " + node.getLabel().getValue(lang));
+            } else {
+                columns.add(node.getLabel().getValue(lang));
+            }
         }
         for (int i = 0; i < rowLevelCount; ++i) {
-            columns.add(pivot.getRowAt(i, rowNum).getLabel().getValue(lang));
+            DimensionNode node = pivot.getRowAt(i, rowNum);
+            if (showCodes) {
+                columns.add(node.getCode() + " - " + node.getLabel().getValue(lang));
+            } else {
+                columns.add(node.getLabel().getValue(lang));
+            }
         }
 
         if (null == cell.getValue()) {

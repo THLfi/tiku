@@ -54,7 +54,7 @@
       [/#if]
       [#if node.getProperty("meta:comment")??]
         <p>
-          ${node.getProperty("meta:comment").getValue("fi")!}
+          ${node.getProperty("meta:comment").getValue(lang)!}
         </p>
       [/#if]
     [/#if]

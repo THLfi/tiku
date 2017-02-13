@@ -69,11 +69,6 @@ h1 {
 	background: #ccc;
 }
 
-.filter-control {
-	padding: 0 20px;
-	margin-right: 16.7%;
-	margin-left: -15px;
-}
 
 .pivot-header {
 	position: absolute;
@@ -197,6 +192,7 @@ table tbody>tr>th.row-target, table tbody>tr>th.column-target {
 }
 
 
+
 .accept-all .glyphicon {
 	display: none;
 }
@@ -204,35 +200,16 @@ table tbody>tr>th.row-target, table tbody>tr>th.column-target {
     display: block;
 }
 
-.filter-target * {
-	display: none;
-}
-.filter-target.drop-active {
-	padding: 15px;
-    border: 2px dashed #808080;
-    background: #fff !important;
-    font-size: 20px;
-    border-radius: 10px 10px 10x 10px;
-    font-weight: 500;
-    width: 100%;
-    text-align: center;
-    color: #303030;
-}
-.filter-target.drop-hover {
-	background: #e7e7e7 !important;
-}
-.filter-target.drop-active * {
-	display: block;
-}
 
 
 .dropdown-menu .asc, .dropdown-menu .desc {
-    display: none;
+  display: none;
 }
 .leaf .dropdown-menu .asc, .leaf .dropdown-menu .desc {
 	display: block;
 }
-th.empty {
+
+th.empty {
 	border: 0;
 }
 
@@ -292,18 +269,50 @@ ul.tree-browser {
 	width: 0;
 }
 
-.drop-active, .drop-active a, .drop-active>button {
+.drop-active .ui-droppable, .drop-active .ui-droppable > a, .drop-active .ui-droppable .btn {
 	background: #FBC365;
 	color: #fff;
 }
 
-.drop-hover, .drop-hover a, .drop-hover>button, th.hover {
+.drop-active .ui-droppable.drop-hover, .drop-active .ui-droppable.drop-hover > a,
+.drop-active .ui-droppable.hover, .drop-active .ui-droppable.hover > a,
+.drop-active .ui-droppable.drop-hover .btn, .drop-active .ui-droppable.hover .btn {
 	background: #faa61a;
 	color: #fff;
 }
 
+.filter-target * {
+	display: none;
+}
+.drop-active .filter-target * {
+	display: block;
+}
+.drop-active .filter-target.ui-droppable {
+	padding: 15px;
+  border: 2px dashed #808080;
+  background: #fff !important;
+  font-size: 20px;
+  border-radius: 10px 10px 10px 10px;
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  color: #303030;
+}
+.drop-active .filter-target.drop-hover.ui-droppable {
+	background: #e7e7e7 !important;
+}
+
+
+.filter-control {
+	padding: 0 20px;
+	margin-right: 16.7%;
+	margin-left: -15px;
+}
+
+
 .label.hover {
 	background: #e6e6e6;
+	cursor: pointer;
 	cursor: hand;
 }
 

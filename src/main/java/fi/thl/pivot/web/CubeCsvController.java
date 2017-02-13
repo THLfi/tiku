@@ -33,6 +33,10 @@ public class CubeCsvController extends AbstractCubeController {
             model.addAttribute("cube", cubeRequest.getCube());
             model.addAttribute("updated", cs.getSource().getRunDate());
             model.addAttribute("isOpenData", cs.getSource().isOpenData());
+            
+            if(cubeRequest.getShowCodes().length() > 0) {
+                model.addAttribute("sc", cubeRequest.getShowCodes());
+            }
 
             new CsvExporter().export(model, resp.getOutputStream());
 

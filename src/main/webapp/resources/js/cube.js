@@ -1,6 +1,5 @@
 (function ($, thl) {
   $(document).ready(function () {
-
     function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {
         inputElement = $(inputElement);
@@ -20,31 +19,31 @@
       $('#pivot').submit();
     }
 
-    var treeBrowser = $('.tree-browser'),
-      traverseDimensionTree = function (dimension, node) {
-        var children = $('<ul>').addClass('tree');
-        for (var n = 0; n < node.children.length; ++n) {
-          var li = $('<li>')
-            .append(
-              $('<span>')
-                .attr('dim-ref', dimension)
-                .attr('node-ref', node.children[n].sid)
-                .append(node.children[n].label)
-            );
-          if (node.children[n].children.length > 0) {
-            li.find('span').append($('<span>').addClass('caret caret-right'));
-            li.append(traverseDimensionTree(dimension, node.children[n]));
-          }
-          children.append(li);
+    var treeBrowser = $('.tree-browser');
+    var traverseDimensionTree = function (dimension, node) {
+      var children = $('<ul>').addClass('tree');
+      for (var n = 0; n < node.children.length; ++n) {
+        var li = $('<li>')
+          .append(
+            $('<span>')
+              .attr('dim-ref', dimension)
+              .attr('node-ref', node.children[n].sid)
+              .append(node.children[n].label)
+          );
+        if (node.children[n].children.length > 0) {
+          li.find('span').append($('<span>').addClass('caret caret-right'));
+          li.append(traverseDimensionTree(dimension, node.children[n]));
         }
-        return children;
-      },
-      nthRow = function (e) {
-        return e.index() + 1;
-      },
-      nthCol = function (e) {
-        return e.parent().index() + 1;
-      };
+        children.append(li);
+      }
+      return children;
+    };
+    var nthRow = function (e) {
+      return e.index() + 1;
+    };
+    var nthCol = function (e) {
+      return e.parent().index() + 1;
+    };
 
     $('.label').hover(function () {
       $(this).removeClass('hover');
@@ -73,13 +72,47 @@
       .draggable({
         cursor: 'move',
         helper: 'clone',
-        appendTo: '.pivot-content',
-        start: function (e, ui) { $(ui.helper).css('top', '-20px'); }
-
+        appendTo: 'body',
+        start: function (e, ui) {
+          $(ui.helper)
+            .css('top', '-20px')
+            .css('z-index', '1000');
+          $('.pivot-content').toggleClass('drop-active', true);
+        },
+        stop: function () {
+          $('.pivot-content').toggleClass('drop-active', false);
+        }
       });
+
+    $('.measure-target')
+        .droppable({
+          accept: function (t) {
+            return t.attr('dim-ref') === 'measure';
+          },
+          drop: function (e, ui) {
+            if ($('#filter-measure').size() === 0) {
+              $('#pivot').append('<input type="text" name="filter" id="measure" dim-ref="measure" class="form-control" readonly>');
+            }
+            changeView($('#filter-measure'), ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
+          }
+        });
+
+    $('.filter-target')
+        .droppable({
+          hoverClass: 'drop-hover',
+          drop: function (e, ui) {
+            var dr = ui.draggable.attr('dim-ref');
+            var input = $('.filter-' + dr);
+            if (input.size() === 0) {
+              input = $('<input type="text" name="filter" class="form-control" id="filter-' + dr + '" dim-ref="' + dr + '" readonly>');
+              $('#pivot').append(input);
+            }
+            changeView(input, ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
+          }
+        });
+
     $('.row-target')
       .droppable({
-        activeClass: 'drop-active',
         drop: function (e, ui) {
           if ($('.row-selection').size() < nthRow($(this))) {
             $('#pivot').append('<input type="text" name="row" class="row-selection form-control" readonly>');
@@ -97,7 +130,6 @@
       });
     $('.column-target')
       .droppable({
-        activeClass: 'drop-active',
         drop: function (e, ui) {
           if ($('.column-selection').size() < nthCol($(this))) {
             $('#pivot').append('<input type="text" name="column" class="column-selection form-control" readonly>');
@@ -109,34 +141,6 @@
         },
         out: function () {
           $(this).closest('tr').find('th').toggleClass('drop-hover', false);
-        }
-      });
-    $('.measure-target')
-      .droppable({
-        activeClass: 'drop-active',
-        accept: function (t) {
-          return 'measure' === t.attr('dim-ref');
-        },
-        drop: function (e, ui) {
-          if ($('#filter-measure').size() === 0) {
-            $('#pivot').append('<input type="text" name="filter" id="measure" dim-ref="measure" class="form-control" readonly>');
-          }
-          changeView($('#filter-measure'), ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
-        }
-      });
-
-    $('.filter-target')
-      .droppable({
-        activeClass: 'drop-active',
-        hoverClass: 'drop-hover',
-        drop: function (e, ui) {
-          var dr = ui.draggable.attr('dim-ref');
-          var input = $('.filter-' + dr);
-          if (input.size() === 0) {
-            input = $('<input type="text" name="filter" class="form-control" id="filter-' + dr + '" dim-ref="' + dr + '" readonly>');
-            $('#pivot').append(input);
-          }
-          changeView(input, ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
         }
       });
 
@@ -165,29 +169,29 @@
       selectable.find('div').remove();
       selected.find('div').remove();
 
-      var sort = 0, // Determines the current sort order in dimension
-        nodeOptions = {}, // hash index for options for quicker handling
+      var sort = 0; // Determines the current sort order in dimension
+      var nodeOptions = {}; // hash index for options for quicker handling
         /**
          * Recursively go through the dimension and add each node to
          * the selectable list
          */
-        traverse = function (nodes, level) {
-          $.each(nodes, function (i, v) {
-            var option = $('<div></div>')
-              .text(v.label)
-              .attr('data-val', v.sid)
-              .attr('data-sort', ++sort)
-              .addClass('l' + level);
+      var traverse = function (nodes, level) {
+        $.each(nodes, function (i, v) {
+          var option = $('<div></div>')
+            .text(v.label)
+            .attr('data-val', v.sid)
+            .attr('data-sort', ++sort)
+            .addClass('l' + level);
 
-            if (level > 0) {
-              option.addClass('l');
-            }
+          if (level > 0) {
+            option.addClass('l');
+          }
 
-            selectable.append(option);
-            nodeOptions[v.sid] = option;
-            traverse(v.children, level + 1);
-          });
-        };
+          selectable.append(option);
+          nodeOptions[v.sid] = option;
+          traverse(v.children, level + 1);
+        });
+      };
 
       traverse(dim.children, 0);
 
@@ -264,12 +268,12 @@
     }
 
     $('#subset-selector .selectable, #subset-selector .selected').each(function () {
-      var self = $(this),
-        filter = self.find('input');
+      var self = $(this);
+      var filter = self.find('input');
       var previousValue = '';
       filter.keyup(function () {
-        var re = new RegExp(this.value, 'i'),
-          options = self.find('.options').children();
+        var re = new RegExp(this.value, 'i');
+        var options = self.find('.options').children();
         if (this.value.length < previousValue.length) {
           options.show();
           options.toggleClass('disabled', false);
@@ -285,12 +289,12 @@
     });
 
     $('.column.dropdown-menu .select-subset').click(function (e) {
-      var level = $(this).closest('.dropdown').attr('data-level'),
-        dim = 0,
-        selectable = $('#subset-selector .selectable .options'),
-        selected = $('#subset-selector .selected .options'),
-        options = thl.columns[level].nodes,
-        input = $('.column-selection').get(level);
+      var level = $(this).closest('.dropdown').attr('data-level');
+      var dim = 0;
+      var selectable = $('#subset-selector .selectable .options');
+      var selected = $('#subset-selector .selected .options');
+      var options = thl.columns[level].nodes;
+      var input = $('.column-selection').get(level);
 
       $.each(thl.pivot.dim, function (i, v) {
         if (v.id === thl.columns[level].dimension) {
@@ -300,12 +304,12 @@
       populateModal(level, dim, selectable, selected, options, input);
     });
     $('.row.dropdown-menu .select-subset').click(function (e) {
-      var level = $(this).closest('.dropdown').attr('data-level'),
-        dim = 0,
-        selectable = $('#subset-selector .selectable .options'),
-        selected = $('#subset-selector .selected .options'),
-        options = thl.rows[level].nodes,
-        input = $('.row-selection').get(level);
+      var level = $(this).closest('.dropdown').attr('data-level');
+      var dim = 0;
+      var selectable = $('#subset-selector .selectable .options');
+      var selected = $('#subset-selector .selected .options');
+      var options = thl.rows[level].nodes;
+      var input = $('.row-selection').get(level);
 
       $.each(thl.pivot.dim, function (i, v) {
         if (v.id === thl.rows[level].dimension) {
@@ -320,9 +324,9 @@
     });
 
     var moveDimension = function (self, selector, modifier) {
-      var index = self.attr('data-ref'),
-        fields = $(selector),
-        value = fields.get(index).value;
+      var index = self.attr('data-ref');
+      var fields = $(selector);
+      var value = fields.get(index).value;
 
       fields.get(+index).value = fields.get(+index + modifier).value;
       fields.get(+index + modifier).value = value;
@@ -430,13 +434,13 @@
       $(this).toggleClass('hover');
     });
 
-    var dropdown = $('<div class="dropdown">'),
-      dropdownToggle = $('<button type="button" class="btn btn-xs btn-default drowdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>'),
-      dropdownMenu = $('<ul class="dropdown-menu">'),
-      dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>'),
-      dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>'),
-      dropdownMenuHide = $('<li><a role="menuitem" class="rowhide">' + thl.messages['cube.dimension.hide'] + '</a></li>'),
-      dropdownMenuMeta = $('<li><a role="menuitem" class="info">' + thl.messages['cube.dimension.info'] + '</a></li>');
+    var dropdown = $('<div class="dropdown">');
+    var dropdownToggle = $('<button type="button" class="btn btn-xs btn-default drowdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownMenu = $('<ul class="dropdown-menu">');
+    var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
+    var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
+    var dropdownMenuHide = $('<li><a role="menuitem" class="rowhide">' + thl.messages['cube.dimension.hide'] + '</a></li>');
+    var dropdownMenuMeta = $('<li><a role="menuitem" class="info">' + thl.messages['cube.dimension.info'] + '</a></li>');
 
     dropdownMenu
       .append(dropdownMenuSortAsc)
@@ -453,8 +457,8 @@
       .append(dropdown)
       .find('.asc,.desc')
       .click(function () {
-        var sort = $('#pivot input[name=sort]'),
-          sortMode = $('#pivot input[name=mode]');
+        var sort = $('#pivot input[name=sort]');
+        var sortMode = $('#pivot input[name=mode]');
 
         thl.toggleField(sort);
         thl.toggleField(sortMode);

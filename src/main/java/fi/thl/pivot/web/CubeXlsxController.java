@@ -40,7 +40,10 @@ public class CubeXlsxController extends AbstractCubeController {
             model.addAttribute("cube", cubeRequest.getCube());
             model.addAttribute("updated", cs.getSource().getRunDate());
             model.addAttribute("isOpenData", cs.getSource().isOpenData());
-
+            if(cubeRequest.getShowCodes().length() > 0) {
+                model.addAttribute("sc", cubeRequest.getShowCodes());
+            }
+            
             new XlsxExporter(cubeRequest.getUiLanguage(), messageSource).export(model, resp.getOutputStream());
         } else {
             throw new CubeNotFoundException();
