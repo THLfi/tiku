@@ -12,3 +12,4 @@ if (typeof thl.messages === 'undefined') {
   thl.messages = {}
 }
 thl.messages["no-data"] = '${message("summary.no-data")?js_string}';
+thl.messages["select"] = '${message("cube.dimension.customize")?js_string}';

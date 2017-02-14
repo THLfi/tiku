@@ -1409,7 +1409,150 @@ function selectChartType (e) {
     };
   };
 
+
+  /**
+   * Displays a modal dialog where the user can select which dimension nodes
+   * they'd like to display in a column or a row. Selectable nodes are
+   * added to a select list in the dimensions order and indented accordingly.
+   * The current selection is added to the selected list. User is provided
+   * with a simple infix search and buttons for select all and remove all
+   * events
+   **/
+  function populateModal (e) {
+
+    var group = $(this).closest('.form-group');
+
+    $('#subset-selector').modal('show');
+    $('#subset-selector h4 span').text(group.find('label').text());
+
+    var selectable = $('#subset-selector .selectable .options');
+    var selected = $('#subset-selector .selected .options');
+
+    /* Clear previous dialog values */
+    selectable.find('div').remove();
+    selected.find('div').remove();
+
+    var sort = 0; // Determines the current sort order in dimension
+    var nodeOptions = {}; // hash index for options for quicker handling
+
+    group.find('select option').each(function () {
+      var option = $('<div></div>')
+        .text(this.innerText)
+        .attr('data-val', this.value)
+        .attr('data-sort', ++sort);
+      selectable.append(option);
+      if (this.selected) {
+        selected.append(option.clone());
+      }
+      nodeOptions[this.value] = option;
+    });
+
+    /* wire remove all button */
+    selected.closest('.form-group').siblings('.btn').click(function () {
+      selected.find('div').remove();
+    });
+
+    /* wire select all button */
+    selectable
+      .closest('.form-group')
+      .siblings('.btn')
+      .click(function () {
+        /* clear selected list so that we don't have to check for duplicates */
+        selected.find('div').remove();
+        /* clone all selectable nodes and add them to the selected list */
+        selectable
+          .find('div:not(.disabled)')
+          .clone()
+          .click(function () { $(this).remove(); })
+          .appendTo(selected);
+      });
+
+    /* wire removal of single selected node to click event */
+    selected.find('div').click(function () { $(this).remove(); });
+
+    /* Add option to selected list on click */
+    selectable.find('div').click(
+      function () {
+        /* Only add option once */
+
+        var option = $(this).clone();
+        if (selected.find('div[data-val=' + option.attr('data-val') + ']').length > 0) {
+          return;
+        }
+
+        var sort = parseInt(option.attr('data-sort'), 10);
+        var isAdded = false;
+
+        /* Remove option onclick */
+        option.click(function () { $(this).remove(); });
+
+        /* add option to selected list in it's place */
+        selected.find('div').each(function () {
+          if (parseInt($(this).attr('data-sort'), 10) > sort) {
+            $(this).before(option);
+            isAdded = true;
+            return false;
+          }
+          return true;
+        });
+        if (!isAdded) {
+          selected.append(option);
+          selected.scrollTop(option.scrollTop());
+        }
+      });
+
+    /* create row or column subset http parameter value and reload cube */
+    $('#subset-selector .save').click(function () {
+      var opt = group.find('select option');
+      opt.prop('selected', false);
+      selected.find('div').each(function () {
+        var val = $(this).attr('data-val');
+        opt.each(function () {
+          if(this.value === val) {
+            this.selected = true;
+          }
+        });
+      });
+      group.closest('form').submit();
+      // We have to add the extra separator in case only one item has been selected
+      // changeView(input, dim.id + thl.separator + values.join(thl.subsetSeparator) + thl.subsetSeparator);
+    });
+  }
+
   $(document).ready(function () {
+    $('select[multiple]').each(function () {
+      var btn = $('<a>')
+        .addClass('btn btn-default')
+        .text(thl.messages['select'])
+        .click(populateModal);
+
+      $(this)
+        .after(btn)
+        .after('<br />')
+        .hide();
+    });
+
+    $('#subset-selector .selectable, #subset-selector .selected').each(function () {
+      var self = $(this);
+      var filter = self.find('input');
+      var previousValue = '';
+      filter.keyup(function () {
+        var re = new RegExp(this.value, 'i');
+        var options = self.find('.options').children();
+        if (this.value.length < previousValue.length) {
+          options.show();
+          options.toggleClass('disabled', false);
+        }
+        previousValue = this.value;
+        options
+          .filter(function () {
+            return !re.test($(this).text());
+          })
+          .toggleClass('disabled', true)
+          .hide();
+      });
+    });
+
     var summary = thl.pivot.summary(labels, dimensionData);
     $('.presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table')
       .each(function () {

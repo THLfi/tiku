@@ -343,6 +343,9 @@
             <div class="clearfix"></div>
         </div>
         <div class="clearfix"></div>
+
+        [#include "cube/cube-modal.ftl" /]
+              
     </div>
 
 

@@ -229,7 +229,8 @@ select
 	state,
 	logical_name, 
 	added_meta_hydra, 
-	'summary' view_type
+	'summary' view_type,
+	logical_name as name
 from x
 where rn = 1
     ]]></entry>
