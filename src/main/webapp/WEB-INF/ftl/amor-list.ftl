@@ -1,5 +1,11 @@
 [#ftl]
 [#include "common.ftl"]
+[#function message code]
+    [#if rc.getMessage(code)??]
+        [#return rc.getMessage(code, "[${code}]") /]
+    [/#if]
+    [#return "- ${code} - " /]
+[/#function]
 [#assign breadcrumbs]
     <li class="first"><a href="${rc.contextPath}/">Environments</a></li>
     <li class="active">${env!}</a></li>
@@ -27,44 +33,40 @@
 [/#assign]
 [@amor_page]
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Subject</th>
-            <th>Hydra</th>
-            <th>Report</th>
-            <th>Type</th>
-            [#if showRestrictedView??]
-            [#else]
-            <th>Run Id</th>
-            [/#if]
-            <th>Added</th>
-        </tr>
-    </thead>
-    <tbody>
-        [#assign lastSubject = "" /]
-        [#assign lastHydra = "" /]
-        [#assign lastReport = "" /]
-        [#list reports as report]
-        [#if showRestrictedView?? && lastSubject == report.subject && lastHydra == report.hydra && lastReport == report.fact]
-          [#-- don't display older versions of reports --]
-        [#else]
-        <tr class="subject-${report.subject} hydra-${report.hydra} report-${report.fact} [#if lastHydra != report.hydra ]fh[/#if]">
-            <td><span subject-ref="${report.subject}" class="subject-button">[#if lastSubject != report.subject]${report.subject} <span class="caret"></span></span>[/#if]</td>
-            <td>[#if lastSubject != report.subject || lastHydra != report.hydra || lastReport != report.fact]<span class="hydra-button">${report.hydra} <span class="caret"></span></span>[/#if]</td>
-            <td><a href="${rc.contextPath}/${env}/fi/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}[#if lastSubject == report.subject && lastHydra == report.hydra && lastReport == report.fact]?run_id=${report.runId}[/#if]">${report.fact}</a></td>
-            <td style="text-transform: lowercase">${report.type}</td>
-            [#if showRestrictedView??]
-            [#else]
-              <td>${report.runId}</td>
-            [/#if]
-            <td>${report.added?string("dd.MM.yyyy HH:mm")}</td>
-        </tr>
-        [/#if]
-        [#assign lastSubject = report.subject /]
-        [#assign lastHydra = report.hydra /]
-        [#assign lastReport = report.fact]
-        [/#list]
-    </tbody>
-</table>
+<style>
+  .report {
+    margin-bottom: 30px;
+  }
+  .title {
+    font-size: 1.2em;
+    margin: 0;
+  }
+  .info {
+    font-size: 12px;
+    margin-bottom: 15px;
+  }
+
+</style>
+
+[#list reports as report]
+  [#if report_index > 0 && report.hydra != last_hydra]
+    <hr />
+  [/#if]
+  [#assign last_hydra = report.hydra]
+
+  <div class="report">
+    <h2 class="title">
+      [#if "SUMMARY"=report.type]
+        <i class="fa fa-line-chart"></i>
+      [#else]
+        <i class="fa fa-table"></i>
+      [/#if]
+      <a href="${rc.contextPath}/${env}/fi/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}">${report.name!report.fact}</a></h2>
+    <div class="info">
+      <span class="updated">${message("cube.updated")}: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
+    </div>
+  </div>
+
+[/#list]
+
 [/@amor_page]

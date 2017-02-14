@@ -153,6 +153,12 @@ public class AmorDao {
                 environment, environment);
     }
 
+    @AuditedMethod
+    public List<Report> listReports(String environment, String subject) {
+        Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment " + environment);
+        return jdbcTemplate.query(String.format(queries.getProperty("list-reports-with-subject"), schema), new ReportMapper(),
+                subject, environment, subject, environment);
+    }
     /**
      * Lists reports within the given amor subject. Used to provide a quick way
      * to navigate between different reports of the same subject

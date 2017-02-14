@@ -328,18 +328,21 @@
                 </ul>
                 [/#list]
 
-                <h2>${summary.title.getValue(lang)}</h2>
-                [#if summary.note.getValue(lang)! == "n/a"]
-                [#else]
-                <p>${summary.note.getValue(lang)!}</p>
-                [/#if]
-                <p><a href="${summary.link.getValue(lang)!}">${message("summary.more")}</a></p>
+                <div class="content">
+                  <h2>${summary.title.getValue(lang)}</h2>
+                  [#if summary.note.getValue(lang)! == "n/a"]
+                  [#else]
+                  <p>${summary.note.getValue(lang)!}</p>
+                  [/#if]
+                  <p><a href="${summary.link.getValue(lang)!}">${message("summary.more")}</a></p>
 
-                [@summary_presentations /]
+                  [@summary_presentations /]
+                </div>
             </div>
 
             <div class="clearfix"></div>
         </div>
+        <div class="clearfix"></div>
     </div>
 
 
@@ -402,7 +405,7 @@
     <script>
         [#include "summary-script.ftl" /]
     </script>
-    
+
     <script src="${rc.contextPath}/resources/js/jquery.js"></script>
     <script src="${rc.contextPath}/resources/js/jquery-ui.js"></script>
     <script src="${rc.contextPath}/resources/js/jquery.ui.touch-punch.min.js"></script>

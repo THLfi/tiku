@@ -101,7 +101,7 @@ public class AmorListController {
     }
 
     private Collection<Report> listReportsInSubject(String env, final String subject) {
-        return Collections2.filter(dao.listReports(env), new Predicate<Report>() {
+        return Collections2.filter(dao.listReports(env, subject), new Predicate<Report>() {
 
             @Override
             public boolean apply(Report input) {
@@ -130,7 +130,7 @@ public class AmorListController {
     public String listReportsInHydra(@PathVariable String env, @PathVariable final String subject,
             @PathVariable final String hydra, Model model) {
         model.addAttribute("showRestrictedView", true);
-        model.addAttribute("reports", Collections2.filter(dao.listReports(env), new Predicate<Report>() {
+        model.addAttribute("reports", Collections2.filter(dao.listReports(env, subject), new Predicate<Report>() {
 
             @Override
             public boolean apply(Report input) {
@@ -152,7 +152,7 @@ public class AmorListController {
     }
 
     private Collection<Report> listReportsInHydra(String env, final String subject, final String hydra) {
-        return Collections2.filter(dao.listReports(env), new Predicate<Report>() {
+        return Collections2.filter(dao.listReports(env, subject), new Predicate<Report>() {
 
             @Override
             public boolean apply(Report input) {

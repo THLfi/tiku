@@ -47,8 +47,9 @@ public class CsvExporter {
         try {
             initializeCsvExporter(model);
             createCsvWriter(out);
-            writeHeader();
-            writeValues(model.asMap().containsKey("sc"));
+            boolean showCodes = model.asMap().containsKey("sc");
+            writeHeader(showCodes);
+            writeValues(showCodes);
         } finally {
             closeCsvWriter();
         }
@@ -67,19 +68,20 @@ public class CsvExporter {
         writer = new CsvListWriter(new OutputStreamWriter(out), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
     }
 
-    private void writeHeader() throws IOException {
-        headerColumns();
+    private void writeHeader(boolean showCodes) throws IOException {
+        addHeaders(pivot.getColumns(), showCodes);
+        addHeaders(pivot.getRows(), showCodes);
+        columns.add("val");
         writer.write(columns);
     }
 
-    private void headerColumns() {
-        for (PivotLevel level : pivot.getColumns()) {
+    private void addHeaders(List<PivotLevel> levels, boolean showCodes) {
+        for (PivotLevel level : levels) {
+            if(showCodes) {
+                columns.add(level.getDimension().getLabel().getValue(lang));
+            }
             columns.add(level.getDimension().getLabel().getValue(lang));
         }
-        for (PivotLevel level : pivot.getRows()) {
-            columns.add(level.getDimension().getLabel().getValue(lang));
-        }
-        columns.add("val");
     }
 
     private void writeValues(boolean showCodes) throws IOException {
@@ -101,18 +103,17 @@ public class CsvExporter {
         for (int i = 0; i < columnLevelCount; ++i) {
             DimensionNode node = pivot.getColumnAt(i, colNum);
             if (showCodes) {
-                columns.add(node.getCode() + " - " + node.getLabel().getValue(lang));
-            } else {
-                columns.add(node.getLabel().getValue(lang));
+                columns.add(node.getCode());
             }
+            columns.add(node.getLabel().getValue(lang));
+
         }
         for (int i = 0; i < rowLevelCount; ++i) {
             DimensionNode node = pivot.getRowAt(i, rowNum);
             if (showCodes) {
-                columns.add(node.getCode() + " - " + node.getLabel().getValue(lang));
-            } else {
-                columns.add(node.getLabel().getValue(lang));
+                columns.add(node.getCode());
             }
+            columns.add(node.getLabel().getValue(lang));
         }
 
         if (null == cell.getValue()) {

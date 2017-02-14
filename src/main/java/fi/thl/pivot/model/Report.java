@@ -14,6 +14,7 @@ public class Report {
 
     private Label title = new Label(), subjectTitle = new Label();
     private boolean isProtected;
+    private String name;
 
     public String getSubject() {
         return subject;
@@ -91,6 +92,14 @@ public class Report {
     public String toString() {
         return "\n\nReport [subject=" + subject + ", hydra=" + hydra + ", runId=" + runId + ", fact=" + fact + ", type=" + type + ", added=" + added + ", title="
                 + title + ", subjectTitle=" + subjectTitle + ", isProtected=" + isProtected + "]";
+    }
+
+    public void setName(String string) {
+       this.name = string;
+    }
+    
+    public String getName() {
+        return name;
     }
 
 }

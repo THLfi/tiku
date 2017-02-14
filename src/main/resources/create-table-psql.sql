@@ -119,3 +119,84 @@ $BODY$
 $BODY$
 LANGUAGE plpgsql;
 
+create or replace function amor_prod.f_cube_property(
+	p_subject text,
+	p_hydra text,
+	p_state text,
+	p_cube text,
+	p_predicate text,
+	p_lang text
+) returns text
+as $$
+declare 
+	v_runid text;
+	v_value text;
+begin
+	select run_id into v_runid
+	from amor_prod.meta_state_current 
+	where subject = p_subject
+	and hydra = p_hydra
+	and state = p_state;
+
+	raise notice 'run_id: %', v_runid; 
+	execute 'select data
+		from amor_prod.x'|| v_runid ||'_meta 
+		where ref in (
+			select ref from amor_prod.x'|| v_runid ||'_meta 
+			where data = ''' || p_cube || '''
+		)
+		and tag = $1
+		and lang = $2' into v_value using p_predicate, p_lang ;
+
+	return v_value;
+end
+$$ language plpgsql;
+
+
+grant execute on function amor_prod.f_cube_property(text,text,text,text,text,text) to amor_user;
+
+
+create or replace function amor_prod.f_summary_name(
+	p_subject text,
+	p_hydra text,
+	p_state text,
+	p_summary text,
+	p_lang text
+) returns text
+as $$
+declare 
+	v_runid text;
+	v_value text;
+begin
+	execute
+	'with x as 
+		(select 
+		  summary_xml as col,
+		  row_number() over (partition by subject, hydra, summary_id order by run_id desc) rn
+		from amor_prod.amor_summaries
+		join amor_prod.meta_hydra using (run_id)
+		join amor_prod.meta_state_current using (subject, hydra, run_id)
+		join amor_prod.meta_table using (run_id)
+			where state = $1
+			and subject = $2
+			and summary_id  = $3
+			and hydra = $4) 
+	select title::text from (
+		select 
+			unnest(xpath(''/summary/title/text()'', col::xml)) title,
+			unnest(xpath(''/summary/title/@lang'', col::xml)) lang
+		from x
+		where rn = 1
+	) d where lang::text = $5
+	'
+	into v_value 
+	using p_state, p_subject, p_summary, p_hydra, p_lang;
+	
+	return v_value;
+end
+$$ language plpgsql;
+
+grant execute on function amor_prod.f_summary_name(text,text,text,text,text) to amor_user;
+
+
+

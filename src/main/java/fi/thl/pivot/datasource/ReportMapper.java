@@ -24,6 +24,7 @@ class ReportMapper implements RowMapper<Report> {
         r.setFact(rs.getString("logical_name"));
         r.setAdded(rs.getTimestamp("added_meta_hydra"));
         r.setRunId(rs.getString("run_id"));
+        r.setName(rs.getString("name"));
         if (rs.getMetaData().getColumnCount() > 5) {
             ReportType viewType;
             if ("cube".equals(rs.getString("view_type"))) {

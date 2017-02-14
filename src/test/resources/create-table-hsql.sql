@@ -210,4 +210,13 @@ INSERT INTO  amor_test.amor_summaries
 VALUES
 	(1003, 'a-subject', 'test-hydra', 'summary-1', 'Test summary', 'Test subject'),
 	(1003, 'a-subject', 'test-hydra', 'summary-2', 'Second summary', 'Second subject');
+	
+
+create function amor_test.f_cube_property(a varchar(1000), b varchar(1000) , c varchar(1000), d varchar(1000) , e varchar(1000) , f varchar(1000)) 
+returns varchar(1000)
+return '';
+
+create function amor_test.f_summary_name(a varchar(1000), b varchar(1000), c varchar(1000), d varchar(1000), e varchar(1000)) 
+returns varchar(1000)
+return '';
 		
