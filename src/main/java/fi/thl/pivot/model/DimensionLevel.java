@@ -59,9 +59,10 @@ public class DimensionLevel {
     }
 
     public DimensionLevel addLevel(String id, Label label) {
-        child = new DimensionLevel(id, dimension, this.index + 1);
-        child.parent = this;
-        child.label = label;
+        if(null == this.child) {
+            child = new DimensionLevel(id, dimension, this.index + 1);
+            child.parent = this;
+        }  
         return child;
     }
 
@@ -75,7 +76,8 @@ public class DimensionLevel {
     }
 
     public DimensionLevel addLevel(String dimensionLevel) {
-        return addLevel(dimensionLevel, Label.create("fi", dimensionLevel));
+        DimensionLevel child =  addLevel(dimensionLevel, Label.create("fi", dimensionLevel));
+        return child;
     }
 
     public String getId() {

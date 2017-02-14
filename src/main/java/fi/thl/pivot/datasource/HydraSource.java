@@ -148,12 +148,14 @@ public abstract class HydraSource {
         private void createDimensionLevel(final Map<String, DimensionLevel> dimensionLevels, String dimension, String dimensionLevel) {
             if (dimensionLevel != null) {
                 DimensionLevel prevLevel = currentLevel.get(dimension);
+                String key = dimension + "-" + dimensionLevel;
+                
                 if (null == prevLevel) {
                     LOG.warn("No prev level found for " + dimension);
-                } else if (!dimensionLevel.equals(prevLevel.getId())) {
-                    LOG.debug("Added new level " + dimension + "-" + dimensionLevel);
+                } else if (!dimensionLevel.equals(prevLevel.getId()) && !dimensionLevels.containsKey(key)) {
+                    LOG.debug("Added new level " + key);
                     DimensionLevel newLevel = prevLevel.addLevel(dimensionLevel);
-                    dimensionLevels.put(dimension + "-" + dimensionLevel, newLevel);
+                    dimensionLevels.put(key, newLevel);
                     currentLevel.put(dimension, newLevel);
                 }
             }
@@ -657,7 +659,7 @@ public abstract class HydraSource {
                 for (Property p : nodeMetadata.getValue()) {
                     if (PREDICATE_NAME.equals(p.predicate)) {
                         level.getLabel().setValue(p.lang, p.value);
-                    }
+                     }
                 }
                 levelFound = true;
             }
