@@ -17,20 +17,28 @@ public class TablePresentation extends DataPresentation {
         return rows;
     }
 
-    public void addColumn(String dimension, SummaryStage stage, boolean includeTotal) {
-        columns.add(new SummaryDimension(dimension, stage, includeTotal));
+    public SummaryItem addColumn(String dimension, SummaryStage stage, boolean includeTotal) {
+        SummaryDimension dim = new SummaryDimension(dimension, stage, includeTotal);
+        columns.add(dim);
+        return dim;
     }
 
-    public void addColumn(List<MeasureItem> measures) {
-        columns.add(createMeasure(measures));
+    public SummaryItem addColumn(List<MeasureItem> measures) {
+        SummaryMeasure item = createMeasure(measures);
+        columns.add(item);
+        return item;
     }
 
-    public void addRow(String dimension, SummaryStage stage, boolean includeTotal) {
-        rows.add(new SummaryDimension(dimension, stage, includeTotal));
+    public SummaryItem addRow(String dimension, SummaryStage stage, boolean includeTotal) {
+        SummaryDimension dim = new SummaryDimension(dimension, stage, includeTotal);
+        rows.add(dim);
+        return dim;
     }
 
-    public void addRow(List<MeasureItem> measures) {
-        rows.add(createMeasure(measures));
+    public SummaryItem addRow(List<MeasureItem> measures) {
+        SummaryMeasure item = createMeasure(measures);
+        rows.add(item);
+        return item;
     }
 
     private SummaryMeasure createMeasure(List<MeasureItem> measures) {

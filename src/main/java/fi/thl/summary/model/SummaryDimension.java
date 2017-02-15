@@ -7,7 +7,8 @@ package fi.thl.summary.model;
  * @author aleksiyrttiaho
  *
  */
-public class SummaryDimension implements SummaryItem {
+public class SummaryDimension extends AbstractSummaryItem implements SummaryItem {
+
     private final String dimension;
     private final SummaryStage stage;
     private boolean includeTotal;

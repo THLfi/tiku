@@ -21,6 +21,8 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
         this.source = source;
         this.delegate = d;
         this.summary = summary;
+
+        this.align(d.getValueAlign(), d.getHeaderAlign(), null);
     }
 
     public Set<MeasureItem> getMeasures() {

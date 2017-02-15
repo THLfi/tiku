@@ -190,6 +190,10 @@
         text-align: center;
         border-right: 1px solid #ddd;
     }
+    td span {
+        display: inline-block;
+        text-align: right;
+    }
 
     td:last-child {
       border-right: 0;

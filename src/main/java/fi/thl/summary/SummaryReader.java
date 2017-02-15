@@ -22,6 +22,7 @@ import fi.thl.summary.model.MeasureItem;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
+import fi.thl.summary.model.SummaryItem;
 import fi.thl.summary.model.SummaryStage;
 import fi.thl.summary.model.TablePresentation;
 import fi.thl.summary.model.TextPresentation;
@@ -119,7 +120,7 @@ public class SummaryReader {
             selection.setVisible(!BOOLEAN_YES.equals(attribute(node, "hidden")));
             selection.setMultiple(BOOLEAN_YES.equals(attribute(node, "multi")));
             selection.setSearchable(BOOLEAN_YES.equals(attribute(node, "search")));
-            
+
             selection.setDimension(firstChildNode(node, DIMENSION_ELEMENT).getTextContent());
 
             for (Node item : iterator(node, "item")) {
@@ -314,24 +315,35 @@ public class SummaryReader {
 
         private void addColumn(TablePresentation p, Node col) {
             Node dim = firstChildNode(col, DIMENSION_ELEMENT);
+            final SummaryItem item;
             if (null != dim) {
-                p.addColumn(dim.getTextContent(), getStage(p, col), showTotal(dim));
+                item = p.addColumn(dim.getTextContent(), getStage(p, col), showTotal(dim));
             } else {
-                p.addColumn(listMeasures(col));
+                item = p.addColumn(listMeasures(col));
             }
+            align(col, item);
         }
 
         private void addRow(TablePresentation p, Node row) {
             Node dim = firstChildNode(row, DIMENSION_ELEMENT);
+            final SummaryItem item;
             if (null != dim) {
-                p.addRow(dim.getTextContent(), getStage(p, row), showTotal(dim));
+                item = p.addRow(dim.getTextContent(), getStage(p, row), showTotal(dim));
             } else {
-                p.addRow(listMeasures(row));
+                item = p.addRow(listMeasures(row));
             }
+            align(row, item);
         }
 
         private boolean showTotal(Node dim) {
             return BOOLEAN_YES.equals(attribute(dim, "total"));
+        }
+
+        private void align(Node col, final SummaryItem item) {
+            String valueAlign = attribute(col, "aligndata");
+            String headerAlign = attribute(col, "alignheader");
+            String allAlign = attribute(col, "alignall");
+            item.align(valueAlign, headerAlign, allAlign);
         }
 
         private SummaryStage getStage(TablePresentation p, Node row) {
@@ -398,7 +410,7 @@ public class SummaryReader {
             List<SummaryStage> stages = new ArrayList<>();
             parseDimensions(p, stages, DIMENSION_ELEMENT, "dimMulti");
             List<String> dimensions = new ArrayList<>();
-            for(SummaryStage stage : stages) {
+            for (SummaryStage stage : stages) {
                 dimensions.add(stage.getDimensionId());
             }
 

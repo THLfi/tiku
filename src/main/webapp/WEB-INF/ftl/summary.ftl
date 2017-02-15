@@ -204,6 +204,7 @@
             class="presentation table"
             data-column-count="${presentation.columns?size}"
             data-columns="[#list presentation.columns as column]${column.id!}[/#list]"
+            data-align="[#list presentation.columns as column]${column.valueAlign!} ${column.headerAlign!}[/#list]"
             data-row-count="${presentation.rows?size}"
             data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
             data-ref="${factTable}.json?${presentation.dataUrl}">
@@ -345,7 +346,7 @@
         <div class="clearfix"></div>
 
         [#include "cube/cube-modal.ftl" /]
-              
+
     </div>
 
 

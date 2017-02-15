@@ -22,6 +22,7 @@ public class DimensionExtension extends SummaryDimension implements Extension {
         super(d.getDimension(), d.getStage());
         Collections.sort(nodes);
         this.nodes = nodes;
+        this.align(d.getValueAlign(), d.getHeaderAlign(), null);
     }
 
     public List<DimensionNode> getNodes() {

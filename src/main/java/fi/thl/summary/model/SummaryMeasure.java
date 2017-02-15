@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-public class SummaryMeasure implements SummaryItem {
+public class SummaryMeasure extends AbstractSummaryItem implements SummaryItem{
 
     private Set<MeasureItem> measures = Sets.newLinkedHashSet();
 

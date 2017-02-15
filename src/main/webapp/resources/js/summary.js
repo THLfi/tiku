@@ -168,6 +168,7 @@ function selectChartType (e) {
                 var node =
                 $('<th>')
                   .attr('colspan', spanPerLevel[level])
+                  .css('text-align', opt.align[1])
                   .text(labels[v]);
                 row.append(node);
               });
@@ -255,13 +256,24 @@ function selectChartType (e) {
             var key = $.merge($.merge([], rowIndices), colIndices);
             var val = opt.dataset.Data(key);
             if (val == null || val.value === null) {
-              row.append($('<td>').text('..'));
+              row.append(
+                $('<td>')
+                .append('<span>..</span>')
+                .css('text-align', opt.align[0])
+              );
             } else {
               hasValue = true;
-              row.append($('<td>').text(
-                ('' + val.value)
-                  .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
-                  .replace(/\./g, ','))); // Use comma as a decimal separator
+              row.append(
+                $('<td>')
+                .append(
+                  $('<span></span>')
+                  .text(
+                    ('' + val.value)
+                      .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
+                      .replace(/\./g, ','))
+                )
+                .css('text-align', opt.align[0])
+              ); // Use comma as a decimal separator
             }
             i += 1;
           });
@@ -295,6 +307,18 @@ function selectChartType (e) {
         table.append(body);
         tableContainer.append(table);
         $(opt.target[0]).append(tableContainer);
+        var maxWidth = {};
+        table
+          .find('span')
+          .each(function () {
+            var self = $(this);
+            var w = self.width();
+            var i = self.closest('td').index();
+            maxWidth[i] = maxWidth[i] === undefined || w > maxWidth[i] ? w : maxWidth[i];
+          })
+          .css('width', function () {
+            return maxWidth[$(this).closest('td').index()] + 'px';
+          });
       },
 
       presentation: function (opt) {
@@ -1573,7 +1597,8 @@ function selectChartType (e) {
                 target: $(p),
                 dataset: dataset,
                 rowCount: parseInt(target.attr('data-row-count')),
-                columnCount: parseInt(target.attr('data-column-count'))
+                columnCount: parseInt(target.attr('data-column-count')),
+                align: target.attr('data-align').split(' ')
               });
           } else {
             summary.presentation({
