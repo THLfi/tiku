@@ -1620,8 +1620,9 @@ function selectChartType (e) {
                   // Multiple series and measure
                   val = dataset.Data([i, series, measure]);
                 }
-                val = val && val.value !== null ? +val.value : null;
-                return isNaN(val) ? null : val;
+                val = val && val.value !== null ? +(val.value.replace(',', '.')) : null;
+                val = isNaN(val) ? null : val;
+                return val;
               },
               width: 800,
               height: 400,
