@@ -74,7 +74,7 @@ public class PivotCellImpl implements PivotCell {
 
     @Override
     public boolean isNumber() {
-        return null != value && NUMBER.matcher(value).matches();
+        return null != value && value.length() > 0 && !"-".equals(value) && NUMBER.matcher(value).matches();
     }
 
     @Override
