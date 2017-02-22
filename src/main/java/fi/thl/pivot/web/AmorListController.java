@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.AmorDao;
@@ -125,6 +126,8 @@ public class AmorListController {
         return createJsonStatCollection(env, subject, reports, subject);
     }
 
+
+
     @Monitored
     @RequestMapping("/{env}/{locale}/{subject}/{hydra}")
     public String listReportsInHydra(@PathVariable String env, @PathVariable final String subject,
@@ -193,7 +196,7 @@ public class AmorListController {
 
     }
 
-    private Collection<Report> filterLatest(Collection<Report> reports) {
+    private List<Report> filterLatest(Collection<Report> reports) {
         List<Report> filter = new ArrayList<>();
         final Set<String> closed = new HashSet<>();
         for (Report input : reports) {
@@ -209,6 +212,8 @@ public class AmorListController {
         }
         return filter;
     }
+    
+
 
     private ResponseEntity<String> createJsonStatCollection(String env, final String subject,
             Collection<Report> reports, String label) {
@@ -241,6 +246,9 @@ public class AmorListController {
                 }
             }
             if(isCubeAccessDenied) {
+                continue;
+            }
+            if(!isOpenData) {
                 continue;
             }
 
