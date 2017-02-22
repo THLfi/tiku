@@ -4,7 +4,7 @@
 	<groupId>fi.thl</groupId>
 	<artifactId>tiku</artifactId>
 	<packaging>war</packaging>
-	<version>1.0.6</version>
+	<version>1.0.7</version>
 	<name>Reporting user interface for precalculated cubes and reports</name>
 	<properties>
 		<org.springframework.version>4.3.4.RELEASE</org.springframework.version>
