@@ -193,6 +193,10 @@ begin
 	using p_state, p_subject, p_summary, p_hydra, p_lang;
 	
 	return v_value;
+exception 
+	when invalid_xml_content 
+	then return 'n/a';
+	
 end
 $$ language plpgsql;
 
