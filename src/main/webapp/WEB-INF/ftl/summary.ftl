@@ -301,13 +301,13 @@
       <div>
 
       [#if requireLogin]
-      <div class="btn-group" role="group" aria-label="${message("site.logout")}">
+      <div class="btn-group pull-right" role="group" aria-label="${message("site.logout")}">
           <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
               <button type="submit" class="btn btn-default">${message("site.logout")}</button>
           </form>
       </div>
       [/#if]
-      <div class="btn-group pull-right" role="group" aria-label="...">
+      <div class="btn-group pull-right help" role="group">
           ${message("site.help")}
       </div>
       [#--<a href="#">pdf</a>--]

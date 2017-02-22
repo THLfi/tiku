@@ -205,6 +205,22 @@
         padding-right: 15px;
     }
 
+    .stripe form {
+        padding-top: 0;
+    }
+    .stripe form .btn-default {
+      background: none;
+      color: #fff;
+      border: none;
+    }
+    .stripe form .btn-default.hover,.stripe form .btn-default:hover  {
+      background: none;
+      text-decoration: underline;
+    }
+    .stripe .help {
+        line-height: 30px;
+    }
+
     #summary-form fieldset {
         padding: 0;
         margin: 0 -15px;
