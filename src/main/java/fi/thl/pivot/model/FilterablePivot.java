@@ -51,7 +51,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     @Override
     public int getColumnNumber(int column) {
-        return delegate.getColumnNumber(columnIndices.indexOf(column));
+        // System.out.println("column " + column + " => " + columnIndices.indexOf(column));
+        // return delegate.getColumnNumber(columnIndices.indexOf(column));
+        return delegate.getColumnNumber(column);
     }
 
     @Override
@@ -120,7 +122,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
                     columnIncluded = true;
                     included.add(row);
                 }
-                
+
             }
             if (!columnIncluded) {
                 columnIndices.remove(column);
@@ -157,12 +159,12 @@ public class FilterablePivot extends AbstractPivotForwarder {
     private int includeLeafLevel(IncludeStrategy strategy, int level, int index) {
         int levelIndex = 0;
         int levelSize = strategy.get(level).size();
-        if(strategy.get(level).isTotalIncluded()) {
+        if (strategy.get(level).isTotalIncluded()) {
             levelSize -= 1;
         }
         for (@SuppressWarnings("unused")
         DimensionNode node : strategy.get(level)) {
-            if(++levelIndex <= levelSize && !shouldFilter(strategy, level, index)) {
+            if (++levelIndex <= levelSize && !shouldFilter(strategy, level, index)) {
                 strategy.add(index);
             }
             ++index;
@@ -178,18 +180,18 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
             for (int b = a + 1; b < level + 1; ++b) {
                 DimensionNode bNode = strategy.getNode(b, i);
-   
-                if(!aNode.getDimension().equals(bNode.getDimension())) {
+
+                if (!aNode.getDimension().equals(bNode.getDimension())) {
                     continue;
                 }
-                
+
                 DimensionNode bLastNode = strategy.get(b).getLastNode();
                 if (aLastNode == bLastNode
                         && aLastNode.getSurrogateId() == aNode.getSurrogateId()
                         && bLastNode.getSurrogateId() != bNode.getSurrogateId()) {
                     return true;
                 }
-                
+
                 if (!aNode.ancestorOf(bNode) && !bNode.ancestorOf(aNode)) {
                     return true;
                 }
@@ -278,7 +280,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     }
 
-    private class ColumnStrategy extends  IncludeStrategy {
+    private class ColumnStrategy extends IncludeStrategy {
 
         @Override
         public List<PivotLevel> getLevels() {
@@ -289,7 +291,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         public DimensionNode getNode(int level, int index) {
             return delegate.getColumnAt(level, index);
         }
-        
+
         @Override
         void add(int index) {
             columnIndices.add(index);
