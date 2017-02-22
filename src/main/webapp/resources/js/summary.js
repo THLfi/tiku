@@ -1584,7 +1584,6 @@ function selectChartType (e) {
         $.getJSON($(p).attr('data-ref'), function (data) {
           if (data.dataset.value.length === 0) {
             $(p).children('img').remove();
-            $(p).append(thl.messages["no-data"]);
             return;
           }
           var dataset = JSONstat(data).Dataset(0),
