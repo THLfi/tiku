@@ -37,6 +37,7 @@ public class Summary {
     private Label note;
     private String factTable;
     private String itemLanguage;
+    private String source;
 
     public void setScheme(Scheme scheme) {
         this.scheme = scheme;
@@ -146,6 +147,14 @@ public class Summary {
 
     public void setItemLanguage(String itemLanguage) {
         this.itemLanguage = itemLanguage;
+    }
+
+    public String getSource() {
+        return this.source;
+    }
+
+    public void setSource(String documentAsString) {
+        this.source = documentAsString;
     }
 
 }

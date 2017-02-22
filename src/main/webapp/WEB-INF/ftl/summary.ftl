@@ -310,6 +310,11 @@
       <div class="btn-group pull-right help" role="group">
           ${message("site.help")}
       </div>
+      [#if env == "deve" || env == "test"]
+      <div class="btn-group pull-right help" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source"> Näytä lähdekoodi </a>
+      </div>
+      [/#if]
       [#--<a href="#">pdf</a>--]
     </div>
     </div>

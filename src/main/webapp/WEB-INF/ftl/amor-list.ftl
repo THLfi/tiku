@@ -64,6 +64,9 @@
       <a href="${rc.contextPath}/${env}/fi/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}">${report.name!report.fact}</a></h2>
     <div class="info">
       <span class="updated">${message("cube.updated")}: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
+      [#if "SUMMARY"=report.type && (env = "test" || env = "deve")]
+      <a href="${rc.contextPath}/${env}/fi/${report.subject}/${report.hydra}/summary_${report.fact}/source">Näytä lähdekoodi</a></h2>
+      [/#if]
     </div>
   </div>
 

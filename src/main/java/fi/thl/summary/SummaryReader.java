@@ -1,12 +1,20 @@
 package fi.thl.summary;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -100,9 +108,20 @@ public class SummaryReader {
             parseFilters();
             parsePresentations();
 
+            summary.setSource(documentAsString());
         } catch (Exception e) {
             throw new SummaryException(e.getMessage(), e);
         }
+    }
+
+    private String documentAsString()
+            throws TransformerFactoryConfigurationError, TransformerConfigurationException, TransformerException {
+        StringWriter writer = new StringWriter();
+        StreamResult result= new StreamResult(writer);
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer = factory.newTransformer();
+        transformer.transform(new DOMSource(document), result);
+        return writer.toString();
     }
 
     private void assertOnlyOneDocumentRead() {

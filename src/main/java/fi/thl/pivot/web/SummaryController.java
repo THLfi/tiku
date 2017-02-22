@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
 import com.google.common.base.Predicate;
@@ -63,8 +64,10 @@ public class SummaryController extends AbstractController {
     private AccessTokens tokens;
 
     @ModelAttribute
-    public SummaryRequest getSummaryRequest(@PathVariable String env, @PathVariable String locale, @PathVariable String subject, @PathVariable String hydra,
-            @PathVariable String summaryId, @RequestParam(value = "run_id", required = false, defaultValue = "latest") String runId) {
+    public SummaryRequest getSummaryRequest(@PathVariable String env, @PathVariable String locale,
+            @PathVariable String subject, @PathVariable String hydra,
+            @PathVariable String summaryId,
+            @RequestParam(value = "run_id", required = false, defaultValue = "latest") String runId) {
         SummaryRequest sr = new SummaryRequest();
         sr.setEnv(env);
         sr.setLocale(locale);
@@ -78,7 +81,8 @@ public class SummaryController extends AbstractController {
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
     public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, @RequestParam String password) {
         Summary summary = amorDao.loadSummary(summaryRequest.getEnv(), summaryRequest.getCube());
-        login(summaryRequest.getEnv(), amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password);
+        login(summaryRequest.getEnv(),
+                amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password);
         return "redirect:/" + summaryRequest.getSummaryUrl();
     }
 
@@ -90,7 +94,8 @@ public class SummaryController extends AbstractController {
 
     @Monitored
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
-    public String displaySummary(@ModelAttribute SummaryRequest summaryRequest, WebRequest request, Model model) throws CubeNotFoundException {
+    public String displaySummary(@ModelAttribute SummaryRequest summaryRequest, WebRequest request, Model model)
+            throws CubeNotFoundException {
 
         LOG.info("ACCESS Rendering summary " + summaryRequest.getCube());
 
@@ -127,13 +132,31 @@ public class SummaryController extends AbstractController {
         model.addAttribute("isOpenData", source.isOpenData());
         model.addAttribute("factTable", summary.getFactTable());
         model.addAttribute("uiLanguage", summaryRequest.getLocale());
-        
 
-        model.addAttribute("reports", listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));
+        model.addAttribute("reports",
+                listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));
 
         LOG.debug("Sending user to template summary with summary " + summaryRequest.getCube());
 
         return "summary";
+    }
+
+    @Monitored
+    @RequestMapping(value = "/source", produces = "text/xml;charset=UTF-8", method = RequestMethod.GET)
+    public @ResponseBody String displaySource(@ModelAttribute SummaryRequest summaryRequest, WebRequest request,
+            Model model)
+                    throws CubeNotFoundException {
+
+        if ("deve".equals(summaryRequest.getEnv()) || "test".equals(summaryRequest.getEnv())) {
+            LOG.info("ACCESS Displaying source of summary " + summaryRequest.getCube());
+
+            // Load summary and hydra definitions for the current summary
+            // If the source does not exists then display 404 for the user
+            Summary summary = amorDao.loadSummary(summaryRequest.getEnv(), summaryRequest.getCube());
+            return summary.getSource();
+        } else {
+            return "";
+        }
     }
 
     private void addAccessTokenForSummaryIfCubeAccessIsDenied(HydraSource source, HydraSummary hSummary) {
@@ -154,10 +177,10 @@ public class SummaryController extends AbstractController {
         HydraSummary hSummary = new HydraSummary(summary, source);
         for (Selection s : hSummary.getSelections()) {
             HydraFilter f = (HydraFilter) s;
-            for(int i = 0; i < f.getFilterStages().size(); ++i) {
+            for (int i = 0; i < f.getFilterStages().size(); ++i) {
                 String[] parameters = request.getParameterValues(s.getId() + "_" + i);
                 if (null != parameters) {
-                   f.select(i, parameters);
+                    f.select(i, parameters);
                 } else {
                     f.select(i, null);
                 }
@@ -182,19 +205,22 @@ public class SummaryController extends AbstractController {
 
     private Collection<Report> listSummariesBasedOnTheSameSubject(String env, String summaryId, HydraSource source) {
         final Set<String> reports = Sets.newHashSet();
-        return Collections2.filter(amorDao.listReports(env, summaryId.substring(0, summaryId.indexOf(".")), source.getRunid()), new Predicate<Report>() {
+        return Collections2.filter(
+                amorDao.listReports(env, summaryId.substring(0, summaryId.indexOf(".")), source.getRunid()),
+                new Predicate<Report>() {
 
-            @Override
-            public boolean apply(Report report) {
-                String id = String.format("%s.%s.%s", report.getHydra(), report.getFact(), report.getType().toString());
-                if (reports.contains(id)) {
-                    return false;
-                } else {
-                    reports.add(id);
-                    return true;
-                }
-            }
-        });
+                    @Override
+                    public boolean apply(Report report) {
+                        String id = String.format("%s.%s.%s", report.getHydra(), report.getFact(),
+                                report.getType().toString());
+                        if (reports.contains(id)) {
+                            return false;
+                        } else {
+                            reports.add(id);
+                            return true;
+                        }
+                    }
+                });
     }
 
     private boolean isDrillParameter(Map.Entry<String, String[]> parameter) {

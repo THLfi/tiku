@@ -219,6 +219,7 @@
     }
     .stripe .help {
         line-height: 30px;
+        padding: 0px 12px;
     }
 
     #summary-form fieldset {
