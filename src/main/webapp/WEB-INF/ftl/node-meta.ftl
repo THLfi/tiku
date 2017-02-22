@@ -58,19 +58,7 @@
         </p>
       [/#if]
     [/#if]
-    <h2>${message("meta.technicalmetadata")}</h2>
-    <dl>
-      <dt>${message("meta.dimension")}</dt>
-      <dd>[@label node.dimension /] / [@label node.level /]</dd>
-      <dt>${message("meta.id")}<dt>
-      <dd>${node.id}</dd>
-      [#if node.code??]
-      <dt>${message("meta.code")}</dt>
-      <dd>${node.code}</dd>
-      [/#if]
-      <dt>${message("meta.uri")}</dt>
-      <dd>${node.reference}</dd>
-    </dl>
+    
 
 
     [#if node.children?size > 0]
@@ -81,6 +69,22 @@
         [/#list]
       </ul>
     [/#if]
+
+    <h2>${message("meta.technicalmetadata")}</h2>
+    <dl>
+      [#--
+        <dt>${message("meta.dimension")}</dt>
+        <dd>[@label node.dimension /] / [@label node.level /]</dd>
+        <dt>${message("meta.id")}<dt>
+        <dd>${node.id}</dd>
+      --]
+      [#if node.code??]
+      <dt>${message("meta.code")}</dt>
+      <dd>${node.code}</dd>
+      [/#if]
+      <dt>${message("meta.uri")}</dt>
+      <dd>${node.reference}</dd>
+    </dl>
 
   </div>
 
