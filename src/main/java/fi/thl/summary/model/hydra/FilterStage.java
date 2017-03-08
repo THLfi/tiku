@@ -68,6 +68,7 @@ public class FilterStage {
                 boolean isDescendent = false;
                 DimensionNode s = it.next();
                 for (DimensionNode p : parent.getSelected()) {
+
                     if (p.ancestorOf(s)) {
                         isDescendent = true;
                         break;

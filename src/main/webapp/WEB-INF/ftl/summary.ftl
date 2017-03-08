@@ -308,8 +308,12 @@
       </div>
       [/#if]
       <div class="btn-group pull-right help" role="group">
-          ${message("site.help")}
+        <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-question-sign"></span>
+          <span class="hide-xs">${message("site.help")}</span>
+        </a>
       </div>
+
       [#if env == "deve" || env == "test"]
       <div class="btn-group pull-right help" role="group">
           <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source"> Näytä lähdekoodi </a>
@@ -433,7 +437,7 @@
     labels[${n.surrogateId!"-1"}] = '[#if n?? && n.label??]${n.label.getValue(lang)?js_string} [#else]???[/#if]';
     dimensionData[${n.surrogateId}] = {
         hasChild: [#if n.children?size>0]true[#else]false[/#if],
-        dim: '${n.dimension.id}'
+        dim: [#if n.dimension??]'${n.dimension.id}'[#else]'n/a'[/#if]
     };
     [/#if]
     [/#list]

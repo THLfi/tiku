@@ -15,6 +15,8 @@ public class DimensionLevel {
     private final Map<String, DimensionNode> nodeMap = Maps.newHashMap();
     private final List<DimensionNode> nodes = Lists.newArrayList();
 
+    public static DimensionLevel SENTINEL = new DimensionLevel("nil",null,Integer.MAX_VALUE);
+    
     private final Dimension dimension;
     private DimensionLevel parent;
     private DimensionLevel child;
