@@ -65,17 +65,27 @@
     </div>
     [#if metaLink??]
     <div class="btn-group" role="group" aria-label="...">
-      <a class="btn btn-default" target="_blank" href="${metaLink.getValue(lang)}">${message("summary.more")}</a>
+      <a class="btn btn-default" target="_blank" href="${metaLink.getValue(lang)}">
+        <span class="glyphicon glyphicon-info-sign"></span>
+        <span class="hide-xs">${message("summary.more")}</span>
+      </a>
     </div>
     [/#if]
 
     <div class="btn-group" role="group" aria-label="...">
-        <a href="#" type="submit" class="btn btn-default">${message("site.help")}</a>
+        <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-question-sign"></span>
+          <span class="hide-xs">${message("site.help")}</span>
+        </a>
     </div>
+
     [#if requireLogin]
      <div class="btn-group dropdown" role="group" aria-label="...">
         <form class="form" method="POST" action="${target}/logout">
-            <button type="submit" class="btn btn-default">${message("site.logout")}</button>
+            <button type="submit" class="btn btn-default">
+              <span class="glyphicon glyphicon-log-out"></span>
+              <span class="hide-xs">${message("site.logout")}</span>
+            </button>
         </form>
     </div>
     [/#if]

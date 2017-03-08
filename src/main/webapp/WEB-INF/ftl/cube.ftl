@@ -66,6 +66,12 @@
     <div class="pivot-body">
     <div class="pivot-sidebar">
 
+         <button class="browser-toggle btn btn-default">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="sr-only">${message("cube.options")}</span>
+        </button>
          <ul class="tree-browser">
 
          </ul>

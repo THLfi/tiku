@@ -20,6 +20,10 @@
     }
 
     var treeBrowser = $('.tree-browser');
+    $('.browser-toggle').click(function () {
+      treeBrowser.toggleClass('active');
+    });
+
     var traverseDimensionTree = function (dimension, node) {
       var children = $('<ul>').addClass('tree');
       for (var n = 0; n < node.children.length; ++n) {
@@ -67,6 +71,8 @@
         var t = $(this);
         t.find('span').toggleClass('caret-right');
         t.siblings('ul').toggle();
+        t.closest('li').siblings().toggle(200);
+
       });
     $('.tree>li>span')
       .draggable({
@@ -78,6 +84,7 @@
             .css('top', '-20px')
             .css('z-index', '1000');
           $('.pivot-content').toggleClass('drop-active', true);
+          treeBrowser.removeClass('active');
         },
         stop: function () {
           $('.pivot-content').toggleClass('drop-active', false);

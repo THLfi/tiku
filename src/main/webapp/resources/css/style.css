@@ -392,3 +392,111 @@ ul.tree-browser {
 		padding-left: 30px;
 	}
 }
+
+
+.browser-toggle {
+	display: none;
+}
+
+@media screen and (max-width: 768px) {
+	h1 {
+		font-size: 12pt;
+		padding: 0;
+		margin: 0 15px;
+	}
+	.environment {
+		font-size: 6pt;
+		top: 1em;
+	}
+	.logo {
+		display: none;
+	}
+	.pivot-header, .toolbar-control, .pivot-body, .pivot-sidebar, .pivot-content, .pivot-footer {
+		position: unset;
+		height: auto;
+		top: auto;
+		left: auto;
+		right: auto;
+		bottom: auto;
+		padding: 0;
+	}
+	.toolbar-control > div {
+		margin-left: 0;
+		padding-left: 0;
+	}
+	.pivot-sidebar {
+		width: 100%;
+		padding: 6px 10px;
+		
+	}
+	.pivot-content {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		overflow: scroll;
+	}
+	.pivot-content .table{
+		margin: 0 10px;
+	}
+	.pivot-footer {
+		font-size: 8pt;
+		padding: 6px 15px;
+	}
+	.tree-browser {
+		width: 100%;
+	}
+	.tree {
+		width: 100%;
+		padding: 0;
+		text-indent: 0;
+	}
+	.tree .tree {
+		position: absolute;
+		margin: 0;
+		margin-top: .5em;
+		border: 1px solid #ccc;
+		background: #fff;
+		width: 100%;
+		padding: 0;
+	}
+	.tree-browser li {
+		border-bottom: 1px solid #ccc;
+		padding: 6px 12px;
+		width: 100%;
+	}
+
+	.tree li:hover {
+		background: #ddd;
+	}
+	.icon-bar {
+		display: block;
+		width: 22.5px;
+		height: 2px;
+		border-radius: 1px;
+		background: #563d7c;
+	}
+	.icon-bar + .icon-bar {
+		margin-top: 4px;
+	}
+	.browser-toggle {
+		display: block;
+		width: 32px;
+		height: 28px;
+		padding: 4px 4px;
+	}
+	.tree-browser {
+		display:none;
+	}
+	.tree-browser.active {
+		display: block;
+		background: #fff;
+		border: 1px solid #ddd;
+		position: absolute;	
+		z-index: 1000;
+		
+	}
+	.hide-xs {
+		display: none;
+	}
+	
+}
