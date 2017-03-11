@@ -163,7 +163,7 @@ public class DimensionTreeExporter {
         for(char c : value.toCharArray()) {
             switch(c) {
             case '"':
-                writer.print('"');
+                writer.print('\\');
                 writer.print('"');
                 break;
             default:

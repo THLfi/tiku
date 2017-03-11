@@ -75,12 +75,12 @@ public class JsonStatExporter {
             sizes.add(4);
         }
 
-        writer.println("\t\"dataset\": {");
-        writer.println("\t\t\"version\": \"2.0\",");
-        writer.println("\t\t\"class\": \"dataset\",");
-        writer.println(String.format("\t\t\"label\": \"%s\",", escape(label.getValue(ThreadRole.getLanguage()))));
+        writer.println("\"dataset\": {");
+        writer.println("\"version\": \"2.0\",");
+        writer.println("\"class\": \"dataset\",");
+        writer.println(String.format("\"label\": \"%s\",", escape(label.getValue(ThreadRole.getLanguage()))));
 
-        writer.println("\t\t\"dimension\": {");
+        writer.println("\"dimension\": {");
 
         exportDimensionIdentifiers(writer, identifiers);
         exportDimensionSizes(writer, sizes);
@@ -90,11 +90,11 @@ public class JsonStatExporter {
         if (showValueTypes) {
             writer.println(",\"tiku_vtype\": { \"category\": { \"index\": { \"v\": 0, \"ci_lower\": 1, \"ci_upper\": 2, \"n\": 3 } } }");
         }
-        writer.print("\n\t\t}");
+        writer.print("\n}");
 
         exportValues(writer, pivot, showValueTypes);
 
-        writer.println("\t}");
+        writer.println("}");
     }
 
     private String findUniqueId(List<String> identifiers, PivotLevel level) {
@@ -119,10 +119,10 @@ public class JsonStatExporter {
             String value = cell.getValue();
             if (value != null) {
                 if (count > 0) {
-                    writer.write(",\n\t\t\t");
+                    writer.write(",\n");
                 } else {
-                    writer.println(",\n\t\t\"value\": {");
-                    writer.print("\t\t\t");
+                    writer.println(",\n\"value\": {");
+                    writer.print("");
                 }
                 printValue(writer, index, value);
                 if (showValueTypes) {
@@ -139,9 +139,9 @@ public class JsonStatExporter {
             }
         }
         if (count > 0) {
-            writer.println("\n\t\t}");
+            writer.println("\n}");
         } else {
-            writer.println(",\n\t\t\"value\": []");
+            writer.println(",\n\"value\": []");
         }
     }
 
@@ -152,7 +152,7 @@ public class JsonStatExporter {
 //        if(NUMBER.matcher(value).matches()) {
 //            writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
 //        } else {
-            writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\"\"")));
+            writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\\\"")));
 //        }
     }
 
@@ -161,60 +161,60 @@ public class JsonStatExporter {
             if (level.size() == 0) {
                 continue;
             }
-            writer.println(String.format(",\n\t\t\t%s : {", identifiers.get(index++)));
-            writer.println("\t\t\t\t\"category\": {");
-            writer.print("\t\t\t\t\t\"index\": {");
+            writer.println(String.format(",\n%s : {", identifiers.get(index++)));
+            writer.println("\"category\": {");
+            writer.print("\"index\": {");
             List<String> nodes = new ArrayList<>();
             int i = 0;
             if (isSet(model, "surrogate")) {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\t\t\t\t\t\t\"%s\": %d", node.getSurrogateId(), i++));
+                    nodes.add(String.format("\n\"%s\": %d", node.getSurrogateId(), i++));
                 }
             } else {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\t\t\t\t\t\t\"%s\": %d", escape(node.getId()), i++));
+                    nodes.add(String.format("\n\"%s\": %d", escape(node.getId()), i++));
                 }
             }
-            writer.print("\t\t\t\t\t");
+            writer.print("");
             writer.println(Joiner.on(",").join(nodes));
-            writer.println("\t\t\t\t\t},");
+            writer.println("},");
 
-            writer.print("\t\t\t\t\t\"label\": {");
+            writer.print("\"label\": {");
             nodes = new ArrayList<>();
             i = 0;
             if (isSet(model, "surrogate")) {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\t\t\t\t\t\t\"%s\": \"%s\"", node.getSurrogateId(), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
+                    nodes.add(String.format("\n\"%s\": \"%s\"", node.getSurrogateId(), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
 
                 }
             } else {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\t\t\t\t\t\t\"%s\": \"%s\"", escape(node.getId()), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
+                    nodes.add(String.format("\n\"%s\": \"%s\"", escape(node.getId()), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
                 }
             }
 
-            writer.print("\t\t\t\t\t");
+            writer.print("");
             writer.println(Joiner.on(",").join(nodes));
-            writer.println("\t\t\t\t\t}");
+            writer.println("}");
 
-            writer.print("\t\t\t\t}\n\t\t\t}");
+            writer.print("}\n}");
         }
         return index;
     }
 
     private void exportDimensionSizes(PrintWriter writer, List<Integer> sizes) {
         writer.println(",");
-        writer.println("\t\t\t\"size\": [");
-        writer.print("\t\t\t\t");
+        writer.println("\"size\": [");
+        writer.print("");
         writer.println(Joiner.on(",").join(sizes));
-        writer.print("\t\t\t]");
+        writer.print("]");
     }
 
     private void exportDimensionIdentifiers(PrintWriter writer, List<String> identifiers) {
-        writer.println("\t\t\t\"id\": [");
-        writer.print("\t\t\t\t");
+        writer.println("\"id\": [");
+        writer.print("");
         writer.println(Joiner.on(",").join(identifiers));
-        writer.print("\t\t\t]");
+        writer.print("]");
     }
 
     private String quote(String value) {
@@ -225,7 +225,7 @@ public class JsonStatExporter {
         if (null == value) {
             return "";
         }
-        return value.replaceAll("\"", "\\\"");
+        return  value.replaceAll("\\\"", "\\\\\\\"");
     }
 
     private void close(PrintWriter writer) {
