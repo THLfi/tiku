@@ -36,15 +36,13 @@
         display: none;
     }
 
-
-
     .stripe {
         background-color: #2a6496;
         position: absolute;
         height: 60px;
         width: 100%;
         z-index: 1;
-        padding: 10px 45px;
+        padding: 10px 10px;
     }
     .stripe > div > .btn-group > a {
     	color: #fff;
