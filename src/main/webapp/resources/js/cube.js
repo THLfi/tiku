@@ -21,7 +21,10 @@
 
     var treeBrowser = $('.tree-browser');
     $('.browser-toggle').click(function () {
+      treeBrowser.find('li, .tree').removeClass('open closed');
+      treeBrowser.find('.caret').addClass('caret-right');
       treeBrowser.toggleClass('active');
+
     });
 
     var traverseDimensionTree = function (dimension, node) {
@@ -35,7 +38,7 @@
               .append(node.children[n].label)
           );
         if (node.children[n].children.length > 0) {
-          li.find('span').append($('<span>').addClass('caret caret-right'));
+          li.find('span').prepend($('<span>').addClass('caret caret-right'));
           li.append(traverseDimensionTree(dimension, node.children[n]));
         }
         children.append(li);
@@ -59,20 +62,20 @@
       var labelSpan = $('<span>').html(v.label);
       var subtree = $('<li>').append(labelSpan);
       if (v.children.length > 0) {
-        labelSpan.append($('<span>').addClass('caret caret-right'));
+        labelSpan.prepend($('<span>').addClass('caret caret-right'));
         subtree.append(traverseDimensionTree(v.id, v));
       }
       treeBrowser.append(subtree);
     });
 
-    $('.tree').hide();
     $('.tree-browser>li>span,.tree>li>span')
       .click(function () {
         var t = $(this);
-        t.find('span').toggleClass('caret-right');
-        t.siblings('ul').toggle();
-        t.closest('li').siblings().toggle(200);
-
+        var span = t.find('span').toggleClass('caret-right');
+        if (span.size() > 0) {
+          t.siblings('ul').toggleClass('open');
+          t.closest('li').siblings().toggleClass('closed');
+        }
       });
     $('.tree>li>span')
       .draggable({

@@ -28,7 +28,7 @@ public class CubeMetaController extends AbstractCubeController {
     private static final Logger LOG = Logger.getLogger(CubeController.class);
 
     @Monitored
-    @RequestMapping(value = "/{id}", produces = "application/javascript;charset=UTF-8", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
     public String displayMetaData(@PathVariable String cube, @PathVariable String id, @ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, HttpServletResponse resp, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
 
@@ -45,7 +45,7 @@ public class CubeMetaController extends AbstractCubeController {
     public String displayMetaDataJson(@PathVariable String cube, @PathVariable String id, @ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, HttpServletResponse resp, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
 
-        String contentType = "application/javascript";
+        String contentType = "application/javascript;charset=UTF-8";
         String view = "node-meta-json";
        
         

@@ -1,6 +1,5 @@
 [#ftl]
 <table class="cube table table-hover table-condensed table-bordered">
-
 [#list pivot.columns as ch]
    <tr>
         [#if ch_index == 0]
@@ -32,6 +31,7 @@
         [/#list]
     </tr>
 [/#list]
+
 <tr>
     [#list pivot.rows as rh]
         <th>

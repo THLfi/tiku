@@ -274,6 +274,9 @@ ul.tree-browser {
 	height: 0;
 	width: 0;
 }
+.tree-browser .caret, .tree-browser .caret-right {
+		margin-right: 6px;
+}
 
 .drop-active .ui-droppable, .drop-active .ui-droppable>a, .drop-active .ui-droppable .btn
 	{
@@ -446,6 +449,13 @@ ul.tree-browser {
 	display: none;
 }
 
+.tree-browser .tree {
+	display: none;
+}
+.tree-browser .tree.open {
+	display: list-item;
+}
+
 @media screen and (max-width: 768px) {
 	h1 {
 		font-size: 12pt;
@@ -555,7 +565,14 @@ ul.tree-browser {
 		height: 28px;
 		padding: 4px 4px;
 	}
-	.tree-browser {
+	.tree-browser,
+	.hide-xs {
+		display: none;
+	}
+	.tree-browser .tree.open {
+		display: list-item;
+	}
+	.tree-browser .closed {
 		display: none;
 	}
 	.tree-browser.active {
@@ -564,8 +581,5 @@ ul.tree-browser {
 		border: 1px solid #ddd;
 		position: absolute;
 		z-index: 1000;
-	}
-	.hide-xs {
-		display: none;
 	}
 }
