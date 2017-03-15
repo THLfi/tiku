@@ -25,7 +25,7 @@ public class JsonStatExporter {
 
     private static final Logger LOG = Logger.getLogger(JsonStatExporter.class);
     private static final Pattern NUMBER = Pattern.compile("^-?\\d+([,\\.]\\d+)?$");
-    
+
     public void export(Model model, OutputStream out) throws IOException {
         PrintWriter writer = null;
         Map<String, Object> params = model.asMap();
@@ -88,7 +88,8 @@ public class JsonStatExporter {
         i = exportLevels(writer, model, identifiers, i, pivot.getRows());
         i = exportLevels(writer, model, identifiers, i, pivot.getColumns());
         if (showValueTypes) {
-            writer.println(",\"tiku_vtype\": { \"category\": { \"index\": { \"v\": 0, \"ci_lower\": 1, \"ci_upper\": 2, \"n\": 3 } } }");
+            writer.println(
+                    ",\"tiku_vtype\": { \"category\": { \"index\": { \"v\": 0, \"ci_lower\": 1, \"ci_upper\": 2, \"n\": 3 } } }");
         }
         writer.print("\n}");
 
@@ -126,14 +127,21 @@ public class JsonStatExporter {
                 }
                 printValue(writer, index, value);
                 if (showValueTypes) {
-                    writer.print(",");
-                    printValue(writer, index + 1, cell.getConfidenceLowerLimit());
 
-                    writer.print(",");
-                    printValue(writer, index + 2, cell.getConfidenceUpperLimit());
+                    if (null != cell.getConfidenceLowerLimit()) {
+                        writer.print(",");
+                        printValue(writer, index + 1, cell.getConfidenceLowerLimit());
+                    }
 
-                    writer.print(",");
-                    printValue(writer, index + 3, cell.getSampleSize());
+                    if (null != cell.getConfidenceUpperLimit()) {
+                        writer.print(",");
+                        printValue(writer, index + 2, cell.getConfidenceUpperLimit());
+                    }
+
+                    if (null != cell.getSampleSize()) {
+                        writer.print(",");
+                        printValue(writer, index + 3, cell.getSampleSize());
+                    }
                 }
                 ++count;
             }
@@ -146,17 +154,18 @@ public class JsonStatExporter {
     }
 
     private void printValue(PrintWriter writer, int i, String value) {
-        // All values are handled as text to preserve accuracy of 
-        // values e.g. if handled as numbers then 0,0 would be reduced 0 
-        
-//        if(NUMBER.matcher(value).matches()) {
-//            writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
-//        } else {
-            writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\\\"")));
-//        }
+        // All values are handled as text to preserve accuracy of
+        // values e.g. if handled as numbers then 0,0 would be reduced 0
+
+        // if(NUMBER.matcher(value).matches()) {
+        // writer.write(String.format("\"%d\": %s", i, value.replace(",", ".")));
+        // } else {
+        writer.write(String.format("\"%d\": \"%s\"", i, value.replace("\"", "\\\"")));
+        // }
     }
 
-    private int exportLevels(PrintWriter writer, Map<String, Object> model, List<String> identifiers, int index, List<PivotLevel> levels) {
+    private int exportLevels(PrintWriter writer, Map<String, Object> model, List<String> identifiers, int index,
+            List<PivotLevel> levels) {
         for (PivotLevel level : levels) {
             if (level.size() == 0) {
                 continue;
@@ -184,12 +193,14 @@ public class JsonStatExporter {
             i = 0;
             if (isSet(model, "surrogate")) {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\"%s\": \"%s\"", node.getSurrogateId(), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
+                    nodes.add(String.format("\n\"%s\": \"%s\"", node.getSurrogateId(),
+                            escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
 
                 }
             } else {
                 for (DimensionNode node : level.getNodes()) {
-                    nodes.add(String.format("\n\"%s\": \"%s\"", escape(node.getId()), escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
+                    nodes.add(String.format("\n\"%s\": \"%s\"", escape(node.getId()),
+                            escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
                 }
             }
 
@@ -225,7 +236,7 @@ public class JsonStatExporter {
         if (null == value) {
             return "";
         }
-        return  value.replaceAll("\\\"", "\\\\\\\"");
+        return value.replaceAll("\\\"", "\\\\\\\"");
     }
 
     private void close(PrintWriter writer) {
