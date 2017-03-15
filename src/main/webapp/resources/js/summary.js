@@ -1518,11 +1518,13 @@ function selectChartType (e) {
             return false;
           }
           return true;
-        });
+        })
+        .removeClass('just-added');
         if (!isAdded) {
           selected.append(option);
-          selected.scrollTop(option.scrollTop());
         }
+        option.addClass('just-added');
+        selected.scrollTop(selected.scrollTop() - selected.offset().top + option.offset().top - selected.height() / 2);
       });
 
     /* create row or column subset http parameter value and reload cube */
