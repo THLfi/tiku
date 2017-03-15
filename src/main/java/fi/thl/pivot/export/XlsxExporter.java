@@ -28,6 +28,8 @@ import fi.thl.pivot.model.PivotCell;
 
 public class XlsxExporter {
 
+    private static final short FONT_SIZE = (short) 10;
+    private static final String FONT_FAMILY = "Arial";
     private String language = "fi";
     private MessageSource messageSource;
     private Locale locale;
@@ -44,12 +46,21 @@ public class XlsxExporter {
     }
 
     public void export(Model model, OutputStream out) throws IOException {
+        try {
+            doExport(model, out);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        
+    }
+    
+    private void doExport(Model model, OutputStream out) throws IOException {
+        
         Map<String, ?> params = model.asMap();
         Workbook wb = new XSSFWorkbook();
 
-        Font valueFont = wb.createFont();
-        valueFont.setBold(false);
-        valueFont.setFontName("Arial");
+        Font valueFont = createValueFont(wb);
 
         this.defaultStyle = wb.createCellStyle();
         defaultStyle.setFont(valueFont);
@@ -60,13 +71,8 @@ public class XlsxExporter {
         numberStyle.setFont(valueFont);
         numberStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
 
-        this.headerStyle = wb.createCellStyle();
-        Font headerFont = wb.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontName("Arial");
-        headerStyle.setFont(headerFont);
-        headerStyle.setWrapText(true);
-        headerStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        Font headerFont = createHeaderFont(wb);
+        createHeaderStyle(wb, headerFont);
 
         this.headerLastRowStyle = wb.createCellStyle();
         headerLastRowStyle.setFont(headerFont);
@@ -84,13 +90,40 @@ public class XlsxExporter {
         rowNumber = createColumnHeaders(pivot, sheet, showCodes);
         rowNumber = printData(sheet, pivot, rowNumber, showCodes);
         mergeRowHeaders(sheet, pivot);
-        rowNumber = printFilters(params, sheet, rowNumber);
-        printCopyrightNotice(sheet, rowNumber, params);
+        rowNumber = printFilters(params, sheet, rowNumber, pivot.getColumnCount() + pivot.getColumns().size());
+        printCopyrightNotice(sheet, rowNumber, params,  pivot.getColumnCount() + pivot.getColumns().size());
         printCurrentMeasureIfOnlyOneMeasureShown(params, sheet, pivot);
         mergeTopLeftCorner(sheet, pivot);
-
+        
+        autosizeColumns(sheet, pivot);
+        sheet.createFreezePane(pivot.getRows().size(), pivot.getColumns().size());
+        
         wb.write(out);
         wb.close();
+    }
+
+
+    private Font createValueFont(Workbook wb) {
+        Font valueFont = wb.createFont();
+        valueFont.setBold(false);
+        valueFont.setFontName(FONT_FAMILY);
+        valueFont.setFontHeightInPoints(FONT_SIZE);
+        return valueFont;
+    }
+
+    private void createHeaderStyle(Workbook wb, Font headerFont) {
+        this.headerStyle = wb.createCellStyle();
+        headerStyle.setFont(headerFont);
+        headerStyle.setWrapText(true);
+        headerStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+    }
+
+    private Font createHeaderFont(Workbook wb) {
+        Font headerFont = wb.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontName(FONT_FAMILY);
+        headerFont.setFontHeightInPoints(FONT_SIZE);
+        return headerFont;
     }
 
     private void mergeTopLeftCorner(Sheet sheet, Pivot pivot) {
@@ -129,6 +162,14 @@ public class XlsxExporter {
         return rowNumber;
     }
 
+    
+
+    private void autosizeColumns(Sheet sheet, Pivot pivot) {
+        for(int i = 0; i < pivot.getColumns().size() + pivot.getColumnCount(); ++i) {
+            sheet.autoSizeColumn(i, true);
+        }
+    }
+    
     private void mergeRowHeaders(Sheet sheet, Pivot pivot) {
         int rowOffset = pivot.getColumns().size();
         for (int c = 0; c < pivot.getRows().size(); ++c) {
@@ -154,30 +195,34 @@ public class XlsxExporter {
         return messageSource.getMessage(msgKey, null, defaultValue, locale);
     }
 
-    private void printCopyrightNotice(Sheet sheet, int initialRowNumber, Map<String, ?> params) {
+    private void printCopyrightNotice(Sheet sheet, int initialRowNumber, Map<String, ?> params, int columns) {
         int rowNumber = initialRowNumber + 1;
         Boolean isOpenData = (Boolean) params.get("isOpenData");
         Cell c1 = sheet.createRow(++rowNumber).createCell(0);
         c1.setCellValue(
                 String.format("%1$s %2$te.%2$tm.%2$tY", message("cube.updated", "date"), params.get("updated")));
         c1.setCellStyle(defaultStyle);
-
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
+        
         Cell c2 = sheet.createRow(++rowNumber).createCell(0);
         c2.setCellValue(
                 String.format("(c) %s %d %s", message("site.company", "THL"), Calendar.getInstance().get(Calendar.YEAR),
                         isOpenData != null && isOpenData ? ", " + message("site.license.dd", "CC BY 4.0") : ""));
         c2.setCellStyle(defaultStyle);
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
+        
 
     }
 
     @SuppressWarnings("unchecked")
-    private int printFilters(Map<String, ?> params, Sheet sheet, int initialRowNumber) {
+    private int printFilters(Map<String, ?> params, Sheet sheet, int initialRowNumber, int columns) {
         int rowNumber = initialRowNumber + 2;
         Row r = sheet.createRow(rowNumber);
         Cell c1 = r.createCell(0);
         c1.setCellValue(message("cube.filter.selected", ""));
         c1.setCellStyle(defaultStyle);
-
+        sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
+        
         for (Dimension d : (Collection<Dimension>) params.get("dimensions")) {
             for (DimensionNode f : (Collection<DimensionNode>) params.get("filters")) {
                 if (f.getDimension().getId().equals(d.getId())) {
@@ -189,6 +234,8 @@ public class XlsxExporter {
                     Cell cell2 = filterRow.createCell(1);
                     cell2.setCellStyle(defaultStyle);
                     cell2.setCellValue(f.getLabel().getValue(language));
+                    sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 1, columns - 1));
+                    
                 }
             }
         }
@@ -272,6 +319,7 @@ public class XlsxExporter {
                     } else {
                         cell.setCellStyle(headerStyle);
                     }
+                  
                     mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset,
                             lastColumnWithSameHeader + columnOffset);
                     firstColumnWithSameHeader = column;
