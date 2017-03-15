@@ -67,6 +67,15 @@ h1 {
 .options.form-control {
 	height: 100px;
 	overflow-y: auto;
+	position: relative;
+}
+
+.options .just-added {
+	background: rgba(102, 175, 233, 0.133);
+	border: 1px solid #ccc;
+	border-left: 0;
+	border-right: 0;
+	padding: 15px inherit;
 }
 
 .options div:hover {
