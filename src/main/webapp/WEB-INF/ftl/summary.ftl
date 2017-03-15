@@ -300,6 +300,16 @@
     <div class="stripe">
       <div>
 
+        <div class="btn-group pull-left filter-toggle">
+          <button class="btn btn-default">
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="sr-only">${message("cube.options")}</span>
+         </button>
+       </div>
+
+
       [#if requireLogin]
       <div class="btn-group pull-right" role="group" aria-label="${message("site.logout")}">
           <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
@@ -327,6 +337,7 @@
         <div class="summary-content">
 
             <div class="col-sm-3">
+
                 [@summary_filter_form /]
             </div>
 

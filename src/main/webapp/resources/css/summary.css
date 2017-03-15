@@ -36,19 +36,7 @@
         display: none;
     }
 
-    @media (min-width: 480px) {
-      header h1 {
-        font-size: 18px;
-        width: calc(100% - 150px);
-      }
-      header img { display: block; }
-    }
-    @media (min-width: 768px) {
-      header h1 { font-size: 24px;}
-    }
-    @media (min-width: 992px) {
-      header h1 { font-size: 36px;}
-    }
+
 
     .stripe {
         background-color: #2a6496;
@@ -73,13 +61,7 @@
     .stripe .btn-group > .btn .caret {
     	border-top-color: #fff;
     }
-    @media screen and (min-width: 768px) {
 
-    	.stripe > div {
-    		margin-left: 16.7%;
-    		padding-left: 30px;
-    	}
-    }
 
     footer .row {
         padding: 15px 0;
@@ -238,30 +220,6 @@
         font-weight: bold;
     }
 
-    @media (min-width: 768px) {
-        .summary-content {
-            display: table;
-            table-layout:fixed;
-            width: 100%;
-        }
-        .summary-content .col-sm-9 {
-            display: table-cell;
-            float: none;
-        }
-
-        .table-responsive {
-          width: 100%;
-          margin-bottom: 15px;
-          overflow-x: scroll;
-          overflow-y: hidden;
-          border: 1px solid #ddd;
-        }
-        .summary-content .col-sm-3 {
-            background: #efefef;
-            display: table-cell;
-            float: none;
-        }
-    }
 
     ul.legend {
         clear: both;
@@ -340,6 +298,78 @@
  .search-group .form-control {
    padding-right: 24px;
  }
+
+ @media (min-width: 480px) {
+   header h1 {
+     font-size: 18px;
+     width: calc(100% - 150px);
+   }
+   header img { display: block; }
+ }
+ @media (max-width: 767px) {
+   form {
+     padding-top: 15px;
+   }
+   .summary-content .col-sm-3 {
+     background: #efefef;
+     border-bottom: 1px solid #808080;
+     display:none;
+   }
+   .summary-content .col-sm-3.active {
+     display: block;
+   }
+   .summary-content .col-sm-3 hr {
+     display: none;
+   }
+   .summary-content .col-sm-9 {
+     padding-top: 15px;
+   }
+   .filter-toggle {
+     display: block;
+   }
+   .filter-toggle .icon-bar {
+     background: #fff;
+   }
+ }
+ @media (min-width: 768px) {
+   .filter-toggle {
+     display:none;
+   }
+   header h1 { font-size: 24px;}
+   .summary-content {
+       display: table;
+       table-layout:fixed;
+       width: 100%;
+   }
+   .summary-content .col-sm-9 {
+       display: table-cell;
+       float: none;
+   }
+
+   .table-responsive {
+     width: 100%;
+     margin-bottom: 15px;
+     overflow-x: scroll;
+     overflow-y: hidden;
+     border: 1px solid #ddd;
+   }
+   .summary-content .col-sm-3 {
+       background: #efefef;
+       display: table-cell;
+       float: none;
+   }
+}
+@media screen and (min-width: 768px) {
+
+   .stripe > div {
+     margin-left: 16.7%;
+     padding-left: 30px;
+   }
+ }
+@media (min-width: 992px) {
+   header h1 { font-size: 36px;}
+ }
+
 
  @media print {
 

@@ -1546,6 +1546,9 @@ function selectChartType (e) {
   }
 
   $(document).ready(function () {
+    $('.filter-toggle .btn').click(function () {
+      $('.col-sm-3').toggleClass('active');
+    });
     $('select[multiple]').each(function () {
       var btn = $('<a>')
         .addClass('btn btn-default')
