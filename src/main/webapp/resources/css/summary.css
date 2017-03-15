@@ -300,7 +300,7 @@
  @media (min-width: 480px) {
    header h1 {
      font-size: 18px;
-     width: calc(100% - 150px);
+     width: 100%;
    }
    header img { display: block; }
  }
@@ -333,7 +333,10 @@
    .filter-toggle {
      display:none;
    }
-   header h1 { font-size: 24px;}
+   header h1 {
+     font-size: 24px;
+     width: calc(100% - 150px);
+   }
    .summary-content {
        display: table;
        table-layout:fixed;
@@ -364,10 +367,6 @@
      padding-left: 30px;
    }
  }
-@media (min-width: 992px) {
-   header h1 { font-size: 36px;}
- }
-
 
  @media print {
 
