@@ -19,7 +19,7 @@
 	<aop:aspectj-autoproxy />
  -->
 	<util:properties id="queries" location="classpath:sql.xml" />
-
+	<util:properties id="build-version" location="classpath:build.properties" />
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">

@@ -659,6 +659,7 @@ function selectChartType (e) {
                 .selectAll('g')
                 .data(opt.data);
 
+
               sg.enter()
                 .append('rect')
                 .attr('class', 'series series' + series)
@@ -720,57 +721,13 @@ function selectChartType (e) {
           'linechart': function (svg) {
             for (var series = 0; series < opt.series.length; ++series) {
               var datum = opt.data
-              // Plot lines
-              svg
-                .append('path')
-                .attr('class', 'series series' + series)
-                .attr('stroke', series < colors.length ? colors[series] : '#000')
-                .attr('stroke-width', 2)
-                .attr('fill', 'none')
-                .datum(datum)
-                .attr('d', d3.svg.line()
-                  .y(offsetColumn(series))
-                  .defined(function(d, i) { return null != opt.callback(series, i); })
-                  .x(function (d, i) {
-                    return ordinalScale(d) + spacing / 2;
-                  })
-              )
-                .append('svg:title')
-                .text(function (d, i) {
-                  return labels[opt.dataset.Dimension(1).id[series]];
-                });
-
-              // Plot tick marks
-              svg
-                .append('g')
-                .selectAll('g')
-                .data(datum)
-                .enter()
-                .append('circle')
-                .attr('class', 'series series' + series)
-                .attr('fill', colors[series])
-                .attr('stroke', '#fff')
-                .attr('r', function(d, i) {
-                  return opt.callback(series, i) == null ? 0 : 4;
-                })
-                .attr('stroke-width', function(d, i) {
-                  return opt.callback(series, i) == null ? 0 : 4;
-                })
-                .attr('cx', function (d, i) {
-                  return ordinalScale(d) + spacing / 2;
-                })
-                .attr('cy', offsetColumn(series))
-                .append('svg:title')
-                .text(function (d, i) {
-                  return opt.callback(series, i);
-                });
 
               // plot ci
               if (opt.showCi) {
                 var area =
                   d3.svg.area()
                     .x(function (d, i) {
-                      return ordinalScale(datum[i]) + spacing / 2;
+                      return ordinalScale(datum[i]) + spacing / 2.0 - 3;
                     })
                     .y0(function (d, i) {
                       return scaleValue(opt.callback(series, i, 1));
@@ -785,7 +742,82 @@ function selectChartType (e) {
                   .attr('fill-opacity', 0.3)
                   .attr('d', area);
               }
-            }
+
+              // Plot lines
+              svg
+                .append('path')
+                .attr('class', 'series series' + series)
+                .attr('stroke', series < colors.length ? colors[series] : '#000')
+                .attr('stroke-width', 2)
+                .attr('fill', 'none')
+                .datum(datum)
+                .attr('d', d3.svg.line()
+                  .y(offsetColumn(series))
+                  .defined(function(d, i) { return null != opt.callback(series, i); })
+                  .x(function (d, i) {
+                    return ordinalScale(d) + spacing / 2.0 - 3;
+                  })
+              )
+                .append('svg:title')
+                .text(function (d, i) {
+                  return labels[opt.dataset.Dimension(1).id[series]];
+                });
+
+              // Plot tick marks
+              var tooltip = d3.select('body')
+                .append('div')
+                .style('position', 'absolute')
+                .style('z-index', '10')
+                .style('visibility', 'hidden')
+                .style('background', '#fff')
+                .style('border', '2px solid #808080')
+                .style('padding','6px 12px')
+                .style('border-radius','4px');
+              var color =  colors[series];
+              svg
+                .append('g')
+                .selectAll('g')
+                .data(datum)
+                .enter()
+                .append('circle')
+                .attr('class', 'series series' + series)
+                .attr('fill', '#fff')
+                .attr('stroke', colors[series])
+                .attr('r', function(d, i) {
+                  return opt.callback(series, i) == null ? 0 : 4;
+                })
+                .attr('stroke-width', function(d, i) {
+                  return opt.callback(series, i) == null ? 0 : 2;
+                })
+                .attr('cx', function (d, i) {
+                  return ordinalScale(d) + spacing / 2.0 - 3;
+                })
+                .attr('cy', offsetColumn(series))
+                .on('mouseover', function(d, i) {
+                  var self = d3.select(this);
+                  self.attr('r', 3);
+                  self.attr('stroke-width',3);
+                  tooltip.style('visibility','visible');
+                  tooltip.style('border-color', color);
+                  tooltip.text(self.text());
+                  return false;
+                })
+                .on('mouseout', function() {
+                  var self = d3.select(this);
+                  tooltip.style('visibility','hidden');
+                  self.attr('r', 4);
+                  self.attr('stroke-width',2);
+                })
+                .on("mousemove", function(){
+                  return tooltip
+                    .style("top",(d3.event.pageY-10)+"px")
+                    .style("left",(d3.event.pageX+10)+"px");
+                })
+                .append('svg:title')
+                .text(function (d, i) {
+                  return opt.callback(series, i) + ' ' + label(d, i, series);
+                });
+              }
           },
           'piechart': function (svg) {
             var dataIndex = [];

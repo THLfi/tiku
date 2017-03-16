@@ -10,6 +10,8 @@
 		<org.springframework.version>4.3.4.RELEASE</org.springframework.version>
 		<org.aspectj.version>1.8.5</org.aspectj.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 	</properties>
 
 	<profiles>
@@ -188,6 +190,12 @@
 	</dependencies>
 	<build>
 		<finalName>pivot</finalName>
+		<resources>
+     		      <resource>
+			        <directory>src/main/filtered-resources</directory>
+			        <filtering>true</filtering>
+		      </resource>	
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>

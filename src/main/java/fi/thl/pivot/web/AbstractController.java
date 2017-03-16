@@ -1,13 +1,18 @@
 package fi.thl.pivot.web;
 
+import java.util.Properties;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 
 import fi.thl.pivot.datasource.AmorDao;
@@ -44,6 +49,9 @@ public abstract class AbstractController {
     @Autowired
     protected LogSource logSource;
 
+    @Autowired
+    protected ApplicationContext ctx;
+    
     /**
      * Provides a friendly error messages when content is not found
      * 
@@ -107,6 +115,19 @@ public abstract class AbstractController {
         model.addObject("cubeLabel", e.getSource().getName());
 
         return model;
+    }
+    
+    @ModelAttribute
+    public void setBuildVersion(Model model, RedirectAttributes r) {
+        if(null != ctx) {
+            try {
+                Properties p = (Properties)ctx.getBean("build-version");
+                model.addAttribute("buildVersion", p.getProperty("build.version"));
+                model.addAttribute("buildTimestamp", p.getProperty("build.timestamp"));
+            } catch (Exception e) {
+                LOG.warn("Could not set build version " + e.getMessage());;
+            }
+        }
     }
 
     /**

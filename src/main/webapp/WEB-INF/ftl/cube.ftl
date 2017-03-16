@@ -24,7 +24,7 @@
 
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
-        <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css?v=${buildTimestamp}" />
 
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/resources/js/html5shiv.js"></script>
@@ -111,7 +111,7 @@
     <script>
         [#include "cube/cube-script.ftl" /]
     </script>
-    <script src="${rc.contextPath}/resources/js/cube.js"></script>
+    <script src="${rc.contextPath}/resources/js/cube.js?v=${buildTimestamp}"></script>
     <script src="${rc.contextPath}/${dimensionsUrl}"></script>
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

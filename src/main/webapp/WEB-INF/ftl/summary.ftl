@@ -257,8 +257,8 @@
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
         <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
-        <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/resources/css/summary.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css?v=${buildTimestamp}" />
+        <link rel="stylesheet" href="${rc.contextPath}/resources/css/summary.css?v=${buildTimestamp}" />
 
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/resources/js/html5shiv.js"></script>
@@ -437,7 +437,7 @@
     <script src="${rc.contextPath}/resources/js/d3.min.js"></script>
     <script src="${rc.contextPath}/resources/js/json-stat.js"></script>
     [#--<script src="${rc.contextPath}/resources/js/jspdf.min.js"></script>--]
-    <script src="${rc.contextPath}/resources/js/summary.js"></script>
+    <script src="${rc.contextPath}/resources/js/summary.js?v=${buildTimestamp}"></script>
 
     <script>
     var labels = {},
