@@ -773,7 +773,6 @@ function selectChartType (e) {
                 .style('border', '2px solid #808080')
                 .style('padding','6px 12px')
                 .style('border-radius','4px');
-              var color =  colors[series];
               svg
                 .append('g')
                 .selectAll('g')
@@ -798,7 +797,7 @@ function selectChartType (e) {
                   self.attr('r', 3);
                   self.attr('stroke-width',3);
                   tooltip.style('visibility','visible');
-                  tooltip.style('border-color', color);
+                  tooltip.style('border-color', self.attr('stroke'));
                   tooltip.text(self.text());
                   return false;
                 })
@@ -815,7 +814,7 @@ function selectChartType (e) {
                 })
                 .append('svg:title')
                 .text(function (d, i) {
-                  return opt.callback(series, i) + ' ' + label(d, i, series);
+                  return label(d, i, series) + ': ' + opt.callback(series, i);
                 });
               }
           },
