@@ -224,24 +224,35 @@ function selectChartType (e) {
          */
         function createRowHeaderCells (ri, row, rowVals, spanPerLevel) {
           for (var level = 0; level < opt.rowCount; ++level) {
-          //  var rowspan = spanPerLevel[level];
-          //  if (ri % rowspan === 0) {
-              var nodeId = rowVals[level],
-                th = $('<th>'),
-                content = labels[nodeId];
-            //  th.attr('rowspan', rowspan);
-              if (canDrill(nodeId)) {
-                var link = $('<a>')
-                  .attr('href', '#')
-                  .text(content)
-                  .click(drillDown(nodeId, dimensionData[nodeId].dim));
-                th.append(link);
-              } else {
-                th.text(content);
-              }
-              row.append(th);
-        //    }
+            var nodeId = rowVals[level];
+            if (spanPerLevel[level] === undefined || spanPerLevel[level].id !== nodeId) {
+              spanPerLevel[level] = {
+                th: createRowHeaderCell(rowVals, row, level),
+                span: 1,
+                id: nodeId
+              };
+            } else {
+              spanPerLevel[level].span++;
+              spanPerLevel[level].th.prop('rowSpan', spanPerLevel[level].span);
+            }
           }
+        }
+
+        function createRowHeaderCell (rowVals, row, level) {
+          var nodeId = rowVals[level];
+          var content = labels[nodeId];
+          var th = $('<th>');
+          if (canDrill(nodeId)) {
+            var link = $('<a>')
+              .attr('href', '#')
+              .text(content)
+              .click(drillDown(nodeId, dimensionData[nodeId].dim));
+            th.append(link);
+          } else {
+            th.text(content);
+          }
+          row.append(th);
+          return th;
         }
 
         /**
@@ -284,24 +295,29 @@ function selectChartType (e) {
         var table =
           $('<table>')
             .addClass('table table-striped table-condensed')
-            .append(createTableHead()),
-          body = $('<tbody>');
+            .append(createTableHead());
+        var body = $('<tbody>');
 
         var dim = opt.dataset.Dimension();
         var cols = 1;
         var ri = 0;
+        var ari = 0;
         for (var i = opt.rowCount; i < dim.length; ++i) {
           cols *= dim[i].length;
         }
-        var rowspanPerLevel = calculateSpanPerLevel(0, opt.rowCount);
+        var thCount = 0;
+        var rowspanPerLevel = {};
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
           createRowHeaderCells(ri, row, rowVals, rowspanPerLevel);
-          hasValue = createRowValueCells(ri * cols, row, rowIndices);
-          ri += 1;
-          if (hasValue) {
+          if (createRowValueCells(ri * cols, row, rowIndices)) {
+            if (ari === 0) {
+              thCount = $(row).find('th').size();
+              ari += 1;
+            }
             body.append(row);
           }
+          ri += 1;
         });
 
         table.append(body);
@@ -314,10 +330,16 @@ function selectChartType (e) {
             var self = $(this);
             var w = self.width();
             var i = self.closest('td').index();
+            var t = self.closest('tr').find('th').size();
+            i += thCount - t;
             maxWidth[i] = maxWidth[i] === undefined || w > maxWidth[i] ? w : maxWidth[i];
           })
           .css('width', function () {
-            return maxWidth[$(this).closest('td').index()] + 'px';
+            var self = $(this);
+            var i = self.closest('td').index();
+            var t = self.closest('tr').find('th').size();
+            i += thCount - t;
+            return maxWidth[i] + 'px';
           });
       },
 
