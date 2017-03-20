@@ -41,7 +41,7 @@ public class CubeMetaController extends AbstractCubeController {
        
     }
     @Monitored
-    @RequestMapping(value = "/{id}.json", produces = "application/javascript;charset=UTF-8", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}.json", headers="Accept=*/*", produces = "application/javascript;charset=UTF-8", method = RequestMethod.GET)
     public String displayMetaDataJson(@PathVariable String cube, @PathVariable String id, @ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, HttpServletResponse resp, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
 
