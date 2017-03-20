@@ -293,8 +293,8 @@
             <li class="active"><a href="${rc.contextPath}/${cubeRequest.summaryUrl}">${x}</a></li>
           [/#if]
         [/#list]
+        </ul>
       [/#if]
-      </ul>
     </div>
 
     <div class="stripe">
