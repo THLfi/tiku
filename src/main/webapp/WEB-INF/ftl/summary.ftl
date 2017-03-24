@@ -38,7 +38,7 @@
     [#else]
       [#list filter.filterStages as filterStage]
         <div class="form-group">
-          <label for="${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
+          <label for="s-${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
           [#if filter.searchable]
             <div class="dropdown">
               <div class="search-group">
@@ -248,15 +248,13 @@
 [/#macro]
 [#macro label e][#if e?? && e.label??]${e.label.getValue(lang)} [#else]???[/#if][/#macro]
 
-<html>
+<html lang="${lang!"fi"}">
     <head>
         <title>${summary.title.getValue(lang)} - ${factName.getValue(lang)} -  ${message("site.title")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
-        <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css?v=${buildTimestamp}" />
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/summary.css?v=${buildTimestamp}" />
 
@@ -272,7 +270,7 @@
         <div class="logo">
             <img src="${rc.contextPath}/resources/img/thl_${uiLanguage!"fi"}.jpg">
         </div>
-        <div class="col-xs-10 col-md-9">
+        <div class="col-xs-12 col-md-9">
             <h1>
               ${summary.subject.getValue(lang)}
               [#if env != "prod"]
@@ -283,21 +281,24 @@
 
         <div class="clearfix"></div>
     </header>
-    <div id="languages">
-      [#if supportedLanguages?? && supportedLanguages?size > 1]
-        <ul>
-        [#list supportedLanguages as x]
-          [#if x != lang]
-            <li><a href="${rc.contextPath}/${cubeRequest.getSummaryUrl(x)}">${x}</a></li>
-          [#else]
-            <li class="active"><a href="${rc.contextPath}/${cubeRequest.summaryUrl}">${x}</a></li>
-          [/#if]
-        [/#list]
-        </ul>
-      [/#if]
-    </div>
+
 
     <div class="stripe">
+
+      <div id="languages">
+        [#if supportedLanguages?? && supportedLanguages?size > 1]
+          <ul>
+          [#list supportedLanguages as x]
+            [#if x != lang]
+              <li><a href="${rc.contextPath}/${cubeRequest.getSummaryUrl(x)}">${x}</a></li>
+            [#else]
+              <li class="active"><a href="${rc.contextPath}/${cubeRequest.summaryUrl}">${x}</a></li>
+            [/#if]
+          [/#list]
+          </ul>
+        [/#if]
+      </div>
+
       <div>
 
         <div class="btn-group pull-left filter-toggle">
@@ -337,7 +338,6 @@
         <div class="summary-content">
 
             <div class="col-sm-3">
-
                 [@summary_filter_form /]
             </div>
 

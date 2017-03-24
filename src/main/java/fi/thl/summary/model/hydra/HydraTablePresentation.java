@@ -68,24 +68,56 @@ public class HydraTablePresentation extends TablePresentation {
 
     public String getDataUrl() {
 
+        boolean hasMeasureFilter = false;
+        boolean measureAdded = false;
+        boolean hasMeasureDimension = false;
+        for (SummaryItem d : getRows()) {
+            if (((Extension) d).getDimension().equals("measure")) {
+                hasMeasureDimension = true;
+                break;
+            }
+        }
+        for (SummaryItem d : getColumns()) {
+            if (hasMeasureDimension || ((Extension) d).getDimension().equals("measure")) {
+                hasMeasureDimension = true;
+                break;
+            }
+        }
+        for (Selection s : getFilters()) {
+            if ("measure".equals(s.getDimension())) {
+                hasMeasureFilter = true;
+                break;
+            }
+        }
+
         UrlBuilder url = new UrlBuilder();
         url.addRows();
         // Select row parameters
         for (SummaryItem d : getRows()) {
-            url.addParameter(((Extension) d).getDimension(), nodesOf(d));
+            String dimension = ((Extension) d).getDimension();
+            if (hasMeasureFilter && "measure".equals(dimension)) {
+                url.addParameter(dimension, nodesOf(d));
+            } else {
+                url.addParameter(dimension, nodesOf(d));
+            }
         }
 
         // Select column parameters
         url.addColumns();
         for (SummaryItem d : getColumns()) {
-            url.addParameter(((Extension) d).getDimension(), nodesOf(d));
+            String dimension = ((Extension) d).getDimension();
+            if (hasMeasureFilter && "measure".equals(dimension)) {
+                url.addParameter(dimension, nodesOf(d));
+            } else {
+                url.addParameter(dimension, nodesOf(d));
+            }
         }
 
         // Select filter parameters
         // NOTE: order of parameters must equal the order in CubeRequest.toDataUrl or else
-        // cubes with restricted access via summaries do not work . 
+        // cubes with restricted access via summaries do not work .
         for (Selection s : getFilters()) {
-            if ("measure".equals(s.getDimension())) {
+            if ("measure".equals(s.getDimension()) ) {
                 url.addColumns();
                 HydraFilter f = ((HydraFilter) s);
                 url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));

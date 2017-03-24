@@ -5,12 +5,15 @@ var thl = {
       'cube.dimension.sort.asc': '${message("cube.dimension.sort.asc")?js_string}',
       'cube.dimension.sort.desc': '${message("cube.dimension.sort.desc")?js_string}',
       'cube.dimension.hide': '${message("cube.dimension.hide")?js_string}',
-      'cube.dimension.info': '${message("cube.dimension.info")?js_string}'
+      'cube.dimension.info': '${message("cube.dimension.info")?js_string}',
+      'cube.filter.measure': '${message("cube.filter.measure")?js_string}',
+      'cube.filter': '${message("cube.filter")?js_string}'
     },
     pivot : {
         loadDimensions: function (dim) {
             thl.pivot.dim = dim;
-        }
+        },
+        multipleMeasuresShown: ${multipleMeasuresShown?c}
     },
     separator : '-',
     subsetSeparator: '.',

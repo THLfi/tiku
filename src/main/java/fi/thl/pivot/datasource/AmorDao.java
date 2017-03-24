@@ -141,10 +141,12 @@ public class AmorDao {
                 }
                 
             });
+
     private Cache<String, String> versionCache = CacheBuilder
             .newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
             .build();
+    
 
     @AuditedMethod
     public List<Report> listReports(String environment) {
@@ -295,10 +297,12 @@ public class AmorDao {
     }
 
     private String determineReportVersion(final String environment, String[] params) {
-        String latestRunId;
+        String latestRunId = null;
         if (params.length < 4 || "latest".equals(params[3])) {
             String key = String.format("%s.%s.%s.%s", environment, params[0],params[1], params[2]);
-            latestRunId = versionCache.getIfPresent(key);
+            if(!"deve".equals(environment)) {
+                latestRunId = versionCache.getIfPresent(key);
+            }
             if(null == latestRunId) {
                 Report r = loadLatestReport(environment, params[0], params[1], params[2]);
                 latestRunId = r == null ? "0" : r.getRunId();

@@ -21,6 +21,8 @@
         padding: 15px 0;
         color: #555;
     }
+
+
     #languages {
       top: 3px;
     }
@@ -38,12 +40,12 @@
 
     .stripe {
         background-color: #2a6496;
-        position: absolute;
         height: 60px;
         width: 100%;
         z-index: 1;
         padding: 10px 10px;
     }
+
     .stripe > div > .btn-group > a {
     	color: #fff;
     }
@@ -137,11 +139,6 @@
     .axis path {
         fill: none;
         stroke: none;
-    }
-
-
-    .summary-body {
-        margin-top: 60px;
     }
 
     .presentation {
@@ -305,8 +302,26 @@
    header img { display: block; }
  }
  @media (max-width: 767px) {
+   body, header {
+     padding: 0;
+   }
+   header {
+     padding-bottom: 6px;
+     width: unset;
+   }
    form {
      padding-top: 15px;
+   }
+   .stripe {
+     position: relative;
+     padding: 6px 15px;
+     height: auto;
+   }
+   #languages {
+     top: 0;
+   }
+   .stripe .pull-right {
+     float: unset !important;
    }
    .summary-content .col-sm-3 {
      background: #efefef;

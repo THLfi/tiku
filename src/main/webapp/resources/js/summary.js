@@ -222,26 +222,17 @@ function selectChartType (e) {
          * row -> current row element
          * rowVals -> array of header node identifiers
          */
-        function createRowHeaderCells (ri, row, rowVals, spanPerLevel) {
+        function createRowHeaderCells (ri, row, rowVals) {
           for (var level = 0; level < opt.rowCount; ++level) {
-            var nodeId = rowVals[level];
-            if (spanPerLevel[level] === undefined || spanPerLevel[level].id !== nodeId) {
-              spanPerLevel[level] = {
-                th: createRowHeaderCell(rowVals, row, level),
-                span: 1,
-                id: nodeId
-              };
-            } else {
-              spanPerLevel[level].span++;
-              spanPerLevel[level].th.prop('rowSpan', spanPerLevel[level].span);
-            }
+            createRowHeaderCell(rowVals, row, level);
           }
         }
 
         function createRowHeaderCell (rowVals, row, level) {
           var nodeId = rowVals[level];
           var content = labels[nodeId];
-          var th = $('<th>');
+          var th = $('<th>')
+            .attr('data-id', nodeId);
           if (canDrill(nodeId)) {
             var link = $('<a>')
               .attr('href', '#')
@@ -263,6 +254,8 @@ function selectChartType (e) {
         function createRowValueCells (offset, row, rowIndices) {
           var i = 0;
           var hasValue = false;
+          console.log(opt.columnCount, opt.rowCount, opt.dataset.Dimension().length);
+
           forEachDimension(opt.rowCount, opt.dataset.Dimension().length, [], [], function (colIndices, colVals) {
             var key = $.merge($.merge([], rowIndices), colIndices);
             var val = opt.dataset.Data(key);
@@ -306,7 +299,7 @@ function selectChartType (e) {
           cols *= dim[i].length;
         }
         var thCount = 0;
-        var rowspanPerLevel = {};
+        var rowspanPerLevel = [];
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
           createRowHeaderCells(ri, row, rowVals, rowspanPerLevel);
@@ -341,6 +334,17 @@ function selectChartType (e) {
             i += thCount - t;
             return maxWidth[i] + 'px';
           });
+        for (var i = 1; i < opt.rowCount + 1; ++i) {
+          var previous;
+          table.find('tbody tr th:nth-child(' + i + ')').each(function () {
+            var current = $(this);
+            if (previous === undefined || previous.attr('data-id') !== current.attr('data-id')) {
+              previous = current;
+            } else if (previous.attr('data-id') === current.attr('data-id')) {
+              current.children().wrap('<span class="sr-only"></span>');
+            }
+          });
+        }
       },
 
       presentation: function (opt) {
@@ -566,6 +570,29 @@ function selectChartType (e) {
           return label;
         }
 
+        function showToolTip () {
+          var self = d3.select(this);
+          self.attr('r', 3);
+          self.attr('stroke-width', 3);
+          tooltip.style('visibility', 'visible');
+          tooltip.style('border-color', self.attr('stroke') || self.attr('fill'));
+          tooltip.text(self.text());
+          return false;
+        }
+
+        function hideToolTip () {
+          var self = d3.select(this);
+          tooltip.style('visibility', 'hidden');
+          self.attr('r', 4);
+          self.attr('stroke-width', 2);
+        }
+
+        function moveToolTip () {
+          return tooltip
+            .style('top', (d3.event.pageY - 10) + 'px')
+            .style('left', (d3.event.pageX + 10) + 'px');
+        }
+
         var draw = {
           /**
            * Plots a column chart where columns
@@ -584,6 +611,12 @@ function selectChartType (e) {
             var offsets = [],
               chartColumnWidth = opt.stacked ? ordinalScale.rangeBand() - 10 * barAndColumnMargin : (ordinalScale.rangeBand() - BAR_GROUP_MARGIN - opt.series.length * BAR_MARGIN) / (opt.series.length),
               scaledZero = scaleValue(0);
+
+              if (chartColumnWidth <= 10) {
+                chartColumnWidth = opt.stacked
+                  ? ordinalScale.rangeBand() - 1
+                  : ordinalScale.rangeBand() / opt.series.length - 1;
+              }
 
             svg
               .append('line')
@@ -634,9 +667,12 @@ function selectChartType (e) {
                 .on('click', function (d) {
                   submitDrillDown(d, dimensionData[d].dim);
                 })
+                .on('mouseover', showToolTip)
+                .on('mouseout', hideToolTip)
+                .on('mousemove', moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                  return opt.callback(series, i, 0) + ' ' + label(d, i, series);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
                 });
 
               if (opt.showCi) {
@@ -681,7 +717,6 @@ function selectChartType (e) {
                 .selectAll('g')
                 .data(opt.data);
 
-
               sg.enter()
                 .append('rect')
                 .attr('class', 'series series' + series)
@@ -718,9 +753,12 @@ function selectChartType (e) {
                 .on('click', function (d) {
                   submitDrillDown(d, dimensionData[d].dim);
                 })
+                .on('mouseover', showToolTip)
+                .on('mouseout', hideToolTip)
+                .on('mousemove', moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                    return opt.callback(series, i, 0) + ' ' + label(d, i, series);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
                 });
               if (opt.showCi) {
                 drawWhiskers(sg, series, scaledZero,
@@ -786,15 +824,6 @@ function selectChartType (e) {
                 });
 
               // Plot tick marks
-              var tooltip = d3.select('body')
-                .append('div')
-                .style('position', 'absolute')
-                .style('z-index', '10')
-                .style('visibility', 'hidden')
-                .style('background', '#fff')
-                .style('border', '2px solid #808080')
-                .style('padding','6px 12px')
-                .style('border-radius','4px');
               svg
                 .append('g')
                 .selectAll('g')
@@ -814,29 +843,12 @@ function selectChartType (e) {
                   return ordinalScale(d) + spacing / 2.0 - 3;
                 })
                 .attr('cy', offsetColumn(series))
-                .on('mouseover', function(d, i) {
-                  var self = d3.select(this);
-                  self.attr('r', 3);
-                  self.attr('stroke-width',3);
-                  tooltip.style('visibility','visible');
-                  tooltip.style('border-color', self.attr('stroke'));
-                  tooltip.text(self.text());
-                  return false;
-                })
-                .on('mouseout', function() {
-                  var self = d3.select(this);
-                  tooltip.style('visibility','hidden');
-                  self.attr('r', 4);
-                  self.attr('stroke-width',2);
-                })
-                .on("mousemove", function(){
-                  return tooltip
-                    .style("top",(d3.event.pageY-10)+"px")
-                    .style("left",(d3.event.pageX+10)+"px");
-                })
+                .on('mouseover', showToolTip)
+                .on('mouseout', hideToolTip)
+                .on("mousemove", moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                  return label(d, i, series) + ': ' + opt.callback(series, i);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
                 });
               }
           },
@@ -886,7 +898,11 @@ function selectChartType (e) {
               .on('click', function (d, i) {
                 var nodeId = opt.dataset.Dimension(0).id[dataIndex[i]];
                 submitDrillDown(nodeId, dimensionData[nodeId].dim);
-              });
+              })
+              .on('mouseover', showToolTip)
+              .on('mouseout', hideToolTip)
+              .on('mousemove', moveToolTip)
+              ;
             g.append('svg:title')
               .text(function (d, i) {
                 return labels[opt.dataset.Dimension(0).id[dataIndex[i]]];
@@ -1050,11 +1066,14 @@ function selectChartType (e) {
               .on('click', function (d, i) {
                 var nodeId = opt.dataset.Dimension(0).id[i];
                 submitDrillDown(nodeId, dimensionData[nodeId].dim);
-              });
+              })
+              .on('mouseover', showToolTip)
+              .on('mouseout', hideToolTip)
+              .on('mousemove', moveToolTip);
 
             needle.append('svg:title')
               .text(function (d, i) {
-                return labels[opt.dataset.Dimension(0).id[i]];
+                return labels[opt.dataset.Dimension(0).id[i]] + ': ' + opt.callback(0, i);
               });
 
             needle.append('path')
@@ -1413,6 +1432,15 @@ function selectChartType (e) {
             .append('svg')
             .attr('xmlns', 'http://www.w3.org/2000/svg')
             .attr('preserveAspectRatio', 'xMinYMin meet');
+        var tooltip = d3.select('body')
+            .append('div')
+            .style('position', 'absolute')
+            .style('z-index', '10')
+            .style('visibility', 'hidden')
+            .style('background', '#fff')
+            .style('border', '2px solid #808080')
+            .style('padding', '6px 12px')
+            .style('border-radius', '4px');
 
         if (['columnchart', 'linechart'].indexOf(opt.type) >= 0) {
           scaleValue.range([xAxisPos, opt.margin]);

@@ -1,3 +1,4 @@
+
 package fi.thl.pivot.model;
 
 import static fi.thl.pivot.model.ModelTestUtil.mockDimension;

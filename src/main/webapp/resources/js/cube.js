@@ -24,7 +24,6 @@
       treeBrowser.find('li, .tree').removeClass('open closed');
       treeBrowser.find('.caret').addClass('caret-right');
       treeBrowser.toggleClass('active');
-
     });
 
     var traverseDimensionTree = function (dimension, node) {
@@ -88,6 +87,12 @@
             .css('z-index', '1000');
           $('.pivot-content').toggleClass('drop-active', true);
           treeBrowser.removeClass('active');
+          var dr = ui.helper.attr('dim-ref');
+          if (!thl.pivot.multipleMeasuresShown && dr === 'measure') {
+            ft.find('span').text(thl.messages['cube.filter.measure']);
+          } else {
+            ft.find('span').text(thl.messages['cube.filter']);
+          }
         },
         stop: function () {
           $('.pivot-content').toggleClass('drop-active', false);
@@ -107,7 +112,7 @@
           }
         });
 
-    $('.filter-target')
+    var ft = $('.filter-target')
         .droppable({
           hoverClass: 'drop-hover',
           drop: function (e, ui) {

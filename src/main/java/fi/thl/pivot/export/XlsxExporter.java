@@ -38,6 +38,7 @@ public class XlsxExporter {
     private CellStyle headerLastRowStyle;
     private CellStyle defaultStyle;
     private Map<Integer, CellStyle> decimalStyles = new HashMap<>();
+    private Font valueFont;
 
     public XlsxExporter(String language, MessageSource messageSource) {
         this.language = language;
@@ -52,15 +53,15 @@ public class XlsxExporter {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        
+
     }
-    
+
     private void doExport(Model model, OutputStream out) throws IOException {
-        
+
         Map<String, ?> params = model.asMap();
         Workbook wb = new XSSFWorkbook();
 
-        Font valueFont = createValueFont(wb);
+        valueFont = createValueFont(wb);
 
         this.defaultStyle = wb.createCellStyle();
         defaultStyle.setFont(valueFont);
@@ -91,17 +92,16 @@ public class XlsxExporter {
         rowNumber = printData(sheet, pivot, rowNumber, showCodes);
         mergeRowHeaders(sheet, pivot);
         rowNumber = printFilters(params, sheet, rowNumber, pivot.getColumnCount() + pivot.getColumns().size());
-        printCopyrightNotice(sheet, rowNumber, params,  pivot.getColumnCount() + pivot.getColumns().size());
+        printCopyrightNotice(sheet, rowNumber, params, pivot.getColumnCount() + pivot.getColumns().size());
         printCurrentMeasureIfOnlyOneMeasureShown(params, sheet, pivot);
         mergeTopLeftCorner(sheet, pivot);
-        
+
         autosizeColumns(sheet, pivot);
         sheet.createFreezePane(pivot.getRows().size(), pivot.getColumns().size());
-        
+
         wb.write(out);
         wb.close();
     }
-
 
     private Font createValueFont(Workbook wb) {
         Font valueFont = wb.createFont();
@@ -162,14 +162,12 @@ public class XlsxExporter {
         return rowNumber;
     }
 
-    
-
     private void autosizeColumns(Sheet sheet, Pivot pivot) {
-        for(int i = 0; i < pivot.getColumns().size() + pivot.getColumnCount(); ++i) {
+        for (int i = 0; i < pivot.getColumns().size() + pivot.getColumnCount(); ++i) {
             sheet.autoSizeColumn(i, true);
         }
     }
-    
+
     private void mergeRowHeaders(Sheet sheet, Pivot pivot) {
         int rowOffset = pivot.getColumns().size();
         for (int c = 0; c < pivot.getRows().size(); ++c) {
@@ -203,14 +201,13 @@ public class XlsxExporter {
                 String.format("%1$s %2$te.%2$tm.%2$tY", message("cube.updated", "date"), params.get("updated")));
         c1.setCellStyle(defaultStyle);
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
-        
+
         Cell c2 = sheet.createRow(++rowNumber).createCell(0);
         c2.setCellValue(
                 String.format("(c) %s %d %s", message("site.company", "THL"), Calendar.getInstance().get(Calendar.YEAR),
                         isOpenData != null && isOpenData ? ", " + message("site.license.dd", "CC BY 4.0") : ""));
         c2.setCellStyle(defaultStyle);
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
-        
 
     }
 
@@ -222,7 +219,7 @@ public class XlsxExporter {
         c1.setCellValue(message("cube.filter.selected", ""));
         c1.setCellStyle(defaultStyle);
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
-        
+
         for (Dimension d : (Collection<Dimension>) params.get("dimensions")) {
             for (DimensionNode f : (Collection<DimensionNode>) params.get("filters")) {
                 if (f.getDimension().getId().equals(d.getId())) {
@@ -235,7 +232,7 @@ public class XlsxExporter {
                     cell2.setCellStyle(defaultStyle);
                     cell2.setCellValue(f.getLabel().getValue(language));
                     sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 1, columns - 1));
-                    
+
                 }
             }
         }
@@ -254,7 +251,6 @@ public class XlsxExporter {
             long value = Math.round(cell.getNumberValue() * decimals);
             c.setCellValue(value / decimals);
             c.setCellStyle(measureStyle(c.getSheet().getWorkbook(), d));
-
         } else {
             c.setCellValue(cell.getValue());
             c.setCellStyle(defaultStyle);
@@ -266,12 +262,13 @@ public class XlsxExporter {
             return numberStyle;
         }
         if (decimalStyles.containsKey(decimals)) {
-            return decimalStyles.get(decimalStyles);
+            return decimalStyles.get(decimals);
         }
         CellStyle style = wb.createCellStyle();
-        style.cloneStyleFrom(numberStyle);
+        String format = String.format("#,##0.%0" + decimals + "d", 0);
         style.setDataFormat(
-                wb.getCreationHelper().createDataFormat().getFormat(String.format("#,##0.%0" + decimals + "d", 0)));
+                wb.getCreationHelper().createDataFormat().getFormat(format));
+        style.setFont(valueFont);
         decimalStyles.put(decimals, style);
         return style;
 
@@ -319,7 +316,7 @@ public class XlsxExporter {
                     } else {
                         cell.setCellStyle(headerStyle);
                     }
-                  
+
                     mergeInColumn(sheet, rowNumber, firstColumnWithSameHeader + columnOffset,
                             lastColumnWithSameHeader + columnOffset);
                     firstColumnWithSameHeader = column;
