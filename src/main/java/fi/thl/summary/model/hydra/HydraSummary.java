@@ -158,7 +158,7 @@ public class HydraSummary extends Summary {
 
             @Override
             public Section apply(Section input) {
-               return new HydraSection(input, source, HydraSummary.this, selections);
+               return new HydraSection(input, source, summary, HydraSummary.this, selections);
             }
             
         });

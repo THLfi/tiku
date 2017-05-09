@@ -481,7 +481,8 @@ public class SummaryReader {
                 p.addDimension(dimensions.get(i), stages.get(i));
             }
 
-            p.addMeasures(listMeasures(node));
+            List<MeasureItem> measures = listMeasures(node);
+            p.addMeasures(measures);
 
             p.setFirst("begin".equals(attribute(node, "group")));
             p.setLast("end".equals(attribute(node, "group")));

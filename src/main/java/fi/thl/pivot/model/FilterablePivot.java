@@ -93,6 +93,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         columnIndices = new IntArrayList();
 
         // Prepare headers for filteration
+        
         include(new ColumnStrategy(), 0, 0);
         include(new RowStrategy(), 0, 0);
 
@@ -137,7 +138,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private int include(IncludeStrategy strategy, int level, int index) {
-        if (level == strategy.size() - 1) {
+        if (level >= strategy.size() - 1) {
             return includeLeafLevel(strategy, level, index);
         } else {
             return includeLevel(strategy, level, index);
@@ -157,6 +158,11 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private int includeLeafLevel(IncludeStrategy strategy, int level, int index) {
+        if(strategy.size() == 0) {
+            strategy.add(0);
+            return 0;
+        }
+        
         int levelIndex = 0;
         int levelSize = strategy.get(level).size();
         if (strategy.get(level).isTotalIncluded()) {
@@ -253,6 +259,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
 
         public int getRepetitionFactory(int i) {
+            if (i >= getLevels().size()) {
+                return 1;
+            }
             return get(i).getRepetitionFactor(getLevels(), i + 1);
         }
 

@@ -33,13 +33,13 @@ public class UrlBuilder {
     public void addParameter(String dimensionId, List<DimensionNode> nodes) {
         if (!nodes.isEmpty()) {
             sb
-                .append("&")
-                .append(parameterName)
-                .append("=")
-                .append(dimensionId)
-                .append("-")
-                .append(joiner.join(Lists.transform(nodes, new NodeToId())))
-                .append(".");
+                    .append("&")
+                    .append(parameterName)
+                    .append("=")
+                    .append(dimensionId)
+                    .append("-")
+                    .append(joiner.join(Lists.transform(nodes, new NodeToId())))
+                    .append(".");
         }
     }
 

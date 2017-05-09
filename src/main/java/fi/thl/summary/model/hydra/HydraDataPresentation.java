@@ -64,7 +64,6 @@ public class HydraDataPresentation extends DataPresentation {
         url.addRows();
         appendDimensionNodes(url);
         appendMeasureItems(url);
-      
         appendFilters(url);
         if (delegate.getSuppress()) {
             url.suppress();
@@ -89,8 +88,7 @@ public class HydraDataPresentation extends DataPresentation {
     private void appendFilters(UrlBuilder url) {
         for (Selection s : getFilters()) {
             if ("measure".equals(s.getDimension())) {
-                continue;
-                // url.addColumns();
+           //
             } else {
                 // We do not want extra dimension in the returned JSON-STAT
                 // resource
@@ -98,6 +96,7 @@ public class HydraDataPresentation extends DataPresentation {
                 url.addFilters();
             }
             url.addParameter(s.getDimension(), Lists.newArrayList(((HydraFilter) s).getSelected()));
+            
         }
     }
 
