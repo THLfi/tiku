@@ -170,7 +170,12 @@ public class SummaryReader {
 
         // Non-grid based summary description
         if (!gridFound) {
-            parsePresentationInSection(root, gridSection);
+            Section row = new Section();
+            Section block = new Section();
+            
+            row.addChild(block);
+            gridSection.addChild(row);
+            parsePresentationInSection(root, block);
         }
         
         summary.setSections(gridSection.getChildren());

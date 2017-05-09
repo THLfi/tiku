@@ -19,6 +19,7 @@ import fi.thl.pivot.web.tools.FindNodes;
 import fi.thl.pivot.web.tools.FindNodes.SearchType;
 import fi.thl.summary.model.DataPresentation;
 import fi.thl.summary.model.Presentation;
+import fi.thl.summary.model.Section;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
 import fi.thl.summary.model.SummaryDimension;
@@ -149,6 +150,17 @@ public class HydraSummary extends Summary {
                     return new HydraDataPresentation(source, HydraSummary.this, p);
                 }
             }
+        });
+    }
+    
+    public List<Section> getSections() {
+        return Lists.transform(summary.getSections(), new Function<Section, Section>() {
+
+            @Override
+            public Section apply(Section input) {
+               return new HydraSection(input, source, HydraSummary.this, selections);
+            }
+            
         });
     }
 

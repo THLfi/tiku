@@ -119,6 +119,8 @@
 
     <div class="col-sm-${12/row.children?size}">
 
+     [#list block.presentations as presentation]
+
       [#if presentation.groupSize > 0]
           [#if presentation.isFirst()]
           [#-- put a group into a single row --]
@@ -232,6 +234,8 @@
           </div>
           [/#if]
       [/#if]
+
+       [/#list]
 
       </div>
     [/#list]
