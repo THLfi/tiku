@@ -184,6 +184,20 @@
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
               </div>
           <hr />
+       [#elseif "radar" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              id = "${presentation.id}"
+              class="presentation radar"
+              [#if presentation.min??]data-min="${presentation.min}"[/#if]
+              [#if presentation.max??]data-max="${presentation.max}"[/#if]
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              data-sort="${presentation.sortMode}"
+              [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+              </div>
+          <hr />
       [#elseif "pie" = presentation.type]
           [@show_filter_values presentation /]
           <div

@@ -277,6 +277,13 @@
    fill-opacity: 1;
    stroke-opacity: 1;
  }
+ 
+ .presentation.highlight.radar .series {
+   fill-opacity: 0.1;
+ }
+ .presentation.highlight.radar .series.highlight {
+   fill-opacity: 0.5;
+ }
 
  .search-group {
    position: relative;

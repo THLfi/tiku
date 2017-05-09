@@ -5,13 +5,13 @@ var thl = thl || {};
  */
 function selectChartType (e) {
   if (e.is('.bar')) {
-    return 'radarchart';
+    return 'barchart';
   }
   if (e.is('.column')) {
-    return 'radarchart';
+    return 'columnchart';
   }
   if (e.is('.line')) {
-    return 'radarchart';
+    return 'linechart';
   }
   if (e.is('.radar')) {
     return 'radarchart';
@@ -20,7 +20,7 @@ function selectChartType (e) {
     return 'piechart';
   }
   if (e.is('.gauge')) {
-    return 'radarchart';
+    return 'gaugechart';
   }
   if (e.is('.table')) {
     return 'table';
@@ -257,7 +257,6 @@ function selectChartType (e) {
         function createRowValueCells (offset, row, rowIndices) {
           var i = 0;
           var hasValue = false;
-          console.log(opt.columnCount, opt.rowCount, opt.dataset.Dimension().length);
 
           forEachDimension(opt.rowCount, opt.dataset.Dimension().length, [], [], function (colIndices, colVals) {
             var key = $.merge($.merge([], rowIndices), colIndices);
@@ -448,12 +447,16 @@ function selectChartType (e) {
         function range () {
           var min = 0;
           var max = 0;
+          var trueMin = Number.MAX_VALUE;
+          var trueMax = Number.MIN_VALUE;
           for (var i = 0; i < opt.data.length; ++i) {
             var sum = 0;
             for (var j = 0; j < opt.series.length; ++j) {
               var v = opt.callback(j, i);
               min = Math.min(min, v);
               max = Math.max(max, v);
+              trueMin = Math.min(trueMin, v);
+              trueMax = Math.max(trueMax, v);
               if (opt.showCi) {
                 min = Math.min(min, opt.callback(j, i, 1));
                 max = Math.max(max, opt.callback(j, i, 2));
@@ -466,9 +469,9 @@ function selectChartType (e) {
             }
           }
           if (opt.percent) {
-            domainRange = [0, 100];
+            domainRange = [0, 100, trueMin, trueMax];
           } else {
-            domainRange = [min, max];
+            domainRange = [min, max, trueMin, trueMax];
           }
 
           // Scale to range if present
@@ -946,102 +949,161 @@ function selectChartType (e) {
               .attr('stroke', '#808080');
           },
           'radarchart': function (chart) {
-            var g = chart.append('g');
-
-
-            var maxValue = domainRange[1] - domainRange[0];
+    
+            var minValue = domainRange[0];
+            var maxValue = domainRange[1];
             var factor = 1;
             var radians = 2 * Math.PI;
             var total = opt.data.length;
-            var radius = factor*Math.min((opt.height - 20)/2, (opt.height - 20)/2);
-            var offset = opt.data.length % 2 == 0 ? 0 : 0.5;
+            var radius = factor*(opt.height - 10 * opt.margin)/2;
+            var offset = opt.data.length % 2 !== 0 ? 0 : 0.5;
+            var radiansPerSegment = radians/total;
+            var axisTicks = 5;
+            var centerOffset = opt.width/2 - radius;
+            var datum = opt.data.slice().reverse();
+             
+            var radianFactor = [];
+             for (var i = 0; i < opt.data.length; ++i) {
+              radianFactor.push([
+                radius * Math.sin((i + offset)*radiansPerSegment),
+                radius * Math.cos((i + offset)*radiansPerSegment)
+              ]);
+             }
 
-            console.log(total)
-            for(var j=0; j < 5; j++){
-              var levelFactor = factor*radius*((j+1)/5);
+            var g = chart
+              .append('g')
+              .attr('transform', 'translate(' + centerOffset + ',' + (opt.margin * 3)+ ')');
+
+      
+            for(var j=0; j < axisTicks; j++){
+              var levelFactor = factor*radius*((j+1)/axisTicks);
               g.selectAll(".levels")
-               .data(opt.data)
+               .data(datum)
                .enter()
                .append("svg:line")
-               .attr("x1", function(d, i){return levelFactor*(1-factor*Math.sin(i*radians/total));})
-               .attr("y1", function(d, i){return levelFactor*(1-factor*Math.cos(i*radians/total));})
-               .attr("x2", function(d, i){return levelFactor*(1-factor*Math.sin((i+1)*radians/total));})
-               .attr("y2", function(d, i){return levelFactor*(1-factor*Math.cos((i+1)*radians/total));})
+               .attr("x1", function(d, i){return levelFactor*(1-factor*Math.sin(i*radiansPerSegment));})
+               .attr("y1", function(d, i){return levelFactor*(1-factor*Math.cos(i*radiansPerSegment));})
+               .attr("x2", function(d, i){return levelFactor*(1-factor*Math.sin((i+1)*radiansPerSegment));})
+               .attr("y2", function(d, i){return levelFactor*(1-factor*Math.cos((i+1)*radiansPerSegment));})
                .attr("class", "line")
                .style("stroke", "grey")
                .style("stroke-opacity", "0.75")
                .style("stroke-width", "0.3px")
-               .attr("transform", "translate(" + ((opt.height - 20)/2-levelFactor) + ", " + ((opt.height - 20)/2-levelFactor) + ")");
+               .attr("transform", "translate(" + (radius-levelFactor) + ", " + (radius-levelFactor) + ")");
             }
 
+            for(var j=0; j < axisTicks; j++){
+              var levelFactor = radius*((j+1)/axisTicks);
+              g.selectAll(".levels")
+               .data([1]) //dummy data
+               .enter()
+               .append("svg:text")
+               .attr("x", function(d){return levelFactor*(1-Math.sin(0));})
+               .attr("y", function(d){return levelFactor*(1-Math.cos(0));})
+               .attr("class", "legend")
+               .style("font-family", "sans-serif")
+               .style("font-size", "10px")
+               .attr("transform", "translate(" + (radius-levelFactor) + ", " + (radius-levelFactor) + ")")
+               .attr("fill", "#737373")
+               .text(Math.round((j+1)*(maxValue-minValue)/axisTicks + minValue));
+            }
+            
+
              var axis = g.selectAll(".axis")
-              .data(opt.data)
+              .data(datum)
               .enter()
               .append("g")
               .attr("class", "axis");
               axis.append("line")
-                  .attr("x1", (opt.height - 20)/2)
-                  .attr("y1", (opt.height - 20)/2)
-                  .attr("x2", function(d, i){return (opt.height - 20)/2*(1-factor*Math.sin(i*radians/total));})
-                  .attr("y2", function(d, i){return (opt.height - 20)/2*(1-factor*Math.cos(i*radians/total));})
+                  .attr("x1", radius)
+                  .attr("y1", radius)
+                  .attr("x2", function(d, i){return radius*(1-factor*Math.sin(i*radiansPerSegment));})
+                  .attr("y2", function(d, i){return radius*(1-factor*Math.cos(i*radiansPerSegment));})
                   .attr("class", "line")
                   .style("stroke", "grey")
                   .style("stroke-width", "1px");
-                    
+            
+              axis.append("text")
+                .attr("class", "legend")
+                .text(function(d){return labels[d]; })
+                .style("font-family", "sans-serif")
+                .style("font-size", "11px")
+                .attr("text-anchor", "middle")
+                .attr("dy", "1.5em")
+                .attr("transform", function(d, i){return "translate(0, -10)"})
+                .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-60*Math.sin((i+1)*radiansPerSegment);})
+                .attr("y", function(d, i){return radius*(1-Math.cos((i+1)*radiansPerSegment))-20*Math.cos((i+1)*radiansPerSegment);});
 
              for (var series = 0; series < opt.series.length; ++series) {
               var sg = g
                 .append('g')
                 .selectAll('g')
-                .data(opt.data);
-
-
-
+                .data([1]);
               sg.enter()
                 .append('polygon')
                 .attr('class', 'series series' + series)
                 .attr('fill-opacity', '0.0')
                 .attr('fill', function (d, i) {
-                  if (opt.em) {
-                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
-                  } else {
                     return colors[series];
-                  }
-                })
+                  })
                 .attr('stroke-width', '1px')
                 .attr('stroke', function (d, i) {
-                  if (opt.em) {
-                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
-                  } else {
-                    return colors[series];
-                  }
+                  return colors[series];
                 })
-                .attr("points",function(d, i) {
+                .attr("points",function(d) {
                  var str="";
-                 for(var pti=0 ; pti < opt.data.length;pti++){
-                    var val = (value(series, pti) - domainRange[0]) / maxValue;
-                    var x = (opt.height - 20)/2 + (opt.height - 20)/2*((1-val)*factor*Math.sin((pti + offset)*radians/total));
-                    var y = (opt.height - 20)/2 + (opt.height - 20)/2*((1-val)*factor*Math.cos((pti + offset)*radians/total));
-
+                 for(var i = 0; i < opt.data.length; ++i) {
+                    var val = Math.max(Math.min(opt.callback(series,i), maxValue), minValue)
+                    val = (val - minValue) / (maxValue-minValue);
+                    var x = radius + val*radianFactor[i][0];
+                    var y = radius + -val*radianFactor[i][1];
                     str = str + x + "," + y + " ";
                  }
                  return str;
-                })
-                .style('cursor', function (d) {
-                  if (canDrill(d)) {
-                    return 'pointer';
-                  }
-                })
-                .on('click', function (d) {
-                  submitDrillDown(d, dimensionData[d].dim);
-                })
-                .on('mouseover', showToolTip)
-                .on('mouseout', hideToolTip)
-                .on('mousemove', moveToolTip)
-                .append('svg:title')
-                .text(function (d, i) {
-                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
                 });
+              }
+              for (var series = 0; series < opt.series.length; ++series) {
+                 g
+                  .append('g')
+                  .selectAll('g')
+                  .data(opt.data)
+                  .enter()
+                  .append('circle')
+                  .attr('class', 'series series' + series)
+                  .attr('fill', '#fff')
+                  .attr('stroke', colors[series])
+                  .attr('r', function(d, i) {
+                    return opt.callback(series, i) == null ? 0 : 4;
+                  })
+                  .attr('stroke-width', function(d, i) {
+                    return opt.callback(series, i) == null ? 0 : 2;
+                  })
+                  .attr('cx', function (d, i) {
+                    var val = Math.max(Math.min(opt.callback(series,i), maxValue), minValue)
+                    val = (val - minValue) / (maxValue-minValue);
+                    return  radius + val*radianFactor[i][0];
+                  })
+                  .attr('cy', function (d, i) {
+                    var val = Math.max(Math.min(opt.callback(series,i), maxValue), minValue)
+                    val = (val - minValue) / (maxValue-minValue);
+                    return radius + -val*radianFactor[i][1];
+                  })
+                  .style('cursor', function (d, i) {
+                    if (canDrill(d)) {
+                      return 'pointer';
+                    }
+                  })
+                  .on('click', function (d) {
+                    submitDrillDown(d, dimensionData[d].dim);
+                  })
+                  .on('mouseover', showToolTip)
+                  .on('mouseout', hideToolTip)
+                  .on('mousemove', moveToolTip)
+                  .append('svg:title')
+                  .text(function (d, i) {
+                    return label(d, i, series) + '(' + labels[opt.data[i]] + '): ' + opt.callback(series, i);
+                  });
+                
             }
 
           },
@@ -1767,7 +1829,7 @@ function selectChartType (e) {
     });
 
     var summary = thl.pivot.summary(labels, dimensionData);
-    $('.presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table')
+    $('.presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
         $.getJSON($(p).attr('data-ref'), function (data) {
@@ -1778,7 +1840,6 @@ function selectChartType (e) {
           var dataset = JSONstat(data).Dataset(0),
             target = $(p),
             type = selectChartType(target);
-            console.log(type);
 
           if ('table' === type) {
             summary

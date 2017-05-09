@@ -55,6 +55,9 @@ import fi.thl.summary.model.TextPresentation;
  */
 public class SummaryReader {
 
+    private static final String SECTION_ELEMENT = "section";
+    private static final String ROW_ELEMENT = "row";
+    private static final String GRID_ELEMENT = "grid";
     private static final String DEFAULT_STAGE = ":all:";
     private static final String STAGE_ELEMENT = "stage";
     private static final String DIMENSION_ELEMENT = "dim";
@@ -182,14 +185,15 @@ public class SummaryReader {
     }
 
     private boolean parseGrid(Section gridSection, boolean gridFound) {
-        for (Node grid : iterator(root, "grid")) {
+        for (Node grid : iterator(root, GRID_ELEMENT)) {
             gridFound = true;
-            for (Node row : iterator(grid, "row")) {
+            for (Node row : iterator(grid, ROW_ELEMENT)) {
                 Section rowSection = new Section();
                 gridSection.addChild(rowSection);
-                for (Node column : iterator(row, "block")) {
+                for (Node column : iterator(row, SECTION_ELEMENT)) {
                     Section columnSection = new Section();
                     parsePresentationInSection(column, columnSection);
+                    rowSection.addChild(columnSection);
                 }
             }
         }
