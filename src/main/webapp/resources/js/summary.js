@@ -5,19 +5,22 @@ var thl = thl || {};
  */
 function selectChartType (e) {
   if (e.is('.bar')) {
-    return 'barchart';
+    return 'radarchart';
   }
   if (e.is('.column')) {
-    return 'columnchart';
+    return 'radarchart';
   }
   if (e.is('.line')) {
-    return 'linechart';
+    return 'radarchart';
+  }
+  if (e.is('.radar')) {
+    return 'radarchart';
   }
   if (e.is('.pie')) {
     return 'piechart';
   }
   if (e.is('.gauge')) {
-    return 'gaugechart';
+    return 'radarchart';
   }
   if (e.is('.table')) {
     return 'table';
@@ -942,6 +945,106 @@ function selectChartType (e) {
               .attr('fill', 'none')
               .attr('stroke', '#808080');
           },
+          'radarchart': function (chart) {
+            var g = chart.append('g');
+
+
+            var maxValue = domainRange[1] - domainRange[0];
+            var factor = 1;
+            var radians = 2 * Math.PI;
+            var total = opt.data.length;
+            var radius = factor*Math.min((opt.height - 20)/2, (opt.height - 20)/2);
+            var offset = opt.data.length % 2 == 0 ? 0 : 0.5;
+
+            console.log(total)
+            for(var j=0; j < 5; j++){
+              var levelFactor = factor*radius*((j+1)/5);
+              g.selectAll(".levels")
+               .data(opt.data)
+               .enter()
+               .append("svg:line")
+               .attr("x1", function(d, i){return levelFactor*(1-factor*Math.sin(i*radians/total));})
+               .attr("y1", function(d, i){return levelFactor*(1-factor*Math.cos(i*radians/total));})
+               .attr("x2", function(d, i){return levelFactor*(1-factor*Math.sin((i+1)*radians/total));})
+               .attr("y2", function(d, i){return levelFactor*(1-factor*Math.cos((i+1)*radians/total));})
+               .attr("class", "line")
+               .style("stroke", "grey")
+               .style("stroke-opacity", "0.75")
+               .style("stroke-width", "0.3px")
+               .attr("transform", "translate(" + ((opt.height - 20)/2-levelFactor) + ", " + ((opt.height - 20)/2-levelFactor) + ")");
+            }
+
+             var axis = g.selectAll(".axis")
+              .data(opt.data)
+              .enter()
+              .append("g")
+              .attr("class", "axis");
+              axis.append("line")
+                  .attr("x1", (opt.height - 20)/2)
+                  .attr("y1", (opt.height - 20)/2)
+                  .attr("x2", function(d, i){return (opt.height - 20)/2*(1-factor*Math.sin(i*radians/total));})
+                  .attr("y2", function(d, i){return (opt.height - 20)/2*(1-factor*Math.cos(i*radians/total));})
+                  .attr("class", "line")
+                  .style("stroke", "grey")
+                  .style("stroke-width", "1px");
+                    
+
+             for (var series = 0; series < opt.series.length; ++series) {
+              var sg = g
+                .append('g')
+                .selectAll('g')
+                .data(opt.data);
+
+
+
+              sg.enter()
+                .append('polygon')
+                .attr('class', 'series series' + series)
+                .attr('fill-opacity', '0.0')
+                .attr('fill', function (d, i) {
+                  if (opt.em) {
+                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
+                  } else {
+                    return colors[series];
+                  }
+                })
+                .attr('stroke-width', '1px')
+                .attr('stroke', function (d, i) {
+                  if (opt.em) {
+                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
+                  } else {
+                    return colors[series];
+                  }
+                })
+                .attr("points",function(d, i) {
+                 var str="";
+                 for(var pti=0 ; pti < opt.data.length;pti++){
+                    var val = (value(series, pti) - domainRange[0]) / maxValue;
+                    var x = (opt.height - 20)/2 + (opt.height - 20)/2*((1-val)*factor*Math.sin((pti + offset)*radians/total));
+                    var y = (opt.height - 20)/2 + (opt.height - 20)/2*((1-val)*factor*Math.cos((pti + offset)*radians/total));
+
+                    str = str + x + "," + y + " ";
+                 }
+                 return str;
+                })
+                .style('cursor', function (d) {
+                  if (canDrill(d)) {
+                    return 'pointer';
+                  }
+                })
+                .on('click', function (d) {
+                  submitDrillDown(d, dimensionData[d].dim);
+                })
+                .on('mouseover', showToolTip)
+                .on('mouseout', hideToolTip)
+                .on('mousemove', moveToolTip)
+                .append('svg:title')
+                .text(function (d, i) {
+                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
+                });
+            }
+
+          },
           'gaugechart': function (chart) {
             chart = chart.append('g');
 
@@ -1675,6 +1778,7 @@ function selectChartType (e) {
           var dataset = JSONstat(data).Dataset(0),
             target = $(p),
             type = selectChartType(target);
+            console.log(type);
 
           if ('table' === type) {
             summary
