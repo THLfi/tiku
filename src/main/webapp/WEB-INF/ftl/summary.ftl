@@ -39,7 +39,7 @@
       [#list filter.filterStages as filterStage]
         <div class="form-group">
           <label for="s-${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
-          [#if filter.searchable]
+          [#if filter.searchable && !filter.multiple]
             <div class="dropdown">
               <div class="search-group">
                 <input class="form-control search-control" />
@@ -112,121 +112,130 @@
 [/#macro]
 
 [#macro summary_presentations]
-[#list summary.presentations as presentation]
+[#list summary.sections as row]
 
-    [#if presentation.groupSize > 0]
-        [#if presentation.isFirst()]
-        [#-- put a group into a single row --]
-        <div class="row">
-        [/#if]
-        [#-- each presentation into their respective column --]
-        <div class="col-sm-${12/presentation.groupSize}">
-    [/#if]
+  <div class="row">
+    [#list row.children as block]
 
-    [#if "subtitle" = presentation.type]
-        <h3>
-            ${presentation.getContent(lang)}
-        </h3>
-    [#elseif "info" = presentation.type]
-        <p>
-            ${presentation.getContent(lang)}
-        </p>
-    [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            class="presentation bar"
-            [#if presentation.min??]data-min="${presentation.min}"[/#if]
-            [#if presentation.max??]data-max="${presentation.max}"[/#if]
-            [#if "barstacked" = presentation.type]data-stacked="true" data-stacked="true"[/#if]
-            [#if "barstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
-            [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
-            [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
-            data-ref="${factTable}.json?${presentation.dataUrl}"
-            data-sort="${presentation.sortMode}">
-            [@export presentation "image" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-            </div>
-        <hr />
-    [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            class="presentation column"
-            [#if "columnstacked" = presentation.type]data-stacked="true"[/#if]
-            [#if "columnstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
-            [#if presentation.min??]data-min="${presentation.min}"[/#if]
-            [#if presentation.max??]data-max="${presentation.max}"[/#if]
-            [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
-            [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
-            data-ref="${factTable}.json?${presentation.dataUrl}"
-            data-sort="${presentation.sortMode}">
-            [@export presentation "image" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-        </div>
-        <hr />
-    [#elseif "line" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            id = "${presentation.id}"
-            class="presentation line"
-            [#if presentation.min??]data-min="${presentation.min}"[/#if]
-            [#if presentation.max??]data-max="${presentation.max}"[/#if]
-            data-ref="${factTable}.json?${presentation.dataUrl}"
-            data-sort="${presentation.sortMode}"
-            [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
-            [@export presentation "image" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-            </div>
-        <hr />
-    [#elseif "pie" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            class="presentation pie"
-            data-ref="${factTable}.json?${presentation.dataUrl}">
-            [@export presentation "image" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-        </div>
-        <hr />
-    [#elseif "gauge" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            class="presentation gauge"
-            [#if presentation.min??]data-min="${presentation.min}"[/#if]
-            [#if presentation.max??]data-max="${presentation.max}"[/#if]
-            [#if presentation.palette??]data-palette="${presentation.palette}"[/#if]
-            data-ref="${factTable}.json?${presentation.dataUrl}">
-            [@export presentation "image" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-        </div>
-        <hr />
-    [#elseif "table" = presentation.type]
-        [@show_filter_values presentation /]
-        <div
-            class="presentation table"
-            data-column-count="${presentation.columns?size}"
-            data-columns="[#list presentation.columns as column]${column.id!}[/#list]"
-            data-align="[#list presentation.columns as column]${column.valueAlign!} ${column.headerAlign!}[/#list]"
-            data-row-count="${presentation.rows?size}"
-            data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
-            data-ref="${factTable}.json?${presentation.dataUrl}">
-            [@export presentation "table" /]
-            <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
-        </div>
-        <hr />
-    [#else]
+    <div class="col-sm-${12/row.children?size}">
 
-    <h3>${presentation.type}</h3>
-    <p>${presentation.content}</p>
-    [/#if]
+      [#if presentation.groupSize > 0]
+          [#if presentation.isFirst()]
+          [#-- put a group into a single row --]
+          <div class="row">
+          [/#if]
+          [#-- each presentation into their respective column --]
+          <div class="col-sm-${12/presentation.groupSize}">
+      [/#if]
+
+      [#if "subtitle" = presentation.type]
+          <h3>
+              ${presentation.getContent(lang)}
+          </h3>
+      [#elseif "info" = presentation.type]
+          <p>
+              ${presentation.getContent(lang)}
+          </p>
+      [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              class="presentation bar"
+              [#if presentation.min??]data-min="${presentation.min}"[/#if]
+              [#if presentation.max??]data-max="${presentation.max}"[/#if]
+              [#if "barstacked" = presentation.type]data-stacked="true" data-stacked="true"[/#if]
+              [#if "barstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
+              [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
+              [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              data-sort="${presentation.sortMode}">
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+              </div>
+          <hr />
+      [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              class="presentation column"
+              [#if "columnstacked" = presentation.type]data-stacked="true"[/#if]
+              [#if "columnstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
+              [#if presentation.min??]data-min="${presentation.min}"[/#if]
+              [#if presentation.max??]data-max="${presentation.max}"[/#if]
+              [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
+              [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              data-sort="${presentation.sortMode}">
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+          </div>
+          <hr />
+      [#elseif "line" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              id = "${presentation.id}"
+              class="presentation line"
+              [#if presentation.min??]data-min="${presentation.min}"[/#if]
+              [#if presentation.max??]data-max="${presentation.max}"[/#if]
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              data-sort="${presentation.sortMode}"
+              [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+              </div>
+          <hr />
+      [#elseif "pie" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              class="presentation pie"
+              data-ref="${factTable}.json?${presentation.dataUrl}">
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+          </div>
+          <hr />
+      [#elseif "gauge" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              class="presentation gauge"
+              [#if presentation.min??]data-min="${presentation.min}"[/#if]
+              [#if presentation.max??]data-max="${presentation.max}"[/#if]
+              [#if presentation.palette??]data-palette="${presentation.palette}"[/#if]
+              data-ref="${factTable}.json?${presentation.dataUrl}">
+              [@export presentation "image" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+          </div>
+          <hr />
+      [#elseif "table" = presentation.type]
+          [@show_filter_values presentation /]
+          <div
+              class="presentation table"
+              data-column-count="${presentation.columns?size}"
+              data-columns="[#list presentation.columns as column]${column.id!}[/#list]"
+              data-align="[#list presentation.columns as column]${column.valueAlign!} ${column.headerAlign!}[/#list]"
+              data-row-count="${presentation.rows?size}"
+              data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
+              data-ref="${factTable}.json?${presentation.dataUrl}">
+              [@export presentation "table" /]
+              <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+          </div>
+          <hr />
+      [#else]
+
+      <h3>${presentation.type}</h3>
+      <p>${presentation.content}</p>
+      [/#if]
 
 
-    [#if presentation.groupSize > 0]
-        [#-- close presentation groups --]
-        </div>
-        [#if presentation.isLast()]
-        [#-- close row --]
-        </div>
-        [/#if]
-    [/#if]
+      [#if presentation.groupSize > 0]
+          [#-- close presentation groups --]
+          </div>
+          [#if presentation.isLast()]
+          [#-- close row --]
+          </div>
+          [/#if]
+      [/#if]
+
+      </div>
+    [/#list]
+  </div>
 
 [/#list]
 [/#macro]

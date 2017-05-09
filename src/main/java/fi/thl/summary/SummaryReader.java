@@ -28,6 +28,7 @@ import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.DataPresentation;
 import fi.thl.summary.model.MeasureItem;
 import fi.thl.summary.model.Presentation;
+import fi.thl.summary.model.Section;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
 import fi.thl.summary.model.SummaryItem;
@@ -106,6 +107,7 @@ public class SummaryReader {
             summary.setNote(label(root, "note"));
 
             parseFilters();
+
             parsePresentations();
 
             summary.setSource(documentAsString());
@@ -117,7 +119,7 @@ public class SummaryReader {
     private String documentAsString()
             throws TransformerFactoryConfigurationError, TransformerConfigurationException, TransformerException {
         StringWriter writer = new StringWriter();
-        StreamResult result= new StreamResult(writer);
+        StreamResult result = new StreamResult(writer);
         TransformerFactory factory = TransformerFactory.newInstance();
         Transformer transformer = factory.newTransformer();
         transformer.transform(new DOMSource(document), result);
@@ -160,8 +162,38 @@ public class SummaryReader {
     }
 
     private void parsePresentations() {
+        boolean gridFound = false;
+        Section gridSection = new Section();
+
+        // Grid based summary description
+        gridFound = parseGrid(gridSection, gridFound);
+
+        // Non-grid based summary description
+        if (!gridFound) {
+            parsePresentationInSection(root, gridSection);
+        }
+        
+        summary.setSections(gridSection.getChildren());
+    }
+
+    private boolean parseGrid(Section gridSection, boolean gridFound) {
+        for (Node grid : iterator(root, "grid")) {
+            gridFound = true;
+            for (Node row : iterator(grid, "row")) {
+                Section rowSection = new Section();
+                gridSection.addChild(rowSection);
+                for (Node column : iterator(row, "block")) {
+                    Section columnSection = new Section();
+                    parsePresentationInSection(column, columnSection);
+                }
+            }
+        }
+        return gridFound;
+    }
+
+    private void parsePresentationInSection(Node block, Section section) {
         List<Presentation> group = Lists.newArrayList();
-        for (Node node : iterator(root, "presentation")) {
+        for (Node node : iterator(block, "presentation")) {
             Presentation p = createPresentationParserFor(node).parse();
             if (p.isFirst() || !group.isEmpty()) {
                 group.add(p);
@@ -172,6 +204,9 @@ public class SummaryReader {
                 }
                 group.clear();
             }
+            section.addPresentation(p);
+            
+            // Still added to summary to limit code changes required
             summary.addPresentation(p);
         }
     }

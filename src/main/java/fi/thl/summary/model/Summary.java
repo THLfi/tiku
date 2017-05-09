@@ -38,6 +38,7 @@ public class Summary {
     private String factTable;
     private String itemLanguage;
     private String source;
+    private List<Section> sections;
 
     public void setScheme(Scheme scheme) {
         this.scheme = scheme;
@@ -155,6 +156,14 @@ public class Summary {
 
     public void setSource(String documentAsString) {
         this.source = documentAsString;
+    }
+
+    public void setSections(List<Section> children) {
+        this.sections = children;
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 
 }
