@@ -122,7 +122,7 @@ public class HydraSummary extends Summary {
     }
 
     public Label getSubject() {
-        return summary.getSubject();
+        return new HydraLabel(summary.getSubject(), selections);
     }
 
     public Label getTitle() {
@@ -130,7 +130,7 @@ public class HydraSummary extends Summary {
     }
 
     public Label getLink() {
-        return summary.getLink();
+        return new HydraLabel(summary.getLink(), selections);
     }
 
     public Label getNote() {
