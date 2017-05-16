@@ -44,6 +44,10 @@
 		<property name="minIdle" value="0" />
 	</bean>
 
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>	
 
 	<bean id="freemarkerConfiguration"
 		class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">

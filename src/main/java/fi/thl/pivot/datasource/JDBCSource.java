@@ -20,6 +20,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -252,6 +253,7 @@ public class JDBCSource extends HydraSource {
     }
 
     @Override
+    @Transactional
     public Dataset loadSubset(Query queryNodes, List<DimensionNode> filter, boolean showValueTypes) {
         final Dataset newDataSet = new Dataset();
         final String query = buildFactQuery(queryNodes.getNodesPerDimension().values(), filter, showValueTypes);

@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
 import com.google.common.base.Preconditions;
@@ -285,6 +286,7 @@ public abstract class HydraSource {
         return password.equals(masterPassword);
     }
 
+    @Transactional
     public final void loadMetadata() {
 
         final StopWatch watch = new StopWatch();

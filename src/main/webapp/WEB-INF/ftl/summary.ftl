@@ -112,13 +112,13 @@
 [/#macro]
 
 [#macro summary_presentations]
+
 [#list summary.sections as row]
 
   <div class="row">
     [#list row.children as block]
 
     <div class="col-sm-${12/row.children?size}">
-
      [#list block.presentations as presentation]
 
       [#if presentation.groupSize > 0]
@@ -464,7 +464,7 @@
     <script src="${rc.contextPath}/resources/js/d3.min.js"></script>
     <script src="${rc.contextPath}/resources/js/json-stat.js"></script>
     [#--<script src="${rc.contextPath}/resources/js/jspdf.min.js"></script>--]
-    <script src="${rc.contextPath}/resources/js/summary.js?v=${buildTimestamp}&ts=${.now?long}"></script>
+    <script src="${rc.contextPath}/resources/js/summary.js?v=${buildTimestamp}"></script>
 
     <script>
     var labels = {},

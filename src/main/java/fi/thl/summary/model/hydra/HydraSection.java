@@ -45,7 +45,7 @@ public class HydraSection extends Section {
     @Override
     public List<Presentation> getPresentations() {
         
-        return Lists.transform(summaryDelegate.getPresentations(), new Function<Presentation, Presentation>() {
+        return Lists.transform(delegate.getPresentations(), new Function<Presentation, Presentation>() {
 
             @Override
             public Presentation apply(final Presentation p) {
