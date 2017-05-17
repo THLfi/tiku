@@ -6,7 +6,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.summary.model.DataPresentation;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Section;
 import fi.thl.summary.model.Selection;
@@ -19,15 +18,13 @@ public class HydraSection extends Section {
     private Section delegate;
     private HydraSource source;
     private HydraSummary summary;
-    private List<Selection> selections;
     private Summary summaryDelegate;
 
-    public HydraSection(Section input, HydraSource source, Summary summary, HydraSummary hydraSummary, List<Selection> selections) {
+    public HydraSection(Section input, HydraSource source, Summary summary, HydraSummary hydraSummary) {
         this.delegate = input;
         this.source = source;
         this.summaryDelegate = summary;
         this.summary = hydraSummary;
-        this.selections = selections;
     }
 
     @Override
@@ -36,7 +33,7 @@ public class HydraSection extends Section {
 
             @Override
             public Section apply(Section input) {
-                return new HydraSection(input, source, summaryDelegate, summary, selections);
+                return new HydraSection(input, source, summaryDelegate, summary);
             }
 
         });
@@ -50,7 +47,7 @@ public class HydraSection extends Section {
             @Override
             public Presentation apply(final Presentation p) {
                 if (p instanceof TextPresentation) {
-                    return new HydraTextPresentation((TextPresentation) p, selections);
+                    return new HydraTextPresentation((TextPresentation) p, HydraSection.this.summary);
                 } else if (p instanceof TablePresentation) {
                     return new HydraTablePresentation(source, summary, p);
                 } else {

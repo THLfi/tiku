@@ -35,6 +35,7 @@ import fi.thl.summary.model.SummaryItem;
 import fi.thl.summary.model.SummaryStage;
 import fi.thl.summary.model.TablePresentation;
 import fi.thl.summary.model.TextPresentation;
+import fi.thl.summary.model.Value;
 
 /**
  * <p>
@@ -67,7 +68,7 @@ public class SummaryReader {
     private static final String SUPPRESSION_ATTRIBUTE = "suppression";
 
     private static final List<String> textPresentations = ImmutableList.of("subtitle", "info");
-    private static final List<String> dataPresentations = ImmutableList.of("line", "bar", "gauge", "pie");
+    private static final List<String> dataPresentations = ImmutableList.of("line", "bar", "gauge", "pie", "radar");
     private static final List<String> tablePresentations = ImmutableList.of("table");
 
     private static final List<String> stageDefinitionElements = ImmutableList.of("stage", "stageMulti");
@@ -110,8 +111,8 @@ public class SummaryReader {
             summary.setNote(label(root, "note"));
 
             parseFilters();
-
             parsePresentations();
+            parseValues();
 
             summary.setSource(documentAsString());
         } catch (Exception e) {
@@ -134,6 +135,28 @@ public class SummaryReader {
             throw new IllegalStateException("Attempt to read multiple documents using the same SummaryReader intance");
         }
         isDocumentParsed = true;
+    }
+
+    private void parseValues() {
+        for (Node node : iterator(root, "value")) {
+            Value value = new Value();
+            value.setId(attribute(node, "id").toLowerCase());
+            for(Node bind : iterator(node, "bind")) {
+                Selection s = new Selection();
+                s.setDimension(attribute(bind, "dim"));
+                s.addItem(bind.getTextContent().toLowerCase());
+                s.addDefaultItem(bind.getTextContent().toLowerCase());
+                value.addFilter(s);
+            }
+            for(Selection s : parseFilter(summary, node, "filterref")) {
+                value.addFilter(s);
+            }
+            for(Selection s : parseFilter(summary, node, "measureref")) {
+                value.addFilter(s);
+            }
+            
+            summary.addValue(value);
+        }
     }
 
     private void parseFilters() {
@@ -175,12 +198,12 @@ public class SummaryReader {
         if (!gridFound) {
             Section row = new Section();
             Section block = new Section();
-            
+
             row.addChild(block);
             gridSection.addChild(row);
             parsePresentationInSection(root, block);
         }
-        
+
         summary.setSections(gridSection.getChildren());
     }
 
@@ -214,7 +237,7 @@ public class SummaryReader {
                 group.clear();
             }
             section.addPresentation(p);
-            
+
             // Still added to summary to limit code changes required
             summary.addPresentation(p);
         }
@@ -309,6 +332,21 @@ public class SummaryReader {
         }
         return attributeNode.getTextContent();
     }
+    
+
+    private static List<Selection> parseFilter(Summary summary, Node node, String type) {
+        Set<String> ids = Sets.newHashSet();
+        List<Selection> filters = Lists.newArrayList();
+        for (Node n : iterator(node, type)) {
+            if (ids.contains(n.getTextContent().toLowerCase())) {
+                throw new IllegalStateException(n.getTextContent() + " defined multiple times");
+            }
+            ids.add(n.getTextContent().toLowerCase());
+            filters.add(summary.getSelection(n.getTextContent().toLowerCase()));
+        }
+        return filters;
+    }
+
 
     private static interface PresentationParser {
 
@@ -597,13 +635,8 @@ public class SummaryReader {
         }
 
         private void parseFilter(DataPresentation p, String type) {
-            Set<String> filters = Sets.newHashSet();
-            for (Node n : iterator(node, type)) {
-                if (filters.contains(n.getTextContent().toLowerCase())) {
-                    throw new IllegalStateException(n.getTextContent() + " defined multiple times");
-                }
-                filters.add(n.getTextContent().toLowerCase());
-                p.addFilter(summary.getSelection(n.getTextContent().toLowerCase()));
+            for(Selection s : SummaryReader.parseFilter(summary, node, type)) {
+                p.addFilter(s);
             }
         }
 

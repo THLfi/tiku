@@ -332,6 +332,15 @@ public class DimensionNode implements Comparable<DimensionNode> {
     }
 
     public Label getProperty(String property) {
-        return properties.get(property);
+        if("code".equals(property)) {
+            Label l =  new Label();
+            l.setValue("fi", getCode());
+            return l;
+        } else if ("label".equals(property)) {
+            return getLabel();
+        } else {
+            return properties.get(property);
+        }
     }
 }
+    

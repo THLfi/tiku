@@ -8,12 +8,12 @@ import fi.thl.summary.model.TextPresentation;
 
 public class HydraTextPresentation extends TextPresentation {
 
-    private List<Selection> selections;
+    private HydraSummary summary;
     private TextPresentation p;
 
-    public HydraTextPresentation(TextPresentation p, List<Selection> selections) {
+    public HydraTextPresentation(TextPresentation p, HydraSummary summary) {
         this.p = p;
-        this.selections = selections;
+        this.summary = summary;
     }
 
     public void setId(String id) {
@@ -25,7 +25,7 @@ public class HydraTextPresentation extends TextPresentation {
     }
 
     public Label getContent() {
-        return new HydraLabel(p.getContent(), selections);
+        return new HydraLabel(p.getContent(), summary);
     }
 
     public String getContent(String language) {

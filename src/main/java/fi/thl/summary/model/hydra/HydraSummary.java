@@ -1,6 +1,7 @@
 package fi.thl.summary.model.hydra;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,10 +12,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fi.thl.pivot.datasource.HydraSource;
+import fi.thl.pivot.model.Dataset;
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
+import fi.thl.pivot.model.Query;
 import fi.thl.pivot.web.tools.FindNodes;
 import fi.thl.pivot.web.tools.FindNodes.SearchType;
 import fi.thl.summary.model.DataPresentation;
@@ -26,6 +29,7 @@ import fi.thl.summary.model.SummaryDimension;
 import fi.thl.summary.model.SummaryItem;
 import fi.thl.summary.model.TablePresentation;
 import fi.thl.summary.model.TextPresentation;
+import fi.thl.summary.model.Value;
 
 /**
  * Provides an delegate for {@link Summary} that contains a reference to the
@@ -37,11 +41,13 @@ import fi.thl.summary.model.TextPresentation;
  */
 public class HydraSummary extends Summary {
 
+    private static final List<Boolean> TRUE_LIST = Collections.singletonList(true);
     final HydraSource source;
     private final Summary summary;
     private List<Selection> selections;
     private Map<String, List<DimensionNode>> drilledDimensions = Maps.newHashMap();
     private Map<String, DimensionLevel> dimensionMaxLevel = Maps.newHashMap();
+    private Map<String, String> valueCache = Maps.newHashMap();
 
     public HydraSummary(Summary theSummary, HydraSource theSource) {
         this.source = theSource;
@@ -122,19 +128,19 @@ public class HydraSummary extends Summary {
     }
 
     public Label getSubject() {
-        return new HydraLabel(summary.getSubject(), selections);
+        return new HydraLabel(summary.getSubject(), this);
     }
 
     public Label getTitle() {
-        return new HydraLabel(summary.getTitle(), selections);
+        return new HydraLabel(summary.getTitle(), this);
     }
 
     public Label getLink() {
-        return new HydraLabel(summary.getLink(), selections);
+        return new HydraLabel(summary.getLink(), this);
     }
 
     public Label getNote() {
-        return new HydraLabel(summary.getNote(), selections);
+        return new HydraLabel(summary.getNote(), this);
     }
 
     public List<Presentation> getPresentations() {
@@ -143,7 +149,7 @@ public class HydraSummary extends Summary {
             @Override
             public Presentation apply(final Presentation p) {
                 if (p instanceof TextPresentation) {
-                    return new HydraTextPresentation((TextPresentation) p, selections);
+                    return new HydraTextPresentation((TextPresentation) p, HydraSummary.this);
                 } else if (p instanceof TablePresentation) {
                     return new HydraTablePresentation(source, HydraSummary.this, p);
                 } else {
@@ -152,15 +158,15 @@ public class HydraSummary extends Summary {
             }
         });
     }
-    
+
     public List<Section> getSections() {
         return Lists.transform(summary.getSections(), new Function<Section, Section>() {
 
             @Override
             public Section apply(Section input) {
-               return new HydraSection(input, source, summary, HydraSummary.this, selections);
+                return new HydraSection(input, source, summary, HydraSummary.this);
             }
-            
+
         });
     }
 
@@ -265,6 +271,69 @@ public class HydraSummary extends Summary {
             }
         }
         return null;
+    }
+
+    public String getValueOf(String id) {
+        if (valueCache.containsKey(id)) {
+            return valueCache.get(id);
+        }
+        String result;
+        Value v = summary.getValue(id);
+        if (null == v) {
+            result = "-";
+        } else {
+            result = selectValue(id);
+        }
+        valueCache.put(id, result);
+        return result;
+    }
+
+    private String selectValue(String id) {
+        Value v = summary.getValue(id);
+        Query query = new Query();
+        boolean columnAdded = false;
+        List<Selection> filters = Lists.newArrayList(Util.extendFilters(source, this, v.getFilters()));
+        List<DimensionNode> keys = Lists.newArrayList();
+
+        for (Dimension dim : source.getDimensions()) {
+            DimensionNode node = findNode(dim, findFilter(filters, dim));
+            keys.add(node);
+            addToQuery(query, columnAdded, node);
+            columnAdded = true;
+        }
+        Dataset dataset = source.loadSubset(query, Collections.emptyList());
+        return dataset.get(keys);
+    }
+
+    private void addToQuery(Query query, boolean columnAdded, DimensionNode node) {
+        if (!columnAdded) {
+            query.addColumnNode(Collections.singletonList(Collections.singletonList(node)),
+                    TRUE_LIST);
+        } else {
+            query.addRowNode(Collections.singletonList(Collections.singletonList(node)),
+                    TRUE_LIST);
+        }
+    }
+
+    private DimensionNode findNode(Dimension dim, Selection filter) {
+        if (null != filter) {
+            List<DimensionNode> nodes = ((HydraFilter) filter).getSelected();
+            if (nodes.size() == 1) {
+                return nodes.get(0);
+            }
+        }
+        return dim.getRootNode();
+    }
+
+    private Selection findFilter(List<Selection> filters, Dimension dim) {
+        Selection filter = null;
+        for (Selection f : filters) {
+            if (f.getDimension().equals(dim.getId())) {
+                filter = f;
+                break;
+            }
+        }
+        return filter;
     }
 
 }

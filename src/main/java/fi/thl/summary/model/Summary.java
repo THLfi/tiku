@@ -39,6 +39,8 @@ public class Summary {
     private String itemLanguage;
     private String source;
     private List<Section> sections;
+    
+    private Map<String, Value> values = Maps.newHashMap();
 
     public void setScheme(Scheme scheme) {
         this.scheme = scheme;
@@ -164,6 +166,14 @@ public class Summary {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addValue(Value value) {
+        this.values.put(value.getId(), value);
+    }
+    
+    public Value getValue(String id) {
+        return this.values.get(id);
     }
 
 }
