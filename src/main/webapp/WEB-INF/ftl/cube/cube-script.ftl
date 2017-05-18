@@ -1,5 +1,6 @@
 [#ftl]
 var thl = {
+    id: '${subject}.${hydra}.${cubeId}',
     url: '${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/',
     messages: {
       'cube.dimension.sort.asc': '${message("cube.dimension.sort.asc")?js_string}',

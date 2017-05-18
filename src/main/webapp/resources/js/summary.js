@@ -351,6 +351,7 @@ function selectChartType (e) {
 
       presentation: function (opt) {
         var domainRange,
+        trueDomainRange,
           sums = [],
           percent = false,
           stacked = false,
@@ -447,16 +448,12 @@ function selectChartType (e) {
         function range () {
           var min = 0;
           var max = 0;
-          var trueMin = Number.MAX_VALUE;
-          var trueMax = Number.MIN_VALUE;
           for (var i = 0; i < opt.data.length; ++i) {
             var sum = 0;
             for (var j = 0; j < opt.series.length; ++j) {
               var v = opt.callback(j, i);
               min = Math.min(min, v);
               max = Math.max(max, v);
-              trueMin = Math.min(trueMin, v);
-              trueMax = Math.max(trueMax, v);
               if (opt.showCi) {
                 min = Math.min(min, opt.callback(j, i, 1));
                 max = Math.max(max, opt.callback(j, i, 2));
@@ -468,10 +465,19 @@ function selectChartType (e) {
               max = Math.max(max, sum);
             }
           }
-          if (opt.percent) {
-            domainRange = [0, 100, trueMin, trueMax];
+        
+          max = max * 1.2;
+
+          if(min <= 0) {
+            min = min * 1.2;
           } else {
-            domainRange = [min, max, trueMin, trueMax];
+            min = min - min * 0.2;
+          }
+
+          if (opt.percent) {
+            domainRange = [0, 100];
+          } else {
+            domainRange = [Math.floor(min), Math.ceil(max)];
           }
 
           // Scale to range if present
@@ -618,11 +624,8 @@ function selectChartType (e) {
               chartColumnWidth = opt.stacked ? ordinalScale.rangeBand() - 10 * barAndColumnMargin : (ordinalScale.rangeBand() - BAR_GROUP_MARGIN - opt.series.length * BAR_MARGIN) / (opt.series.length),
               scaledZero = scaleValue(0);
 
-              if (chartColumnWidth <= 10) {
-                chartColumnWidth = opt.stacked
-                  ? ordinalScale.rangeBand() - 1
-                  : ordinalScale.rangeBand() / opt.series.length - 1;
-              }
+            
+
 
             svg
               .append('line')
@@ -1300,7 +1303,7 @@ function selectChartType (e) {
          * axis domain
          */
         function drawVerticalValueAxis (yAxisPos, svg) {
-          svg
+         svg
             .append('g')
             .attr('class', 'axis')
             .attr('transform', 'translate(' + yAxisPos + ', 0)')
@@ -1493,8 +1496,8 @@ function selectChartType (e) {
          */
         function calculateValueSize (range) {
           var max = Math.max(
-            range[0].toString().replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1 ').length,
-            range[1].toString().replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1 ').length
+            (range[0].toString().replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1 ')).length,
+            (range[1].toString().replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1 ')).length
           );
 
           return Math.max(pxWidth(max) + (max / 3.0 * CHARACTER_WIDTH), MINIMUM_VALUE_LABEL_WIDTH);

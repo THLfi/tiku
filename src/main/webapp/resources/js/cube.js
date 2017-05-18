@@ -1,5 +1,27 @@
 (function ($, thl) {
   $(document).ready(function () {
+
+    $('.glyphicon-resize-full').click(function() {
+      var t = $(this);
+      t.toggleClass('glyphicon-resize-full glyphicon-resize-small');
+      
+      if(t.is('.glyphicon-resize-full')) {
+        $('.pivot-sidebar, .pivot-header, .pivot-sidebar, .pivot-footer').show();
+         $('.pivot-content')
+          .css('width','80%')
+          .css('left','19.5%')
+          .css('position','absolute');
+        $('.pivot-body').css('top', '145px');
+      } else {
+        $('.pivot-sidebar, .pivot-header, .pivot-sidebar, .pivot-footer').hide();
+        $('.pivot-content')
+          .css('width','100%')
+          .css('left','initial')
+          .css('position','static');
+        $('.pivot-body').css('top', '0');
+      }
+    });
+
     function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {
         inputElement = $(inputElement);
@@ -26,8 +48,8 @@
       treeBrowser.toggleClass('active');
     });
 
-    var traverseDimensionTree = function (dimension, node) {
-      var children = $('<ul>').addClass('tree');
+    var traverseDimensionTree = function (dimension, node, i) {
+      var children = $('<ul>').addClass('tree')
       for (var n = 0; n < node.children.length; ++n) {
         var li = $('<li>')
           .append(
@@ -58,7 +80,10 @@
     });
 
     $.each(thl.pivot.dim, function (i, v) {
-      var labelSpan = $('<span>').html(v.label);
+      var labelSpan = $('<span>')
+        .html(v.label)
+        .attr('dim-ref', v.id)
+        .attr('node-ref', '0');
       var subtree = $('<li>').append(labelSpan);
       if (v.children.length > 0) {
         labelSpan.prepend($('<span>').addClass('caret caret-right'));
@@ -67,7 +92,7 @@
       treeBrowser.append(subtree);
     });
 
-    $('.tree-browser>li>span,.tree>li>span')
+    var nodes = $('.tree-browser>li>span,.tree>li>span')
       .click(function () {
         var t = $(this);
         var span = t.find('span').toggleClass('caret-right');
@@ -75,7 +100,28 @@
           t.siblings('ul').toggleClass('open');
           t.closest('li').siblings().toggleClass('closed');
         }
+        if(window.sessionStorage) {
+          var k = thl.id + ':' + t.attr('dim-ref') + '-' + t.attr('node-ref');
+          if(window.sessionStorage.getItem(k)) {
+            window.sessionStorage.removeItem(k)
+          } else {
+            window.sessionStorage.setItem (k,'1');
+          }
+        }
       });
+    if(window.sessionStorage) {
+      nodes.each(function () {
+        var t = $(this);
+        var k = thl.id + ':' + t.attr('dim-ref') + '-' + t.attr('node-ref');
+        if(window.sessionStorage.getItem(k)) {
+          var span = t.find('span').toggleClass('caret-right');
+          if (span.size() > 0) {
+            t.siblings('ul').toggleClass('open');
+            t.closest('li').siblings().toggleClass('closed');
+          }
+        }
+      });
+    }
     $('.tree>li>span')
       .draggable({
         cursor: 'move',

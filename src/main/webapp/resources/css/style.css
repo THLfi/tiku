@@ -64,6 +64,10 @@ h1 {
 	padding-top: 0px;
 }
 
+.glyphicon-resize-full, .glyphicon-resize-small {
+	cursor:pointer;
+}
+
 .options.form-control {
 	height: 100px;
 	overflow-y: auto;

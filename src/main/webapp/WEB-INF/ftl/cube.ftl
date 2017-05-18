@@ -80,6 +80,10 @@
 
     <div class="pivot-content">
 
+        <div class="pull-right">
+            <span class="glyphicon glyphicon-resize-full"></span>
+        </div>
+
         [#include "cube/cube-filter.ftl" /]
 
         [#if pivot.columns?size == 0 || pivot.rows?size == 0]
