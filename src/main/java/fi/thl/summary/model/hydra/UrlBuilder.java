@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.summary.model.Presentation.SortMode;
+import fi.thl.summary.model.Presentation.SuppressMode;
 
 public class UrlBuilder {
 
@@ -48,8 +49,16 @@ public class UrlBuilder {
         sb.append("&sort=c0");
     }
 
-    public void suppress() {
-        sb.append("&fo&fz");
+    public void suppress(SuppressMode suppressMode) {
+        if(null == suppressMode || SuppressMode.none.equals(suppressMode)) {
+            
+        } else if (SuppressMode.empty.equals(suppressMode)) {
+            sb.append("&fo");
+        } else if (SuppressMode.zero.equals(suppressMode)) {
+            sb.append("&fz");
+        } else if (SuppressMode.all.equals(suppressMode)) {
+            sb.append("&fo&fz");
+        }
     }
 
     public void showConfidenceInterval() {

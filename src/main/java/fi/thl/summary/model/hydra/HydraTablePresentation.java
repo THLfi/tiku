@@ -1,5 +1,6 @@
 package fi.thl.summary.model.hydra;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -69,7 +70,6 @@ public class HydraTablePresentation extends TablePresentation {
     public String getDataUrl() {
 
         boolean hasMeasureFilter = false;
-        boolean measureAdded = false;
         boolean hasMeasureDimension = false;
         for (SummaryItem d : getRows()) {
             if (((Extension) d).getDimension().equals("measure")) {
@@ -117,10 +117,10 @@ public class HydraTablePresentation extends TablePresentation {
         // NOTE: order of parameters must equal the order in CubeRequest.toDataUrl or else
         // cubes with restricted access via summaries do not work .
         for (Selection s : getFilters()) {
-            if ("measure".equals(s.getDimension()) ) {
+            if ("measure".equals(s.getDimension())) {
                 url.addColumns();
                 HydraFilter f = ((HydraFilter) s);
-                url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));
+                url.addParameter(s.getDimension(), getSelectedNodes(s));
             }
         }
         for (Selection s : getFilters()) {
@@ -130,18 +130,51 @@ public class HydraTablePresentation extends TablePresentation {
                 // so we use filters
                 url.addFilters();
                 HydraFilter f = ((HydraFilter) s);
-                url.addParameter(s.getDimension(), Lists.newArrayList(f.getSelected()));
+                url.addParameter(s.getDimension(), getSelectedNodes(s));
             }
         }
 
-        if (delegate.getSuppress()) {
-            url.suppress();
-        }
+        url.suppress(delegate.getSuppress());
+
         return url.toString();
+    }
+
+    private List<DimensionNode> getSelectedNodes(Selection s) {
+        List<DimensionNode> nodes;
+        List<DimensionNode> selected = ((HydraFilter) s).getSelected();
+        switch (s.getSelectionMode()) {
+        case directDescendants:
+            nodes = Lists.newArrayList();
+            for (DimensionNode node : selected) {
+                nodes.add(node);
+                nodes.addAll(node.getChildren());
+            }
+            break;
+        case allDescendants:
+            nodes = Lists.newArrayList();
+            addRecursive(selected, nodes);
+            break;
+        default:
+            nodes = selected;
+            break;
+        }
+        return nodes;
+
+    }
+
+    private void addRecursive(Collection<DimensionNode> selected, List<DimensionNode> nodes) {
+        for (DimensionNode node : selected) {
+            nodes.add(node);
+            addRecursive(node.getChildren(), nodes);
+        }
     }
 
     private List<DimensionNode> nodesOf(SummaryItem d) {
         return ((Extension) d).getNodes();
     }
 
+    @Override
+    public SuppressMode getSuppress() {
+        return delegate.getSuppress();
+    }
 }

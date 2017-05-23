@@ -1,5 +1,6 @@
 package fi.thl.summary.model.hydra;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -65,9 +66,9 @@ public class HydraDataPresentation extends DataPresentation {
         appendDimensionNodes(url);
         appendMeasureItems(url);
         appendFilters(url);
-        if (delegate.getSuppress()) {
-            url.suppress();
-        }
+
+        url.suppress(delegate.getSuppress());
+
         if (delegate.getShowConfidenceInterval()) {
             url.showConfidenceInterval();
         }
@@ -88,21 +89,47 @@ public class HydraDataPresentation extends DataPresentation {
     private void appendFilters(UrlBuilder url) {
         for (Selection s : getFilters()) {
             if ("measure".equals(s.getDimension())) {
-           //
+                //
             } else {
                 // We do not want extra dimension in the returned JSON-STAT
                 // resource
                 // so we use filters
                 url.addFilters();
             }
-            url.addParameter(s.getDimension(), Lists.newArrayList(((HydraFilter) s).getSelected()));
-            
+            List<DimensionNode> nodes;
+            List<DimensionNode> selected = ((HydraFilter) s).getSelected();
+            switch (s.getSelectionMode()) {
+            case directDescendants:
+                nodes = Lists.newArrayList();
+                for (DimensionNode node : selected) {
+                    nodes.add(node);
+                    nodes.addAll(node.getChildren());
+                }
+                break;
+            case allDescendants:
+                nodes = Lists.newArrayList();
+                addRecursive(selected, nodes);
+                break;
+            default:
+                nodes = selected;
+                break;
+            }
+            url.addParameter(s.getDimension(), nodes);
+
+        }
+    }
+
+    private void addRecursive(Collection<DimensionNode> selected, List<DimensionNode> nodes) {
+        for (DimensionNode node : selected) {
+            nodes.add(node);
+            addRecursive(node.getChildren(), nodes);
         }
     }
 
     private void appendMeasureItems(UrlBuilder url) {
         if (delegate.hasMeasures()) {
-            url.addParameter("measure", new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes());
+            url.addParameter("measure",
+                    new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes());
             url.addColumns();
         }
     }
@@ -165,15 +192,15 @@ public class HydraDataPresentation extends DataPresentation {
     }
 
     public List<DimensionNode> getEmphasizedNode() {
-        if(emphasizedNodeCached) {
+        if (emphasizedNodeCached) {
             return emphasizedNode;
         }
-        if(null == getEmphasize()) {
+        if (null == getEmphasize()) {
             return null;
         }
         emphasizedNode = finder.findItems(getEmphasize(), source);
         emphasizedNodeCached = true;
         return emphasizedNode;
-        
+
     }
 }

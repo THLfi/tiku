@@ -302,6 +302,10 @@
    padding-right: 24px;
  }
 
+.table-responsive > .table {
+  margin-bottom: 0;
+}
+
  @media (min-width: 480px) {
    header h1 {
      font-size: 18px;

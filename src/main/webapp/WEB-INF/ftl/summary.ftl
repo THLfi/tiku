@@ -229,7 +229,8 @@
               data-align="[#list presentation.columns as column]${column.valueAlign!} ${column.headerAlign!}[/#list]"
               data-row-count="${presentation.rows?size}"
               data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
-              data-ref="${factTable}.json?${presentation.dataUrl}">
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              data-suppress="${presentation.suppress}">
               [@export presentation "table" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>

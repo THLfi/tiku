@@ -154,6 +154,11 @@ public class AmorDao {
         return jdbcTemplate.query(String.format(queries.getProperty("list-reports"), schema), new ReportMapper(),
                 environment, environment);
     }
+    
+    public List<Report> listSubjects(String environment) {
+        Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment " + environment);
+        return jdbcTemplate.query("select subject, subject as name, '' hydra, to_timestamp(max(run_id)::text,'yyyymmddHH24MISSMS') added_meta_hydra, '' run_id, '' logical_name, '' view_type from amor_prod.meta_state_current where state = ? group by subject order by subject ", new ReportMapper(), environment);
+    }
 
     @AuditedMethod
     public List<Report> listReports(String environment, String subject) {
@@ -367,5 +372,7 @@ public class AmorDao {
                 String.format(queries.getProperty("is-protected"), "amor_" + schema + ".x" + runId + "_meta"),
                 Integer.class);
     }
+
+
 
 }

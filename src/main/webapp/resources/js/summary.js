@@ -225,28 +225,49 @@ function selectChartType (e) {
          * row -> current row element
          * rowVals -> array of header node identifiers
          */
-        function createRowHeaderCells (ri, row, rowVals) {
+        function createRowHeaderCells (ri, row, rowVals, rowHeaders, rowIndex) {
+          var hasChanged = false;
           for (var level = 0; level < opt.rowCount; ++level) {
-            createRowHeaderCell(rowVals, row, level);
+            hasChanged = createRowHeaderCell(rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged);
           }
         }
 
-        function createRowHeaderCell (rowVals, row, level) {
+        function createRowHeaderCell (rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged) {
           var nodeId = rowVals[level];
           var content = labels[nodeId];
-          var th = $('<th>')
-            .attr('data-id', nodeId);
-          if (canDrill(nodeId)) {
-            var link = $('<a>')
-              .attr('href', '#')
-              .text(content)
-              .click(drillDown(nodeId, dimensionData[nodeId].dim));
-            th.append(link);
+          var th;
+          if(!hasChanged && rowIndex > 0 && nodeId == rowHeaders[level][rowIndex - 1].attr('data-id')) {
+            th = rowHeaders[level][rowIndex - 1];
+            span = th.attr('rowspan');
+            if(!span) {
+              th.attr('rowspan', 2);
+            } else {
+              th.attr('rowspan', parseInt(span) + 1);
+            }
           } else {
-            th.text(content);
+            th = $('<th>').attr('data-id', nodeId);
+            row.append(th);
+            hasChanged = true;
           }
-          row.append(th);
-          return th;
+
+          if(rowHeaders[level].length == rowIndex) {
+            rowHeaders[level].push(th);
+          } else {
+            rowHeaders[level][rowIndex] = th;
+          }
+
+          if(!th.attr('rowspan')) {
+            if (canDrill(nodeId)) {
+              var link = $('<a>')
+                .attr('href', '#')
+                .text(content)
+                .click(drillDown(nodeId, dimensionData[nodeId].dim));
+              th.append(link);
+            } else {
+              th.text(content);
+            }
+          }
+          return hasChanged;
         }
 
         /**
@@ -267,8 +288,11 @@ function selectChartType (e) {
                 .append('<span>..</span>')
                 .css('text-align', opt.align[0])
               );
+              if(hasValue || opt.suppress === 'none' || opt.suppress === 'zero') {
+                hasValue = true;
+              }
             } else {
-              hasValue = true;
+              hasValue = hasValue || (+val.value != 0 || (opt.suppress != 'all' && opt.supress != 'zero'));
               row.append(
                 $('<td>')
                 .append(
@@ -280,6 +304,7 @@ function selectChartType (e) {
                 )
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
+              
             }
             i += 1;
           });
@@ -289,28 +314,40 @@ function selectChartType (e) {
         var tableContainer = $('<div></div>').addClass('table-responsive');
         var table =
           $('<table>')
-            .addClass('table table-striped table-condensed')
+            .addClass('table table-condensed')
             .append(createTableHead());
         var body = $('<tbody>');
 
         var dim = opt.dataset.Dimension();
         var cols = 1;
         var ri = 0;
+        var rowIndex = 0
         var ari = 0;
         for (var i = opt.rowCount; i < dim.length; ++i) {
           cols *= dim[i].length;
         }
         var thCount = 0;
-        var rowspanPerLevel = [];
+        var rowHeaders = [];
+        for(var i = 0; i < opt.rowCount; ++i) {
+          rowHeaders[i] = [];
+        }
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
-          createRowHeaderCells(ri, row, rowVals, rowspanPerLevel);
+          createRowHeaderCells(ri, row, rowVals, rowHeaders, rowIndex);
           if (createRowValueCells(ri * cols, row, rowIndices)) {
             if (ari === 0) {
               thCount = $(row).find('th').size();
               ari += 1;
             }
             body.append(row);
+            rowIndex++;
+          } else {
+            for(var i = 0; i < opt.rowCount; ++i) {
+              var th = rowHeaders[i][rowIndex];
+              if(th.attr('rowspan')) {
+                th.attr('rowspan', +th.attr('rowspan') - 1);
+              }
+            }
           }
           ri += 1;
         });
@@ -623,9 +660,6 @@ function selectChartType (e) {
             var offsets = [],
               chartColumnWidth = opt.stacked ? ordinalScale.rangeBand() - 10 * barAndColumnMargin : (ordinalScale.rangeBand() - BAR_GROUP_MARGIN - opt.series.length * BAR_MARGIN) / (opt.series.length),
               scaledZero = scaleValue(0);
-
-            
-
 
             svg
               .append('line')
@@ -1851,7 +1885,8 @@ function selectChartType (e) {
                 dataset: dataset,
                 rowCount: parseInt(target.attr('data-row-count')),
                 columnCount: parseInt(target.attr('data-column-count')),
-                align: target.attr('data-align').split(' ')
+                align: target.attr('data-align').split(' '),
+                suppress: target.attr('data-suppress')
               });
           } else {
             summary.presentation({

@@ -25,7 +25,7 @@ public class DataPresentation implements Presentation {
     private Integer min, max;
     private int groupSize = 1;
     private boolean isFirst, isLast;
-    private boolean suppress;
+    private SuppressMode suppress;
     private boolean showConfidenceInterval;
     private boolean showSampleSize;
     private List<String> emphasize = new ArrayList<>();
@@ -113,11 +113,11 @@ public class DataPresentation implements Presentation {
         this.sortMode = sortMode;
     }
 
-    public void setSuppress(boolean suppress) {
+    public void setSuppress(SuppressMode suppress) {
         this.suppress = suppress;
     }
 
-    public boolean getSuppress() {
+    public SuppressMode getSuppress() {
         return this.suppress;
     }
 

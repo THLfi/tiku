@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.AmorDao;
@@ -66,9 +65,9 @@ public class AmorListController {
             return "error";
         }
 
-        model.addAttribute("reports", dao.listReports(env));
+        model.addAttribute("reports", dao.listSubjects(env));
 
-        return "amor-list";
+        return "amor-list-env";
     }
 
     private Date getLatestUpdate(Collection<Report> reports) {

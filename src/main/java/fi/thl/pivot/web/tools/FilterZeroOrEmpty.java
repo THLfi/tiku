@@ -25,7 +25,7 @@ public final class FilterZeroOrEmpty implements Predicate<PivotCell> {
         if ("..".equals(input.getValue())) {
             return true;
         }
-        return input.getValue().matches("^0*(,0*)?$");
+        return input.getValue().matches("^0*([,\\.]0*)?$");
 
     }
 }

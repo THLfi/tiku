@@ -8,8 +8,40 @@ import java.util.TreeSet;
 
 public class Selection {
 
+    public static enum LabelMode {
+        dimension, stage;
+
+        public static LabelMode fromString(String attribute) {
+            if ("stage".equalsIgnoreCase(attribute)) {
+                return LabelMode.stage;
+            } else {
+                return LabelMode.dimension;
+            }
+        }
+    }
+
+    public static enum SelectionMode {
+        self, directDescendants, allDescendants;
+
+        public static SelectionMode fromString(String attribute) {
+            if (null == attribute) {
+                return SelectionMode.self;
+            }
+            if ("direct".equalsIgnoreCase(attribute)) {
+                return SelectionMode.directDescendants;
+            }
+            if ("all".equalsIgnoreCase(attribute)) {
+                return SelectionMode.allDescendants;
+            }
+            return self;
+        }
+    }
+
     private String id;
     private String dimension;
+    private LabelMode labelMode;
+    private SelectionMode selectionMode;
+
     private List<String> items = new ArrayList<>();
     private List<String> stages = new ArrayList<>();
     private List<String> sets = new ArrayList<>();
@@ -104,5 +136,21 @@ public class Selection {
 
     public boolean getIsCompleteDimension() {
         return completeDimension;
+    }
+
+    public LabelMode getLabelMode() {
+        return labelMode;
+    }
+
+    public void setLabelMode(LabelMode labelMode) {
+        this.labelMode = labelMode;
+    }
+
+    public SelectionMode getSelectionMode() {
+        return selectionMode;
+    }
+
+    public void setSelectionMode(SelectionMode selectionMode) {
+        this.selectionMode = selectionMode;
     }
 }

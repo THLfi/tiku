@@ -10,6 +10,7 @@ import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
 import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
 
@@ -113,6 +114,7 @@ public final class HydraFilter extends Selection {
                 if (dim.getId().equalsIgnoreCase(getDimension())) {
                     if (!getItems().isEmpty() || !getSets().isEmpty()) {
                         List<DimensionNode> options = new ArrayList<>();
+
                         FilterStage stage = new FilterStage(dim.getLabel(), options);
                         stage.setScheme(summary.getScheme());
 
@@ -143,7 +145,8 @@ public final class HydraFilter extends Selection {
         int stageIndex = 0;
         while (level != null) {
             if (stages.size() > stageIndex && stages.get(stageIndex).equals(level.getId())) {
-                FilterStage stage = new FilterStage(stages.size() == 1 ? dim.getLabel() : level.getLabel(), level.getNodes());
+                Label label = delegate.getLabelMode().equals(LabelMode.dimension) && stages.size() == 1 ? dim.getLabel() : level.getLabel();
+                FilterStage stage = new FilterStage(label, level.getNodes());
                 stage.setScheme(summary.getScheme());
                 stage.setParent(parent);
                 filterStages.add(stage);
@@ -205,6 +208,16 @@ public final class HydraFilter extends Selection {
     @Override
     public boolean getIsCompleteDimension() {
         return delegate.getIsCompleteDimension();
+    }
+    
+    @Override
+    public SelectionMode getSelectionMode() {
+        return delegate.getSelectionMode();
+    }
+    
+    @Override
+    public LabelMode getLabelMode() {
+        return delegate.getLabelMode();
     }
 
 }

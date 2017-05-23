@@ -168,6 +168,10 @@ public class SummaryReader {
             selection.setMultiple(BOOLEAN_YES.equals(attribute(node, "multi")));
             selection.setSearchable(BOOLEAN_YES.equals(attribute(node, "search")));
 
+            selection.setLabelMode(Selection.LabelMode.fromString(attribute(node, "label")));
+            selection.setSelectionMode(Selection.SelectionMode.fromString(attribute(node, "include_descendants")));
+            
+            
             selection.setDimension(firstChildNode(node, DIMENSION_ELEMENT).getTextContent());
 
             for (Node item : iterator(node, "item")) {
@@ -387,7 +391,7 @@ public class SummaryReader {
         public Presentation parse() {
             TablePresentation p = new TablePresentation();
 
-            p.setSuppress(BOOLEAN_YES.equals(attribute(node, SUPPRESSION_ATTRIBUTE)));
+            p.setSuppress(Presentation.SuppressMode.fromString(attribute(node, SUPPRESSION_ATTRIBUTE)));
 
             // We have to parse filters before dimensions as dimension
             // may have an unspecified stage in which case if filter
@@ -492,7 +496,7 @@ public class SummaryReader {
 
         protected Presentation parse(DataPresentation p) {
 
-            p.setSuppress(BOOLEAN_YES.equals(attribute(node, SUPPRESSION_ATTRIBUTE)));
+            p.setSuppress(Presentation.SuppressMode.fromString(attribute(node, SUPPRESSION_ATTRIBUTE)));
 
             Node typeNode = firstChildNode(node, "type");
             // As it happens, old version was case insensitive so we have to

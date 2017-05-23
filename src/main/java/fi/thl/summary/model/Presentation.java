@@ -12,6 +12,29 @@ public interface Presentation {
     public static enum SortMode {
         none, desc, asc
     }
+    
+    public static enum SuppressMode {
+        none, empty, zero, all;
+
+        public static SuppressMode fromString(String attribute) {
+            if(null == attribute) {
+                return all;
+            }
+            if("no".equalsIgnoreCase(attribute)) {
+                return none;
+            }
+            if("yes".equalsIgnoreCase(attribute)) {
+                return all;
+            }
+            if("empty".equalsIgnoreCase(attribute)) {
+                return empty;
+            }
+            if("zero".equalsIgnoreCase(attribute)) {
+                return zero;
+            }
+            return all;
+        }
+    }
 
     /**
      * 

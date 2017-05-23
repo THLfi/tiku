@@ -163,7 +163,7 @@ public class XlsxExporter {
     }
 
     private void autosizeColumns(Sheet sheet, Pivot pivot) {
-        for (int i = 0; i < pivot.getColumns().size() + pivot.getColumnCount(); ++i) {
+        for (int i = 0; i < pivot.getRows().size() + pivot.getColumnCount(); ++i) {
             sheet.autoSizeColumn(i, true);
         }
     }
