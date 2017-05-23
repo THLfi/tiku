@@ -1417,7 +1417,7 @@ function selectChartType (e) {
             .scale(ordinalScale)
             .orient('left')
             .tickFormat(function (d) {
-              return pxWidth(labels[d].length) <= MAX_LABEL_LENGTH ? labels[d] : labels[d].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
+              return pxWidth(labels[d]?labels[d].length:0) <= MAX_LABEL_LENGTH ? labels[d] : labels[d].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
             });
           if (showInnerTick) {
             yAxis.innerTickSize(-xAxisWidth + 4 * opt.margin);
@@ -1514,7 +1514,7 @@ function selectChartType (e) {
         function calculateMaxLabelSize (data) {
           var maxLength = 0;
           $.each(data, function (i, v) {
-            maxLength = Math.max(labels[v].length, maxLength);
+            maxLength = Math.max(labels[v]?labels[v].length:0, maxLength);
           });
 
           return Math.min(pxWidth(maxLength), MAX_LABEL_LENGTH);

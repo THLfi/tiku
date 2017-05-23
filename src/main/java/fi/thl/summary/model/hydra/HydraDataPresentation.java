@@ -1,6 +1,5 @@
 package fi.thl.summary.model.hydra;
 
-import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -96,36 +95,13 @@ public class HydraDataPresentation extends DataPresentation {
                 // so we use filters
                 url.addFilters();
             }
-            List<DimensionNode> nodes;
-            List<DimensionNode> selected = ((HydraFilter) s).getSelected();
-            switch (s.getSelectionMode()) {
-            case directDescendants:
-                nodes = Lists.newArrayList();
-                for (DimensionNode node : selected) {
-                    nodes.add(node);
-                    nodes.addAll(node.getChildren());
-                }
-                break;
-            case allDescendants:
-                nodes = Lists.newArrayList();
-                addRecursive(selected, nodes);
-                break;
-            default:
-                nodes = selected;
-                break;
-            }
+            List<DimensionNode> nodes = IncludeDescendants.apply(s);
             url.addParameter(s.getDimension(), nodes);
 
         }
     }
 
-    private void addRecursive(Collection<DimensionNode> selected, List<DimensionNode> nodes) {
-        for (DimensionNode node : selected) {
-            nodes.add(node);
-            addRecursive(node.getChildren(), nodes);
-        }
-    }
-
+    
     private void appendMeasureItems(UrlBuilder url) {
         if (delegate.hasMeasures()) {
             url.addParameter("measure",

@@ -264,11 +264,19 @@ public class HydraSummary extends Summary {
         return drilledDimensions.keySet();
     }
 
-    public List<DimensionNode> getSelectionByDimension(String dimension) {
+    public HydraFilter getSelectionByDimension(String dimension) {
         for (Selection s : getSelections()) {
             if (s.getDimension().equals(dimension)) {
-                return ((HydraFilter) s).getSelected();
+                return (HydraFilter) s;
             }
+        }
+        return null;
+    }
+
+    public List<DimensionNode> getSelectedByDimension(String dimension) {
+        HydraFilter s = getSelectionByDimension(dimension);
+        if (s != null) {
+            return s.getSelected();
         }
         return null;
     }

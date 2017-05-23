@@ -47,7 +47,8 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         SummaryStage stage = dim.getStage();
         if (SummaryStage.Type.STAGE.equals(stage.getType())) {
             if (":filter:".equals(stage.getStage())) {
-                return new DimensionExtension(source, dim, Lists.newArrayList(summary.getSelectionByDimension(dim.getDimension())));
+                HydraFilter s = summary.getSelectionByDimension(dim.getDimension());
+                return new DimensionExtension(source, dim, IncludeDescendants.apply(s));
             } else if (":all:".equals(stage.getStage())) {
                 return new DimensionExtension(source, dim, allNodesIn(dim));
             } else {
