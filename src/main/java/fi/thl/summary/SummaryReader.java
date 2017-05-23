@@ -215,6 +215,7 @@ public class SummaryReader {
                 gridSection.addChild(rowSection);
                 for (Node column : iterator(row, SECTION_ELEMENT)) {
                     Section columnSection = new Section();
+                    columnSection.setWidth(attribute(column, "columns"));
                     parsePresentationInSection(column, columnSection);
                     rowSection.addChild(columnSection);
                 }

@@ -51,10 +51,23 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
             } else if (":all:".equals(stage.getStage())) {
                 return new DimensionExtension(source, dim, allNodesIn(dim));
             } else {
-                return new DimensionExtension(source, dim, findNodes(dim.getDimension(), stage.getStage(), dim.includeTotal()));
+                List<DimensionNode> nodes = findNodes(dim.getDimension(), stage.getStage());
+                if(dim.includeTotal()) {
+                    extendParentLevel(nodes);
+                }
+                return new DimensionExtension(source, dim, nodes);
             }
         } else {
             return new DimensionExtension(source, dim, findNodes(dim.getDimension(), stage.getItems()));
+        }
+    }
+
+    private void extendParentLevel(List<DimensionNode> nodes) {
+        if(!nodes.isEmpty()) {
+        DimensionNode parent = nodes.get(0).getParent();
+        if(parent != null) {
+            nodes.addAll(nodes.get(0).getParent().getLevel().getNodes());
+        }
         }
     }
 
@@ -88,7 +101,7 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
 
     }
 
-    private List<DimensionNode> findNodes(String dimension, String stage, boolean includeTotal) {
+    private List<DimensionNode> findNodes(String dimension, String stage) {
         for (Dimension dim : source.getDimensionsAndMeasures()) {
             if (dim.getId().equals(dimension)) {
                 DimensionLevel level = dim.getRootLevel();
@@ -97,9 +110,7 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
                 }
                 if (null != level) {
                     List<DimensionNode> nodes = Lists.newArrayList(level.getNodes());
-                    if (includeTotal) {
-                        nodes.add(level.getNodes().get(0).getParent());
-                    }
+                   
                     return nodes;
                 } else {
                     break;

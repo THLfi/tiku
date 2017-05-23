@@ -56,5 +56,10 @@ public class HydraSection extends Section {
             }
         });
     }
+    
+    @Override
+    public String getWidth() {
+        return delegate.getWidth();
+    }
 
 }

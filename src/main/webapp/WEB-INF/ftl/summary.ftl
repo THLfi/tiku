@@ -118,7 +118,8 @@
   <div class="row">
     [#list row.children as block]
 
-    <div class="col-sm-${12/row.children?size}">
+    [#assign colWidth][#if block.width??]${block.width}[#else]${12/row.children?size}[/#if][/#assign]
+    <div class="col-md-${colWidth}">
      [#list block.presentations as presentation]
 
       [#if presentation.groupSize > 0]

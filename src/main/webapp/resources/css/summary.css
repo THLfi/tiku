@@ -317,6 +317,7 @@
      padding-bottom: 6px;
      width: unset;
    }
+
    form {
      padding-top: 15px;
    }
@@ -358,7 +359,6 @@
    }
    header h1 {
      font-size: 24px;
-     width: calc(100% - 150px);
    }
    .summary-content {
        display: table;
@@ -392,6 +392,7 @@
  }
 
  @media print {
+
 
   h2 {
     clear: both;

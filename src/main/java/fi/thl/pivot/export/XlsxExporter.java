@@ -176,7 +176,9 @@ public class XlsxExporter {
             int lastRowWithSameHeader = 0;
             for (int r = 0; r < pivot.getRowCount(); ++r) {
                 DimensionNode node = pivot.getRowAt(c, r);
-                if (node.getSurrogateId() == lastNodeId) {
+                if (c == 0 && node.getSurrogateId() == lastNodeId) {
+                    ++lastRowWithSameHeader;
+                } else if (node.getSurrogateId() == lastNodeId && matchesLeft(pivot, c, r)) {
                     ++lastRowWithSameHeader;
                 } else {
                     mergeInRow(sheet, c, firstRowWithSameHeader + rowOffset, lastRowWithSameHeader + rowOffset);
@@ -188,6 +190,35 @@ public class XlsxExporter {
             mergeInRow(sheet, c, firstRowWithSameHeader + rowOffset, lastRowWithSameHeader + rowOffset);
         }
     }
+
+    private boolean matchesLeft(Pivot pivot, int c, int r) {
+       if(r == 0) {
+           return true;
+       }
+       for(int cc = c; cc > 0; --cc) {
+           DimensionNode a = pivot.getRowAt(cc, r);
+           DimensionNode b = pivot.getRowAt(cc, r - 1);
+           if(a.getSurrogateId() != b.getSurrogateId()) {
+               return false;
+           }
+       }
+       return true;
+    }
+    
+    private boolean matchesTop(Pivot pivot, int r, int c) {
+        if(c == 0) {
+            return true;
+        }
+        for(int rr = r; rr > 0; --rr) {
+            System.out.println(rr + " " + c);
+            DimensionNode a = pivot.getColumnAt(rr, c);
+            DimensionNode b = pivot.getColumnAt(rr - 1, c);
+            if(a.getSurrogateId() != b.getSurrogateId()) {
+                return false;
+            }
+        }
+        return true;
+     }
 
     private String message(String msgKey, String defaultValue) {
         return messageSource.getMessage(msgKey, null, defaultValue, locale);
@@ -302,7 +333,9 @@ public class XlsxExporter {
 
             for (int column = 0; column < pivot.getColumnCount(); ++column) {
                 DimensionNode node = pivot.getColumnAt(columnLevel, column);
-                if (node.getSurrogateId() == lastNodeId) {
+                if (columnLevel == 0 && node.getSurrogateId() == lastNodeId) {
+                    ++lastColumnWithSameHeader;
+                } else if(node.getSurrogateId() == lastNodeId && matchesTop(pivot, columnLevel, column)) {
                     ++lastColumnWithSameHeader;
                 } else {
                     Cell cell = row.createCell(column + pivot.getRows().size());

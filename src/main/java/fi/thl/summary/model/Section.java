@@ -17,11 +17,12 @@ public class Section {
 
     private List<Section> children = new ArrayList<>();
     private List<Presentation> presentations = new ArrayList<>();
+    private String width;
 
     public void addChild(Section section) {
         children.add(section);
     }
-    
+
     public void addPresentation(Presentation presentation) {
         presentations.add(presentation);
     }
@@ -32,5 +33,15 @@ public class Section {
 
     public List<Presentation> getPresentations() {
         return presentations;
+    }
+
+    public void setWidth(String attribute) {
+        if (attribute != null && attribute.matches("^((1[012])|([0-9))$")) {
+            this.width = attribute;
+        }
+    }
+
+    public String getWidth() {
+        return width;
     }
 }
