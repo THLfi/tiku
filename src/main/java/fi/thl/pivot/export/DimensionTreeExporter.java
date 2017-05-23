@@ -167,6 +167,7 @@ public class DimensionTreeExporter {
                 writer.print('"');
                 break;
             case '\n':
+            case '\r':
                 writer.print('\\');
                 writer.print('n');
                 break;
