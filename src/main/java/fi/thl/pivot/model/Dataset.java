@@ -119,5 +119,9 @@ public class Dataset {
         Collections.sort(keyList);
         return keyList;
     }
+    
+    public int size() {
+        return values.size();
+    }
 
 }

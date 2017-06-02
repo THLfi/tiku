@@ -300,17 +300,42 @@ public class HydraSummary extends Summary {
         Value v = summary.getValue(id);
         Query query = new Query();
         boolean columnAdded = false;
-        List<Selection> filters = Lists.newArrayList(Util.extendFilters(source, this, v.getFilters()));
+        List<Selection> filters = selectValueFilters(v);
         List<DimensionNode> keys = Lists.newArrayList();
 
         for (Dimension dim : source.getDimensions()) {
+            Selection filter = findFilter(filters, dim);
+            DimensionNode node = findNode(dim, filter);
+            keys.add(node);
+            addToQuery(query, columnAdded, node);
+            columnAdded = true;
+        }
+        for (Dimension dim : source.getMeasures()) {
             DimensionNode node = findNode(dim, findFilter(filters, dim));
             keys.add(node);
             addToQuery(query, columnAdded, node);
             columnAdded = true;
         }
+
         Dataset dataset = source.loadSubset(query, Collections.emptyList());
+
         return dataset.get(keys);
+    }
+
+    private List<Selection> selectValueFilters(Value v) {
+        List<Selection> filters = Lists.newArrayList();
+        for (Selection s : v.getFilters()) {
+            if (s.getId() != null) {
+                for (Selection f : getSelections()) {
+                    if (f.getId().equals(s.getId())) {
+                        filters.add(f);
+                    }
+                }
+            } else {
+                filters.addAll(Util.extendFilters(source, this, Collections.singletonList(s)));
+            }
+        }
+        return filters;
     }
 
     private void addToQuery(Query query, boolean columnAdded, DimensionNode node) {

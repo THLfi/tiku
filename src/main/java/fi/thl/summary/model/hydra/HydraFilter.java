@@ -192,7 +192,7 @@ public final class HydraFilter extends Selection {
 
     @Override
     public String toString() {
-        return "HydraFilter [getId()=" + getId() + ", getDimension()=" + getDimension() + "]";
+        return "HydraFilter [getId()=" + getId() + ", getDimension()=" + getDimension() + ", instance = " + hashCode()+"]";
     }
 
     @Override

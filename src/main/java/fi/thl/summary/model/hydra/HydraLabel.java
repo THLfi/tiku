@@ -43,7 +43,11 @@ public class HydraLabel extends Label {
                 content = replaceFilterReference(language, content, regex, property, select);
             } else {
                 String v = summary.getValueOf(id);
-                content = content.replaceAll(regex, v);
+                if(v == null) {
+                    content = content.replaceAll(regex, "..");
+                } else {
+                    content = content.replaceAll(regex, v);
+                }
             }
         }
         
@@ -60,6 +64,9 @@ public class HydraLabel extends Label {
             }
             if("value".equals(property)) {
                 label.append(node.getLabel().getValue(language));
+            } else if ("code".equals(property)) {
+                String code = node.getCode();
+                label.append(code == null ? ".." : code);
             } else {
                 Label p = node.getProperty(property);
                 if(null == p) {
