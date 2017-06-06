@@ -40,7 +40,7 @@ function selectChartType (e) {
     if(!str) {
       return '';
     }
-    return str.replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
+    return (''+str).replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
       .replace(/\./g, ',')
   }
 
@@ -54,6 +54,9 @@ function selectChartType (e) {
     }
     if(doc.attr('width') !== undefined) {
       width = +doc.attr('width');
+    }
+    if(doc.attr('viewBox') === undefined) {
+      doc.attr('viewBox', width + ' ' + height);
     }
     var data;
     if(doc.attr('height')) {
@@ -239,7 +242,9 @@ function selectChartType (e) {
           for(var i = 0; i < limits.length - 1; ++i) {
             var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
             var li = $('<li>').text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
-            li.prepend($('<span></span>').addClass('legend').css('background', colors[j]));
+            var l = $('<span></span>').addClass('legend');
+            l.get(0).style='background: ' + colors[j] + ' !important';
+            li.prepend(l);
             ul.append(li);  
           }
           $(this._div)
@@ -857,6 +862,8 @@ function selectChartType (e) {
           self.attr('r', 3);
           self.attr('stroke-width', 3);
           tooltip.style('visibility', 'visible');
+          tooltip.style('background-color', 'rgba(255,255,255,0.7)');
+          tooltip.style('z-index', 1000);
           tooltip.style('border-color', self.attr('stroke') || self.attr('fill'));
           tooltip.text(self.text());
           return false;
@@ -948,7 +955,7 @@ function selectChartType (e) {
                 .on('mousemove', moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + numberFormat(opt.callback(series, i));
                 });
 
               if (opt.showCi) {
@@ -1034,7 +1041,7 @@ function selectChartType (e) {
                 .on('mousemove', moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + numberFormat(opt.callback(series, i));
                 });
               if (opt.showCi) {
                 drawWhiskers(sg, series, scaledZero,
@@ -1124,7 +1131,7 @@ function selectChartType (e) {
                 .on("mousemove", moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
-                  return label(d, i, series) + '(' + labels[d] + '): ' + opt.callback(series, i);
+                  return label(d, i, series) + '(' + labels[d] + '): ' + numberFormat(opt.callback(series, i));
                 });
               }
           },
@@ -1205,7 +1212,7 @@ function selectChartType (e) {
                 return midAngle(d) < Math.PI ? 'start' : 'end';
               })
               .text(function (d, i) {
-                return opt.callback(0, dataIndex[i]);
+                return numberFormat(opt.callback(0, dataIndex[i]));
               });
             g.append('polyline')
               .attr('points', function (d) {
@@ -1371,7 +1378,7 @@ function selectChartType (e) {
                   .on('mousemove', moveToolTip)
                   .append('svg:title')
                   .text(function (d, i) {
-                    return label(d, i, series) + '(' + labels[opt.data[i]] + '): ' + opt.callback(series, i);
+                    return label(d, i, series) + '(' + labels[opt.data[i]] + '): ' + numberFormat(opt.callback(series, i));
                   });
                 
             }
@@ -1508,7 +1515,7 @@ function selectChartType (e) {
 
             needle.append('svg:title')
               .text(function (d, i) {
-                return labels[opt.dataset.Dimension(0).id[i]] + ': ' + opt.callback(0, i);
+                return labels[opt.dataset.Dimension(0).id[i]] + ': ' + numberFormat(opt.callback(0, i));
               });
 
             needle.append('path')
@@ -1544,8 +1551,8 @@ function selectChartType (e) {
                 .attr('x', x)
                 .attr('y', y)
                 .attr(styleAttributes)
-                .attr('title', text)
-                .text(text);
+                .attr('title', numberFormat(text))
+                .text(numberFormat(text));
             }
 
             function appendLegendElements (chart, baseX, baseY, rectStyleAttributes, textStyleAttributes, text) {

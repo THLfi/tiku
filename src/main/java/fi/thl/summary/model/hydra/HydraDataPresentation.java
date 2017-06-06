@@ -117,7 +117,7 @@ public class HydraDataPresentation extends DataPresentation {
 
     private void appendFilters(UrlBuilder url) {
         for (Selection s : getFilters()) {
-            if ("measure".equals(s.getDimension())) {
+            if ("measure".equals(s.getDimension()) && !delegate.hasMeasures()) {
                 //
             } else {
                 // We do not want extra dimension in the returned JSON-STAT

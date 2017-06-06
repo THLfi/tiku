@@ -47,19 +47,19 @@
     }
 
     .stripe > div > .btn-group > a {
-    	color: #fff;
+      color: #fff;
     }
 
     .stripe .btn-group {
-    	margin-top: 5px;
+      margin-top: 5px;
     }
     .stripe .btn-group > .btn {
-    	background: transparent;
-    	border: 0;
-    	color: #fff;
+      background: transparent;
+      border: 0;
+      color: #fff;
     }
     .stripe .btn-group > .btn .caret {
-    	border-top-color: #fff;
+      border-top-color: #fff;
     }
 
 
@@ -350,14 +350,14 @@
   margin-bottom: 0;
 }
 
- @media (min-width: 480px) {
+ @media screen and (min-width: 480px) {
    header h1 {
      font-size: 18px;
      width: 100%;
    }
    header img { display: block; }
  }
- @media (max-width: 767px) {
+ @media screen and (max-width: 767px) {
    body, header {
      padding: 0;
    }
@@ -401,7 +401,7 @@
      background: #fff;
    }
  }
- @media (min-width: 768px) {
+ @media screen and (min-width: 768px) {
    .filter-toggle {
      display:none;
    }
@@ -467,5 +467,21 @@
   }
   .presentation {
     page-break-inside:avoid;
+  }
+  .summary-content > div {
+    width: 100% !important;
+    display:block !important
+  }
+  .summary-content > div:first-child {
+    border: 3px double #ccc;
+    border-right: 0px;
+    border-left: 0px;
+    padding: 15px;
+  }
+  footer a[href]::after, .leaflet-control a[href]::after  {
+    content: "";
+  }
+  .leaflet-control-zoom {
+    display:none;
   }
  }

@@ -17,6 +17,7 @@ import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
+import fi.thl.pivot.model.PivotCellImpl;
 import fi.thl.pivot.model.Query;
 import fi.thl.pivot.web.tools.FindNodes;
 import fi.thl.pivot.web.tools.FindNodes.SearchType;
@@ -298,14 +299,33 @@ public class HydraSummary extends Summary {
 
     private String selectValue(String id) {
         Value v = summary.getValue(id);
+        List<DimensionNode> keys = Lists.newArrayList();
+        Query query = buildValueQuery(v, keys);
+        PivotCellImpl pc = buildValueCell(query, keys);
+        return pc.getI18nValue();
+    }
+
+    private PivotCellImpl buildValueCell(Query query, List<DimensionNode> keys) {
+        Dataset dataset = source.loadSubset(query, Collections.emptyList());
+        PivotCellImpl pc = new PivotCellImpl(dataset.get(keys));
+        Collection<DimensionNode> nodes = query.getNodesPerDimension().get("measure");
+        if (null != nodes) {
+            for (DimensionNode measure : nodes) {
+                pc.setMeasure(measure);
+            }
+        }
+        return pc;
+    }
+
+    private Query buildValueQuery(Value v, List<DimensionNode> keys) {
         Query query = new Query();
         boolean columnAdded = false;
         List<Selection> filters = selectValueFilters(v);
-        List<DimensionNode> keys = Lists.newArrayList();
 
         for (Dimension dim : source.getDimensions()) {
             Selection filter = findFilter(filters, dim);
             DimensionNode node = findNode(dim, filter);
+
             keys.add(node);
             addToQuery(query, columnAdded, node);
             columnAdded = true;
@@ -316,10 +336,7 @@ public class HydraSummary extends Summary {
             addToQuery(query, columnAdded, node);
             columnAdded = true;
         }
-
-        Dataset dataset = source.loadSubset(query, Collections.emptyList());
-
-        return dataset.get(keys);
+        return query;
     }
 
     private List<Selection> selectValueFilters(Value v) {

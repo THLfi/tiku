@@ -96,7 +96,6 @@
       [/#list]
       <hr />
     [/#if]
-
 [/#list]
 [#list summary.drilledDimensions as dim]
     [#list summary.getDrilledNodes(dim) as dn]
@@ -164,7 +163,7 @@
       [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id="${presentation.id}"
+              id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation bar"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -181,7 +180,7 @@
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id="${presentation.id}"
+              id="$[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation column"
               [#if "columnstacked" = presentation.type]data-stacked="true"[/#if]
               [#if "columnstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
@@ -198,7 +197,7 @@
       [#elseif "line" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id = "${presentation.id}"
+              id = "[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation line"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -212,7 +211,7 @@
        [#elseif "radar" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id = "${presentation.id}"
+              id = "[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation radar"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -226,7 +225,7 @@
       [#elseif "pie" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id="${presentation.id}"
+              id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation pie"
               data-ref="${factTable}.json?${presentation.dataUrl}">
               [@export presentation "image" /]
@@ -236,7 +235,7 @@
       [#elseif "gauge" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id="${presentation.id}"
+              id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation gauge"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -249,7 +248,7 @@
       [#elseif "table" = presentation.type]
           [@show_filter_values presentation /]
           <div
-              id="${presentation.id}"
+              id="$[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation table"
               data-column-count="${presentation.columns?size}"
               data-columns="[#list presentation.columns as column]${column.id!}[/#list]"
@@ -264,7 +263,7 @@
           <hr />
       [#elseif "map" = presentation.type]
       <div 
-        id="${presentation.id}"
+        id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
         class="presentation map"
         data-ref="${factTable}.json?${presentation.dataUrl}" 
         data-geometry="${presentation.geometry!}" 
