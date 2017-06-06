@@ -10,6 +10,7 @@ import fi.thl.summary.model.DataPresentation;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
+import fi.thl.summary.model.SummaryDimension;
 import fi.thl.summary.model.SummaryItem;
 
 public class HydraDataPresentation extends DataPresentation {
@@ -26,6 +27,35 @@ public class HydraDataPresentation extends DataPresentation {
         delegate = (DataPresentation) p;
         this.summary = summary;
         this.finder = new ItemFinder(summary);
+    }
+
+    public String getArea() {
+        for (SummaryItem item : delegate.getDimensions()) {
+            SummaryDimension s = ((SummaryDimension) item);
+            if (s.getDimension().equals("area")) {
+                String stage = s.getStage().getStage();
+                if ("nutsi".equals(stage)) {
+                    stage = "NUTS1";
+                } else if ("avi".equals(stage)) {
+                    stage = "ALUEHALLINTOVIRASTO";
+                } else if ("ely".equals(stage)) {
+                    stage = "ELY-KESKUS";
+                } else if ("root".equals(stage)) {
+                    stage = "MAA";
+                } else {
+                    stage = stage.toUpperCase();
+                }
+                return stage;
+            }
+        }
+        return "MAA";
+    }
+
+    public DimensionNode getMeasure() {
+        if(delegate.hasMeasures()) {
+            return getMeasureNodes().get(0);
+        }
+        return null;
     }
 
     public String getType() {
@@ -101,13 +131,15 @@ public class HydraDataPresentation extends DataPresentation {
         }
     }
 
-    
     private void appendMeasureItems(UrlBuilder url) {
         if (delegate.hasMeasures()) {
-            url.addParameter("measure",
-                    new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes());
+            url.addParameter("measure", getMeasureNodes());
             url.addColumns();
         }
+    }
+
+    private List<DimensionNode> getMeasureNodes() {
+        return new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes();
     }
 
     private void appendDimensionNodes(UrlBuilder url) {
@@ -177,6 +209,10 @@ public class HydraDataPresentation extends DataPresentation {
         emphasizedNode = finder.findItems(getEmphasize(), source);
         emphasizedNodeCached = true;
         return emphasizedNode;
+    }
 
+    @Override
+    public String getGeometry() {
+        return delegate.getGeometry();
     }
 }

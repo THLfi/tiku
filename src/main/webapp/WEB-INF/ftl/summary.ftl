@@ -1,6 +1,9 @@
 [#ftl]<!DOCTYPE html>
 
 [#setting locale="fi"]
+
+[#assign containsMap = false /]
+[#assign features = {} /]
 [#assign dimensionSeparator = '-' /]
 [#assign nodeSeparator = '.' /]
 
@@ -27,9 +30,29 @@
   [/#list]
 [/#macro]
 
+[#macro recursiveAreaOptions level]
+  <option value="${level.id}">${level.label.getValue("fi")}</option>
+  [#if level.childLevel??]
+    [@recursiveAreaOptions level.childLevel /]
+  [/#if]
+[/#macro]
 [#macro summary_filter_form]
 
 <form id="summary-form" class="form form-horizontal" method="GET" action="#">
+
+[#--]
+[#if summary.drillEnabled]
+  ${summary.areaDimension}
+  [#if area??]
+  <div class="form-group">
+    <label for="area">[#if area.label??]${area.label.getValue(lang)}[#else]${area.id!}[/#if]</label>
+    <select class="form-control" name="area" id="area">
+      [@recursiveAreaOptions area.rootLevel /]
+    </select>
+  </div>
+  [/#if]
+[/#if]
+--]
 [#list summary.selections as filter]
     [#assign dim = filter.dimensionEntity /]
 
@@ -112,7 +135,6 @@
 [/#macro]
 
 [#macro summary_presentations]
-
 [#list summary.sections as row]
 
   <div class="row">
@@ -142,6 +164,7 @@
       [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
           [@show_filter_values presentation /]
           <div
+              id="${presentation.id}"
               class="presentation bar"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -158,6 +181,7 @@
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
           [@show_filter_values presentation /]
           <div
+              id="${presentation.id}"
               class="presentation column"
               [#if "columnstacked" = presentation.type]data-stacked="true"[/#if]
               [#if "columnstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
@@ -202,6 +226,7 @@
       [#elseif "pie" = presentation.type]
           [@show_filter_values presentation /]
           <div
+              id="${presentation.id}"
               class="presentation pie"
               data-ref="${factTable}.json?${presentation.dataUrl}">
               [@export presentation "image" /]
@@ -211,6 +236,7 @@
       [#elseif "gauge" = presentation.type]
           [@show_filter_values presentation /]
           <div
+              id="${presentation.id}"
               class="presentation gauge"
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
@@ -223,6 +249,7 @@
       [#elseif "table" = presentation.type]
           [@show_filter_values presentation /]
           <div
+              id="${presentation.id}"
               class="presentation table"
               data-column-count="${presentation.columns?size}"
               data-columns="[#list presentation.columns as column]${column.id!}[/#list]"
@@ -235,6 +262,28 @@
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>
           <hr />
+      [#elseif "map" = presentation.type]
+      <div 
+        id="${presentation.id}"
+        class="presentation map"
+        data-ref="${factTable}.json?${presentation.dataUrl}" 
+        data-geometry="${presentation.geometry!}" 
+        data-stage="${presentation.area}"
+        data-palette="${presentation.palette!}"
+        [#if presentation.measure??]
+        data-label="${presentation.measure.label.getValue(lang)?html}"
+        [/#if]
+        [#if presentation.measure?? && presentation.measure.limits??]
+          [#assign limits = presentation.measure.limits /]
+          data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
+          data-limits="${limits}"
+          data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+        [#else]
+        data-no-limits[/#if]
+        />     
+        [@export presentation "image" /]
+        <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+      [#assign containsMap = true]
       [#else]
 
       <h3>${presentation.type}</h3>
@@ -477,11 +526,25 @@
     labels[${n.surrogateId!"-1"}] = '[#if n?? && n.label??]${n.label.getValue(lang)?js_string}[#else]???[/#if]';
     dimensionData[${n.surrogateId}] = {
         hasChild: [#if n.children?size>0]true[#else]false[/#if],
-        dim: [#if n.dimension??]'${n.dimension.id}'[#else]'n/a'[/#if]
+        dim: [#if n.dimension??]'${n.dimension.id}'[#else]'n/a'[/#if],
+        code: "${n.code!?js_string}"
     };
     [/#if]
     [/#list]
     </script>
+
+    [#if containsMap] 
+      <link href="${rc.contextPath}/resources/css/leaflet.css" rel="stylesheet">
+      <script src="${rc.contextPath}/resources/js/leaflet.js"></script>
+      <script src="${rc.contextPath}/resources/js/proj4.min.js"></script>
+      <script src="${rc.contextPath}/resources/js/proj4leaflet.js"></script>
+      <script src="https://www.sotkanet.fi/sotkanet/fi/api/geojson/MAA"></script>
+      [#list summary.presentations as presentation]
+      [#if presentation.type == "map"]
+      <script src="https://www.sotkanet.fi/sotkanet/fi/api/geojson/${presentation.area}"></script>
+      [/#if]
+      [/#list]
+    [/#if]
 
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

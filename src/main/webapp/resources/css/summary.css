@@ -146,6 +146,49 @@
         padding: 15px 0;
         text-align: center;
     }
+
+    .presentation.map {
+      height: 480px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    .presentation.leaflet-container {
+      background: transparent;
+    }
+    .map .legend {
+      border: 1px solid #b2b2b2;
+      background: rgba(255,255,255,0.5);
+
+    }
+    .map .legend strong {
+      padding: 15px;
+      padding-bottom: 0;
+    }
+    .map .legend ul {
+      text-align: left;
+      list-style-type: none;
+      padding: 15px;
+    }
+    .map .legend ul li {
+      position: relative;
+      padding-left: 24px;
+      margin-top: 6px;
+    }
+    .map .legend span {
+      position: absolute;
+      left: 0;
+      height: 16px;
+      width: 16px;
+      border-radius: 2px 2px 2px 2px;
+    }
+    .map .maptip {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      padding: 6px;
+      border: 1px solid #b2b2b2;
+      border-radius: 2px 2px 2px 2px;
+      z-index: 10000;
+    }
     .presentation .dropdown-menu {
       text-align: left;
       left: auto;
@@ -268,6 +311,7 @@
 
  .export {
    float: right;
+   z-index:100;
  }
 
  .presentation.highlight .series {

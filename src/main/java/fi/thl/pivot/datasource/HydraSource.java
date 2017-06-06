@@ -29,6 +29,7 @@ import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
+import fi.thl.pivot.model.Limits;
 import fi.thl.pivot.model.NamedView;
 import fi.thl.pivot.model.Query;
 import fi.thl.pivot.model.Tuple;
@@ -52,7 +53,8 @@ import fi.thl.pivot.util.Constants;
 public abstract class HydraSource {
 
     private static final String PREDICATE_NAMED_VIEW_PREFIX = "meta:namedview";
-    private static final ImmutableList<String> GRAPH_PREDICATES = ImmutableList.of(Constants.CONFIDENCE_INTERVAL_LOWER_LIMIT,
+    private static final ImmutableList<String> GRAPH_PREDICATES = ImmutableList.of(
+            Constants.CONFIDENCE_INTERVAL_LOWER_LIMIT,
             Constants.CONFIDENCE_INTERVAL_UPPER_LIMIT, Constants.SAMPLE_SIZE);
     private static final String PREDICATE_DENY_ACCESS_TO_CUBE = "deny";
     private static final String PREDICATE_VALUE_TRUE = "1";
@@ -64,7 +66,9 @@ public abstract class HydraSource {
     private static final String PREDICATE_SORT = "sort";
     private static final String PREDICATE_CODE = "code";
     private static final String PREDICATE_DECIMALS = "decimals";
+
     private static final Pattern NAMED_VIEW_PATTERN = Pattern.compile("meta:namedview(\\d+)(_(.*))?");
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("meta:limit(\\d+)");
 
     /**
      * This callback handler is used when traversing the hydra metadata tree.
@@ -85,7 +89,8 @@ public abstract class HydraSource {
         private final Map<String, DimensionNode> nodesByRef;
         private final Map<String, DimensionLevel> currentLevel;
 
-        protected TreeRowCallbackHandler(Map<String, Dimension> dimensions, Map<String, DimensionNode> nodes, Map<String, DimensionNode> nodesByRef,
+        protected TreeRowCallbackHandler(Map<String, Dimension> dimensions, Map<String, DimensionNode> nodes,
+                Map<String, DimensionNode> nodesByRef,
                 Map<String, DimensionLevel> dimensionLevels) {
             this.dimensions = dimensions;
             this.nodes = nodes;
@@ -117,7 +122,8 @@ public abstract class HydraSource {
             createNode(dimensionLevels, nodes, dimension, dimensionLevel);
         }
 
-        private void createNode(final Map<String, DimensionLevel> dimensionLevels, final Map<String, DimensionNode> nodes, String dimension,
+        private void createNode(final Map<String, DimensionLevel> dimensionLevels,
+                final Map<String, DimensionNode> nodes, String dimension,
                 String dimensionLevel) throws Exception {
 
             DimensionLevel nodeLevel = dimensionLevels.get(dimension + "-" + dimensionLevel);
@@ -133,7 +139,8 @@ public abstract class HydraSource {
                 node.setId(getNodeId());
             } else {
                 if (LOG.isTraceEnabled()) {
-                    LOG.trace("Adding node " + getMetaReference() + " to " + dimension + "-" + dimensionLevel + ": " + nodeLevel);
+                    LOG.trace("Adding node " + getMetaReference() + " to " + dimension + "-" + dimensionLevel + ": "
+                            + nodeLevel);
                 }
                 node = nodeLevel.createNode(getNodeId(), new Label(), nodes.get(getParentId()));
             }
@@ -146,11 +153,12 @@ public abstract class HydraSource {
             return null == getParentId();
         }
 
-        private void createDimensionLevel(final Map<String, DimensionLevel> dimensionLevels, String dimension, String dimensionLevel) {
+        private void createDimensionLevel(final Map<String, DimensionLevel> dimensionLevels, String dimension,
+                String dimensionLevel) {
             if (dimensionLevel != null) {
                 DimensionLevel prevLevel = currentLevel.get(dimension);
                 String key = dimension + "-" + dimensionLevel;
-                
+
                 if (null == prevLevel) {
                     LOG.warn("No prev level found for " + dimension);
                 } else if (!dimensionLevel.equals(prevLevel.getId()) && !dimensionLevels.containsKey(key)) {
@@ -165,7 +173,8 @@ public abstract class HydraSource {
         private void createDimension(final Map<String, Dimension> dimensions, String dimension) {
             if (!dimensions.containsKey(dimension)) {
                 LOG.debug("Found new dimension " + dimension);
-                dimensions.put(dimension, new Dimension(dimension, Label.create("fi", dimension), Label.create("fi", dimension)));
+                dimensions.put(dimension,
+                        new Dimension(dimension, Label.create("fi", dimension), Label.create("fi", dimension)));
 
                 dimensionLevels.put(dimension + "-root", dimensions.get(dimension).getRootLevel());
                 currentLevel.put(dimension, dimensions.get(dimension).getRootLevel());
@@ -211,7 +220,8 @@ public abstract class HydraSource {
     private boolean denyCubeAccess;
     private String masterPassword;
     private Map<String, Label> predicates = new HashMap<>();
-
+    private Map<String, Limits> limits = new HashMap<>();
+    
     protected HydraSource() {
     }
 
@@ -309,7 +319,8 @@ public abstract class HydraSource {
 
         watch.start("load nodes");
         loadNodes(newDimensions, dimensionLevels, newNodes, nodesByRef);
-        LOG.debug(String.format("Dimension tree read from %s found %d dimensions, %d levels and %d nodes", getTreeSource(), newDimensions.size(),
+        LOG.debug(String.format("Dimension tree read from %s found %d dimensions, %d levels and %d nodes",
+                getTreeSource(), newDimensions.size(),
                 dimensionLevels.size(), newNodes.size()));
         if (LOG.isTraceEnabled()) {
             LOG.trace("dimensions: " + newDimensions);
@@ -354,7 +365,7 @@ public abstract class HydraSource {
         this.nodes = newNodes;
         this.columns = newDimensionColumns;
         this.nodeIndex = newNodeIndex;
-     
+
         if (LOG.isDebugEnabled()) {
             LOG.debug("Cube name loaded: " + watch.prettyPrint());
         }
@@ -390,13 +401,14 @@ public abstract class HydraSource {
 
     private void assignNamedView(Tuple t) {
         Matcher m = NAMED_VIEW_PATTERN.matcher(t.predicate);
-        if(m.find()) {
+        if (m.find()) {
             String viewPredicate = m.group(3);
             NamedView view = findOrAddNamedView(Integer.parseInt(m.group(1)));
-            if("name".equals(viewPredicate)) {
-                view.getLabel().setValue(t.lang, t.object);;
-            } else if("default".equals(viewPredicate)) {
-               view.setDefault(true);
+            if ("name".equals(viewPredicate)) {
+                view.getLabel().setValue(t.lang, t.object);
+                ;
+            } else if ("default".equals(viewPredicate)) {
+                view.setDefault(true);
             } else if ("bind_to_password".equals(viewPredicate)) {
                 view.setDefaultForPassword(t.object);
             } else if (null == viewPredicate) {
@@ -405,20 +417,18 @@ public abstract class HydraSource {
         }
     }
 
-    
-    
     private NamedView findOrAddNamedView(int index) {
         NamedView view = null;
-        for(NamedView v : namedViews) {
-            if(v.getId() == index) {
+        for (NamedView v : namedViews) {
+            if (v.getId() == index) {
                 view = v;
                 break;
             }
-            if(v.getId() > index) {
+            if (v.getId() > index) {
                 break;
             }
         }
-        if(null == view) {
+        if (null == view) {
             view = new NamedView();
             view.setId(index);
             namedViews.add(view);
@@ -473,12 +483,12 @@ public abstract class HydraSource {
     }
 
     public final String getDefaultView(String password) {
-        if(null == password) {
+        if (null == password) {
             password = "";
         }
         NamedView view = null;
-        for(NamedView v : namedViews) {
-            if(view == null) {
+        for (NamedView v : namedViews) {
+            if (view == null) {
                 view = v;
             } else if (v.isDefaultForPassword(password)) {
                 view = v;
@@ -486,11 +496,9 @@ public abstract class HydraSource {
                 view = v;
             }
         }
-        return null == view? null : view.getUrl();
+        return null == view ? null : view.getUrl();
     }
-    
 
-    
     protected final List<String> getColumns() {
         return columns;
     }
@@ -545,7 +553,8 @@ public abstract class HydraSource {
      * @param nodesByRef
      *            Index of nodes by metadata reference as an output parameter
      */
-    protected abstract void loadNodes(final Map<String, Dimension> newDimensions, final Map<String, DimensionLevel> dimensionLevels,
+    protected abstract void loadNodes(final Map<String, Dimension> newDimensions,
+            final Map<String, DimensionLevel> dimensionLevels,
             final Map<String, DimensionNode> newNodes, final Map<String, DimensionNode> nodesByRef);
 
     /**
@@ -579,18 +588,59 @@ public abstract class HydraSource {
         for (Map.Entry<String, List<Property>> nodeMetadata : propertiesByRef.entrySet()) {
             if (nodesByRef.containsKey(nodeMetadata.getKey())) {
                 assignMetadataToNode(nodesByRef, nodeMetadata);
+            } else if(limits.containsKey(nodeMetadata.getKey()) || isLimitMetadata(nodeMetadata.getValue())) {
+                assignLimitMetadata(nodeMetadata.getKey(), nodeMetadata.getValue());
             } else {
                 assignMetadataToDimensionsAndLevels(newDimensions, nodeMetadata);
             }
         }
     }
 
-    private void dropDimensionsNotUsedInTheCube(final Map<String, Dimension> newDimensions, final List<String> newDimensionColumns) {
+    private void assignLimitMetadata(String ref, List<Property> properties) {
+        if(!limits.containsKey(ref)) {
+            limits.put(ref, new Limits());
+        }
+        Limits limit = limits.get(ref);
+        for(Property p : properties) {
+            if (p.predicate.startsWith("meta:limit")) {
+                
+                Matcher m = LIMIT_PATTERN.matcher(p.predicate);
+                if (m.find()) {
+                    try {
+                        limit.setLimit(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
+                    } catch (NumberFormatException e) {
+                        
+                        LOG.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid
+                                + ". Limit is not valid number: '" + p.value + "'");
+                    }
+                }
+            } else if ("meta:order".equals(p.predicate)) {
+                limit.setLimitOrder(p.value);
+            } else if ("meta:limitbound".equals(p.predicate)) {
+                limit.setLimitBound(p.value);
+            } else {
+                LOG.warn("Unrecognize limit predicate " + p.predicate + " in " + runid);
+            }
+        }
+    }
+
+    private boolean isLimitMetadata(List<Property> properties) {
+        for(Property p : properties) {
+            if(p.predicate.startsWith("meta:limit")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void dropDimensionsNotUsedInTheCube(final Map<String, Dimension> newDimensions,
+            final List<String> newDimensionColumns) {
         List<String> dimensionsNotInUse = Lists.newArrayList();
         for (String dimension : newDimensions.keySet()) {
             if (!newDimensionColumns.contains(dimension + "_key")) {
                 dimensionsNotInUse.add(dimension);
-                LOG.debug("Dropped dimension " + dimension + " as it is not present in the fact table " + getFactSource());
+                LOG.debug("Dropped dimension " + dimension + " as it is not present in the fact table "
+                        + getFactSource());
             }
         }
         for (String dimension : dimensionsNotInUse) {
@@ -598,7 +648,8 @@ public abstract class HydraSource {
         }
     }
 
-    private void logColumnsWithNoMetadata(final Map<String, Dimension> newDimensions, final List<String> newDimensionColumns) {
+    private void logColumnsWithNoMetadata(final Map<String, Dimension> newDimensions,
+            final List<String> newDimensionColumns) {
         for (String column : newDimensionColumns) {
             if (!newDimensions.keySet().contains(column.replaceAll("_key", ""))) {
                 LOG.warn("No metadata described for dimension " + column);
@@ -606,7 +657,8 @@ public abstract class HydraSource {
         }
     }
 
-    private void assignMetadataToDimensionsAndLevels(final Map<String, Dimension> dimensions, Map.Entry<String, List<Property>> nodeMetadata) {
+    private void assignMetadataToDimensionsAndLevels(final Map<String, Dimension> dimensions,
+            Map.Entry<String, List<Property>> nodeMetadata) {
         String[] is = findIsPredicate(nodeMetadata);
         if (predicateIsDefined(is)) {
             assignIsPredicate(dimensions, nodeMetadata, is);
@@ -630,7 +682,8 @@ public abstract class HydraSource {
         return null != is && is.length > 0;
     }
 
-    private void assignIsPredicate(final Map<String, Dimension> dimensions, Map.Entry<String, List<Property>> nodeMetadata, String[] is) {
+    private void assignIsPredicate(final Map<String, Dimension> dimensions,
+            Map.Entry<String, List<Property>> nodeMetadata, String[] is) {
         Dimension d = dimensions.get(is[0]);
         if (is.length == 1 && d != null) {
             assignDimensionMetadata(nodeMetadata, d);
@@ -661,7 +714,7 @@ public abstract class HydraSource {
                 for (Property p : nodeMetadata.getValue()) {
                     if (PREDICATE_NAME.equals(p.predicate)) {
                         level.getLabel().setValue(p.lang, p.value);
-                     }
+                    }
                 }
                 levelFound = true;
             }
@@ -680,9 +733,10 @@ public abstract class HydraSource {
         }
     }
 
-    private void assignMetadataToNode(final Map<String, DimensionNode> nodesByRef, Map.Entry<String, List<Property>> nodeMetadata) {
+    private void assignMetadataToNode(final Map<String, DimensionNode> nodesByRef,
+            Map.Entry<String, List<Property>> nodeMetadata) {
         DimensionNode node = nodesByRef.get(nodeMetadata.getKey());
-        if(node == null) {
+        if (node == null) {
             LOG.warn("No node found with key" + nodeMetadata.getKey());
             return;
         }
@@ -693,12 +747,12 @@ public abstract class HydraSource {
                 // Root node and root level should have the same name
                 if (node.isRootLevelNode()) {
                     node.getDimension().getRootLevel().getLabel().setValue(p.lang, p.value);
-                } 
+                }
             } else if (PREDICATE_SORT.equals(p.predicate)) {
                 if (p.value != null && p.value.matches("^\\d+$")) {
                     node.setSort(p.lang, Long.parseLong(p.value));
                 } else {
-                    LOG.warn("Illegal value '" + p.value +"' for sort predicate for node " + nodeMetadata.getKey());
+                    LOG.warn("Illegal value '" + p.value + "' for sort predicate for node " + nodeMetadata.getKey());
                 }
             } else if (PREDICATE_CODE.equals(p.predicate)) {
                 node.setCode(p.value);
@@ -706,13 +760,18 @@ public abstract class HydraSource {
                 if (p.value != null && p.value.matches("^\\d+$")) {
                     node.setDecimals(Integer.parseInt(p.value));
                 } else {
-                    LOG.warn("Illegal value '" + p.value +"' for decimal predicate for node " + nodeMetadata.getKey());
+                    LOG.warn("Illegal value '" + p.value + "' for decimal predicate for node " + nodeMetadata.getKey());
                 }
             } else if (PREDICATE_PASSWD.equals(p.predicate)) {
                 node.setPassword(p.value);
                 this.passwords.add(p.value);
             } else if (GRAPH_PREDICATES.contains(p.predicate)) {
                 node.addEdge(p.predicate, nodesByRef.get(p.value));
+            } else if ("meta:limits".equals(p.predicate)) {
+                if(!limits.containsKey(p.value)) {
+                    limits.put(p.value, new Limits());
+                }
+                node.setLimits(limits.get(p.value));
             } else {
                 node.setProperty(p.predicate, p.lang, p.value);
             }

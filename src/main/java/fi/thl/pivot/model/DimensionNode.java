@@ -43,6 +43,8 @@ public class DimensionNode implements Comparable<DimensionNode> {
     private String reference;
     private Map<String, DimensionNode> edges = new HashMap<>();
 
+    private Limits limits;
+
     public DimensionNode(DimensionLevel level, String id, Label label) {
         Preconditions.checkNotNull(id, "Dimension node must have a non-null identifier");
         Preconditions.checkArgument(!id.trim().isEmpty(), "Dimension node must have a non-empty identifier");
@@ -176,18 +178,18 @@ public class DimensionNode implements Comparable<DimensionNode> {
     }
 
     public void setSort(String language, Long sort) {
-        if(null == language || language.length() == 0) {
-            language=DEFAULT;
+        if (null == language || language.length() == 0) {
+            language = DEFAULT;
         }
         this.sort.put(language, sort);
     }
 
     public Long getSort() {
         Long s = sort.get(ThreadRole.getLanguage());
-        if(null == s) {
+        if (null == s) {
             s = sort.get("fi");
         }
-        if(null == s) {
+        if (null == s) {
             s = sort.get(DEFAULT);
         }
         return null == s ? 0 : s;
@@ -217,12 +219,12 @@ public class DimensionNode implements Comparable<DimensionNode> {
             property.setValue(language, value);
             properties.put(predicate, property);
         }
-    
+
     }
 
     @Override
     public int compareTo(DimensionNode o) {
-        if(this.sort.isEmpty()) {
+        if (this.sort.isEmpty()) {
             String s1 = getLabel().getValue(ThreadRole.getLanguage());
             String s2 = o.getLabel().getValue(ThreadRole.getLanguage());
             return COLLATOR.compare(s1, s2);
@@ -315,10 +317,11 @@ public class DimensionNode implements Comparable<DimensionNode> {
     }
 
     public boolean isDecimalsSet() {
-       return 0 <= decimals;
+        return 0 <= decimals;
     }
+
     /**
-     * If no decimals metadata is provided then accuracy of 
+     * If no decimals metadata is provided then accuracy of
      * value must be determined dynamically
      * @return
      */
@@ -326,14 +329,14 @@ public class DimensionNode implements Comparable<DimensionNode> {
         if (isDecimalsSet()) {
             return decimals;
         } else {
-            int separatorIndex = value.replace(",",".").indexOf('.');
-            return separatorIndex >= 0 ? value.length() - separatorIndex - 1: 0;
+            int separatorIndex = value.replace(",", ".").indexOf('.');
+            return separatorIndex >= 0 ? value.length() - separatorIndex - 1 : 0;
         }
     }
 
     public Label getProperty(String property) {
-        if("code".equals(property)) {
-            Label l =  new Label();
+        if ("code".equals(property)) {
+            Label l = new Label();
             l.setValue("fi", getCode());
             return l;
         } else if ("label".equals(property)) {
@@ -342,5 +345,13 @@ public class DimensionNode implements Comparable<DimensionNode> {
             return properties.get(property);
         }
     }
+
+    public Limits getLimits() {
+        return limits;
+    }
+
+    public void setLimits(Limits limits) {
+        this.limits = limits;
+    }
+
 }
-    

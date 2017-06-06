@@ -29,6 +29,7 @@ public class DataPresentation implements Presentation {
     private boolean showConfidenceInterval;
     private boolean showSampleSize;
     private List<String> emphasize = new ArrayList<>();
+    private String geometry;
 
     public void setId(String id) {
         this.id = id;
@@ -167,6 +168,14 @@ public class DataPresentation implements Presentation {
 
     public void addEmphasize(String id) {
         this.emphasize.add(id);
+    }
+
+    public void setGeometry(String attribute) {
+        this.geometry = attribute;
+    }
+
+    public String getGeometry() {
+        return geometry;
     }
 
 }

@@ -1,9 +1,16 @@
 var thl = thl || {};
 
+if(typeof(maps) === 'undefined') {
+    maps = { "features": {}};
+}
+
 /**
  Handle each bar chart presentation
  */
 function selectChartType (e) {
+  if (e.is('.map')) {
+    return 'map';
+  }
   if (e.is('.bar')) {
     return 'barchart';
   }
@@ -28,10 +35,32 @@ function selectChartType (e) {
 }
 
 (function ($, d3) {
+
+  function numberFormat(str) {
+    if(!str) {
+      return '';
+    }
+    return str.replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
+      .replace(/\./g, ',')
+  }
+
   thl.pivot = thl.pivot || {};
   thl.pivot.svgToImg = function (doc, width, height, callback) {
-    var svgHeight = +d3.select(doc).select('svg').attr('viewBox').split(' ')[3];
-    var data = doc.innerHTML.replace('<svg ', '<svg width="' + width + '" height="' + svgHeight + '" ');
+    var svgHeight;
+    if(doc.attr('height') !== undefined) {
+      svgHeight = +doc.attr('height');
+    } else {
+      svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
+    }
+    if(doc.attr('width') !== undefined) {
+      width = +doc.attr('width');
+    }
+    var data;
+    if(doc.attr('height')) {
+      data = doc.parent().html().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+    } else {
+      data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + svgHeight + '" ');
+    }
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
     var DOMURL = window.URL || window.webkitURL || window;
@@ -52,6 +81,22 @@ function selectChartType (e) {
       });
     img.src = url;
   };
+  thl.pivot.exportImg = function(opt) {
+    $(opt.target[0]).find('.img-action a').each(function (e) {
+      var link = $(this);
+      if (link.attr('href') === '#') {
+        thl.pivot.svgToImg($(this).closest('.presentation').find('svg'), 800, 400, function (canvas) {
+          try {
+            link.attr('href', canvas.toDataURL());
+            link.attr('download', opt.target.attr('id') + '.png');
+            link.click();
+          } catch (e) {
+            link.remove();
+          }
+        });
+      }
+    });
+  }
   thl.pivot.summary = function (labels, dimensionData) {
     /*
      * Color palette for charts
@@ -123,6 +168,197 @@ function selectChartType (e) {
        *  - rowCount -> number of row levels in the table
        *  - target -> parent element for the table
        */
+      drawMap: function (opt) {
+        var geojson,
+         showMarkers = false, 
+         visibleCategory = '',
+         selected = { properties: undefined},
+        // Different categories [eg. maakunta, kunta] and their markers to different
+        // layers
+         layersByCategory = {},
+         layerGroupsByCategory = {},
+         markerGroupsByCategory = {};
+
+        var colors;
+        if(opt.palette === 'gray') {
+          colors = ['#b2b2b2', '#8c8c8c','#666666','#3f3f3f','#191919'];
+        } else if (opt.palette == 'ranking') {
+          colors = ['#ef4848', '#EF9048','#efd748','#ABD257', '#66cc66'];
+        } else {
+          colors = ['#edf8e9', '#bae4b3','#74c476', '#31a354', '#006d2c'];
+        }
+        if(opt.order === 'desc') {
+          colors.reverse();
+        }
+
+        var areaCodes = {}
+        $.each(dimensionData, function(i, v) {
+          if(v.dim === 'area') {
+            areaCodes[v.code] = i;
+          }
+        });
+
+        var limits;
+        var values = []
+        $.each(opt.dataset.Data(), function(i, v) {
+          values.push(v.value);
+        });
+        values.sort();
+        if(opt.limits === '') {
+          limits = [
+            values[0],
+            values[Math.floor(values.length / 5)],
+            values[Math.floor(2 * values.length / 5)],
+            values[Math.floor(3 * values.length / 5)],
+            values[Math.floor(4 * values.length / 5)],
+            values[values.length -1]
+          ];
+        } else {
+          limits = opt.limits.split(',');
+        }
+
+        function getFontSize(zoom) {
+            if (typeof (zoom) === 'undefined' || zoom <= 3) {
+                return '100%';
+            }
+            return (zoom <= 4) ? '130%' : '160%';
+        }
+
+        var crs = new L.Proj.CRS('EPSG:3067', '+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
+          origin : [0, 0],
+          resolutions : [3000, 2048, 1024, 512, 256],
+          bounds : [-548576, 6291456, 1548576, 8388608]
+        });
+
+        var legend = L.control({position : 'bottomleft'});
+        var tooltip = $('<span></span>').addClass('maptip').hide();
+
+        legend.update = function() {
+          
+          var ul = $('<ul>');
+          for(var i = 0; i < limits.length - 1; ++i) {
+            var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
+            var li = $('<li>').text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
+            li.prepend($('<span></span>').addClass('legend').css('background', colors[j]));
+            ul.append(li);  
+          }
+          $(this._div)
+            .append($('<strong></strong>').text(opt.label))
+            .append(ul);
+        };
+        legend.onAdd = function(map) {
+          this._div = L.DomUtil.create('div', 'map-info legend');
+          this.update();
+          return this._div;
+        };
+       
+        function mapLimitIndex(limits, i) {
+          var j = i;
+          if(limits.length === 4) {
+            switch(j) {
+              case 1: return 0;
+              case 2: return 2;
+              case 3: return 4;
+            }
+          }
+          return j;
+        }
+         
+        var map = L.map(opt.target.get(0), {
+          crs : crs,
+          maxZoom : 4,
+          scrollWheelZoom : false
+        }).setView([65, 25], 0);
+        map.getPanes().markerPane.style.visibility = 'hidden';
+        map.on('zoomend', function() {
+          var currentZoom = map.getZoom();
+          map.getPanes().markerPane.style.fontSize = getFontSize(currentZoom);
+        });
+
+        L.Proj.geoJson(maps.features.MAA, {
+          style: {
+              fillColor : '#f0f0f0',
+              weight : 1,
+              opacity : 0.7,
+              fillOpacity : 0.7,
+              color : '#808080'
+          }
+        }).addTo(map);
+     
+
+        geojson = L.Proj.geoJson(maps.features[opt.stage], {
+          style: function (feature) {
+            var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
+            var color = '#f0f0f0'
+            if(v !== undefined && v.value !== undefined) {
+              color = undefined;
+              for(var i = 0; i < limits.length; ++i) {
+                if(opt.include = 'lte' && v.value <= limits[i]) {
+                  color = colors[mapLimitIndex(limits, i)];
+                  break;
+                } else if (opt.include = 'gte' && v.value < limits[i]) {
+                  color = colors[mapLimitIndex(limits, i)];
+                  break;
+                }
+              }
+              if(!color) {
+                color = colors[colors.length - 1];
+              }
+            } else {
+              color = '#f0f0f0';
+            }
+
+            return {
+                fillColor : color,
+                weight : 1,
+                opacity : 0.3,
+                fillOpacity : 1,
+                color : '#303030'
+            };
+          },
+          onEachFeature: function(feature, layer) {
+            layer.on({
+              mouseover: function(e) {
+                var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
+                if(v !== undefined && v.value !== undefined) {
+                  tooltip.text(feature.properties.name + ': ' + numberFormat(v.value));
+                } else {
+                  tooltip.text(feature.properties.name);
+                }
+                tooltip.show();
+                var x = e.containerPoint.x;
+                if(x + tooltip.width() > opt.target.width() - 50) {
+                  x = opt.target.width() - tooltip.width() - 15;
+                }
+                var y = e.containerPoint.y;
+                if(y + tooltip.height() > opt.target.height() - 50) {
+                  y = opt.target.height() - tooltip.height() - 15;
+                }
+                tooltip.css('left', x + 'px');
+                tooltip.css('top', y + 'px');
+         
+                layer.setStyle({
+                    weight : 2,
+                    dashArray : '',
+                    fillOpacity : 0.9
+                });
+              },
+              mouseout : function (e) {
+                tooltip.hide();
+                geojson.resetStyle(e.target);
+              },
+              click: function(e) {
+                map.fitBounds(e.target.getBounds());
+                selected = e.target.feature;
+              }
+            });
+          }
+        }).addTo(map);
+        legend.addTo(map);
+        opt.target.append(tooltip);
+        opt.target.find('svg').attr('viewBox', '640 480');
+        thl.pivot.exportImg(opt);
+      },
       drawTable: function (opt) {
         /*
          * calculates how many child elements there are for each
@@ -297,10 +533,7 @@ function selectChartType (e) {
                 $('<td>')
                 .append(
                   $('<span></span>')
-                  .text(
-                    ('' + val.value)
-                      .replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
-                      .replace(/\./g, ','))
+                  .text(numberFormat('' + val.value))
                 )
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
@@ -1698,20 +1931,7 @@ function selectChartType (e) {
 
         // Genereate data urls for each chart so that user can download
         // them as png files
-        $(opt.target[0]).find('.img-action a').each(function (e) {
-          var link = $(this);
-          if (link.attr('href') === '#') {
-            thl.pivot.svgToImg(svgContainer[0][0], 800, 400, function (canvas) {
-              try {
-                link.attr('href', canvas.toDataURL());
-                link.attr('download', opt.target[0][0].id + '.png');
-                link.click();
-              } catch (e) {
-                link.remove();
-              }
-            });
-          }
-        });
+        thl.pivot.exportImg(opt);
       }
     };
   };
@@ -1866,10 +2086,10 @@ function selectChartType (e) {
     });
 
     var summary = thl.pivot.summary(labels, dimensionData);
-    $('.presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
+    $('.presentation.map, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
-        $.getJSON($(p).attr('data-ref'), function (data) {
+        var callback = function (data) {
           if (data.dataset.value.length === 0) {
             $(p).children('img').remove();
             return;
@@ -1878,7 +2098,19 @@ function selectChartType (e) {
             target = $(p),
             type = selectChartType(target);
 
-          if ('table' === type) {
+          if ('map' === type) {
+            summary
+            .drawMap({
+              target: target,
+              dataset: dataset,
+              stage: target.attr('data-stage'),
+              palette: target.attr('data-palette'),
+              limits: target.attr('data-limits'),
+              order: target.attr('data-limit-order'),
+              include: target.attr('data-limit-include'),
+              label: target.attr('data-label')
+            });
+          } else if ('table' === type) {
             summary
               .drawTable({
                 target: $(p),
@@ -1924,7 +2156,17 @@ function selectChartType (e) {
             });
           }
           $(p).children('img').remove();
-        }); // end of getJson
+        };
+        var url = $(p).attr('data-ref');
+        if(url.length > 2000) {
+          $.post(
+            url.substring(0, url.indexOf('json') + 4), 
+            url.substring(url.indexOf('json') + 5),
+            callback, 'json');
+        } else {
+          // prefer GET for caching
+          $.getJSON(url, callback, 'json');
+        }
       }); // end of each presentation.bar
 
     $('#summary-form select, #summary-form input').change(

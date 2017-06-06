@@ -68,7 +68,7 @@ public class SummaryReader {
     private static final String SUPPRESSION_ATTRIBUTE = "suppression";
 
     private static final List<String> textPresentations = ImmutableList.of("subtitle", "info");
-    private static final List<String> dataPresentations = ImmutableList.of("line", "bar", "gauge", "pie", "radar");
+    private static final List<String> dataPresentations = ImmutableList.of("line", "bar", "gauge", "pie", "radar", "map");
     private static final List<String> tablePresentations = ImmutableList.of("table");
 
     private static final List<String> stageDefinitionElements = ImmutableList.of("stage", "stageMulti");
@@ -512,7 +512,7 @@ public class SummaryReader {
             p.setMin(parseIntAttribute(typeNode, "min"));
             p.setMax(parseIntAttribute(typeNode, "max"));
             p.setPalette(attribute(typeNode, "palette"));
-
+            p.setGeometry(attribute(typeNode, "geometry"));
             List<SummaryStage> stages = new ArrayList<>();
             parseDimensions(p, stages, DIMENSION_ELEMENT, "dimMulti");
             List<String> dimensions = new ArrayList<>();
