@@ -66,6 +66,18 @@ class PivotCellKeyGenerator {
      */
     private DimensionNode measure;
 
+    private DimensionNode constantMeasure = null;
+    private boolean constantsAdded = false;
+    private int constantKeySize = 0;
+    
+    private int prevRow = -1;
+    private int prevRowKeySize = 0;
+    private DimensionNode prevRowMeasure = null;
+    private int prevColumn = -1;
+    private int prevColumnKeySize = 0;
+    private DimensionNode prevColumnMeasure = null;
+
+
     public PivotCellKeyGenerator(Pivot pivot, Collection<DimensionNode> constants) {
         this.pivot = pivot;
         this.rows = pivot.getRows().size();
@@ -127,10 +139,20 @@ class PivotCellKeyGenerator {
      * @param row
      */
     private void addRows(int row) {
-        for (int i = 0; i < rows; ++i) {
-            DimensionNode node = pivot.getRowAt(i, row);
-            addNode(node, i);
-        }
+//        if(row == prevRow) {
+//           lastKeyIndex += prevRowKeySize;
+//           if(null != prevRowMeasure) {
+//               measure = prevRowMeasure;
+//           }
+//        } else {
+//            int keyIndex = lastKeyIndex;
+            for (int i = 0; i < rows; ++i) {
+                DimensionNode node = pivot.getRowAt(i, row);
+                prevRowMeasure = addNode(node, i);
+            }
+//            prevRow = row;
+//            prevRowKeySize = lastKeyIndex - keyIndex;
+//        }
     }
 
     /**
@@ -139,6 +161,21 @@ class PivotCellKeyGenerator {
      * @param row
      */
     private void addColumns(int column, int offset) {
+//        if(column == prevColumn) {
+//            lastKeyIndex += prevColumnKeySize;
+//            if(null != prevColumnMeasure) {
+//                measure = prevColumnMeasure;
+//            }
+//         } else {
+//             int keyIndex = lastKeyIndex;
+//             for (int i = 0; i < rows; ++i) {
+//                 DimensionNode node = pivot.getColumnAt(i, column);
+//                 prevColumnMeasure = addNode(node, i);
+//             }
+//             prevColumn = column;
+//             prevColumnKeySize = lastKeyIndex - keyIndex;
+//         }
+        
         for (int i = 0; i < columns; ++i) {
             DimensionNode node = pivot.getColumnAt(i, column);
             addNode(node, i + offset);
@@ -152,7 +189,8 @@ class PivotCellKeyGenerator {
      * 
      * @param node
      */
-    private void addNode(final DimensionNode node, int position) {
+    private DimensionNode addNode(final DimensionNode node, int position) {
+        DimensionNode nodeMeasure = null;
         final int id = node.getSurrogateId();
         final int oldNodeIndex = putDimIfAbsent(node);
         fullKey[position] = node.getSurrogateId();
@@ -161,7 +199,7 @@ class PivotCellKeyGenerator {
             if (node.ancestorOf(oldNode)) {
                 // A more specific node is found from the same
                 // dimension tree, skip
-                return;
+                return nodeMeasure;
             } else {
                 // A more generic node is found from the same
                 // dimension tree. Find the old node and
@@ -173,8 +211,9 @@ class PivotCellKeyGenerator {
                         key[i] = id;
                         if (node.isMeasure()) {
                             measure = node;
+                            nodeMeasure = node;
                         }
-                        return;
+                        return nodeMeasure;
                     }
                 }
                 throw new IllegalStateException("Could not find old node to replace in key");
@@ -183,6 +222,7 @@ class PivotCellKeyGenerator {
             // Append the id as the last element in the list
             key[lastKeyIndex++] = id;
         }
+        return nodeMeasure;
     }
 
     // Check if constants contain the same dimension multiple times
@@ -191,6 +231,15 @@ class PivotCellKeyGenerator {
      * Add all contanst dimensions to the key that are not present in the key
      */
     private void addConstants() {
+        if (constantsAdded) {
+            usePreviousConstants();
+        } else {
+            buildNewConstants();
+            constantsAdded = true;
+        }
+    }
+
+    private void buildNewConstants() {
         outer: for (int j = 0; j < constants.length; ++j) {
             DimensionNode node = constants[j];
             Dimension nd = node.getDimension();
@@ -210,9 +259,18 @@ class PivotCellKeyGenerator {
             // Dimension was not yet found so let's
             // append it to the key
             key[lastKeyIndex++] = node.getSurrogateId();
+            constantKeySize++;
             if (nd.isMeasure()) {
                 measure = node;
+                constantMeasure = node;
             }
+        }
+    }
+
+    private void usePreviousConstants() {
+        lastKeyIndex += constantKeySize;
+        if (null != constantMeasure) {
+            measure = constantMeasure;
         }
     }
 

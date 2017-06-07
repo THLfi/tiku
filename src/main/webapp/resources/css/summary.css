@@ -372,13 +372,13 @@
    .stripe {
      position: relative;
      padding: 6px 15px;
-     height: auto;
+     height: 45px;
    }
    #languages {
      top: 0;
    }
    .stripe .pull-right {
-     float: unset !important;
+     float: none !important;
    }
    .summary-content .col-sm-3 {
      background: #efefef;

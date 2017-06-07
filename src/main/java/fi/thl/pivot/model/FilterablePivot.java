@@ -1,7 +1,10 @@
 package fi.thl.pivot.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -95,8 +98,10 @@ public class FilterablePivot extends AbstractPivotForwarder {
         // Prepare headers for filteration
         
         include(new ColumnStrategy(), 0, 0);
-        include(new RowStrategy(), 0, 0);
-
+      
+        RowStrategy rowStrategy = new RowStrategy();
+        include(rowStrategy, 0, 0);
+    
         filter(filters);
     }
 
@@ -168,8 +173,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         if (strategy.get(level).isTotalIncluded()) {
             levelSize -= 1;
         }
-        for (@SuppressWarnings("unused")
-        DimensionNode node : strategy.get(level)) {
+        for (int i = 0; i < levelSize; ++i) {
             if (++levelIndex <= levelSize && !shouldFilter(strategy, level, index)) {
                 strategy.add(index);
             }
@@ -180,18 +184,26 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private boolean shouldFilter(IncludeStrategy strategy, int level,
             int i) {
+        
         for (int a = 0; a < level; ++a) {
             DimensionNode aNode = strategy.getNode(a, i);
-            DimensionNode aLastNode = strategy.get(a).getLastNode();
+            DimensionNode aLastNode = strategy.getLastNode(a);
 
             for (int b = a + 1; b < level + 1; ++b) {
-                DimensionNode bNode = strategy.getNode(b, i);
 
-                if (!aNode.getDimension().equals(bNode.getDimension())) {
+                DimensionNode bLastNode = strategy.getLastNode(b);
+                // We rely on implementation detail here. 
+                // This phase took 3.6 % of execution time
+                // when changed from safe equals check to 
+                // unsafe reference check. Can reduce execution
+                // time 1 second or more when loop is executed
+                // multiple times. 
+                if (aNode.getDimension() != bLastNode.getDimension()) {
                     continue;
                 }
 
-                DimensionNode bLastNode = strategy.get(b).getLastNode();
+                DimensionNode bNode = strategy.getNode(b, i);
+
                 if (aLastNode == bLastNode
                         && aLastNode.getSurrogateId() == aNode.getSurrogateId()
                         && bLastNode.getSurrogateId() != bNode.getSurrogateId()) {
@@ -248,6 +260,10 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private static abstract class IncludeStrategy {
 
+        protected long hitCount = 0;
+        
+        private Map<Integer, DimensionNode> lastNodes = new HashMap<>();
+
         abstract List<PivotLevel> getLevels();
 
         abstract void add(int index);
@@ -256,6 +272,13 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         public PivotLevel get(int level) {
             return getLevels().get(level);
+        }
+
+        public DimensionNode getLastNode(int level) {
+            if(!lastNodes.containsKey(level)) {
+                lastNodes.put(level, get(level).getLastNode());
+            }
+            return lastNodes.get(level);
         }
 
         public int getRepetitionFactory(int i) {
@@ -268,6 +291,10 @@ public class FilterablePivot extends AbstractPivotForwarder {
         public int size() {
             return getLevels().size();
         }
+        
+        public long getHitCount() {
+            return hitCount;
+        }
     }
 
     private class RowStrategy extends IncludeStrategy {
@@ -279,6 +306,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         @Override
         public DimensionNode getNode(int level, int index) {
+            hitCount++;
             return delegate.getRowAt(level, index);
         }
 
@@ -298,6 +326,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         @Override
         public DimensionNode getNode(int level, int index) {
+            hitCount++;
             return delegate.getColumnAt(level, index);
         }
 

@@ -60,7 +60,8 @@ function selectChartType (e) {
     }
     var data;
     if(doc.attr('height')) {
-      data = doc.parent().html().replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+      data = doc.get(0).xmlns='http://www.w3.org/2000/svg';
+      data = doc.parent().html();
     } else {
       data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + svgHeight + '" ');
     }
@@ -204,9 +205,11 @@ function selectChartType (e) {
         var limits;
         var values = []
         $.each(opt.dataset.Data(), function(i, v) {
-          values.push(v.value);
+          if(v.value !== undefined) {
+            values.push(+v.value);
+          }
         });
-        values.sort();
+        values.sort(function (a,b) { return a-b;});
         if(opt.limits === '') {
           limits = [
             values[0],
@@ -243,7 +246,7 @@ function selectChartType (e) {
             var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
             var li = $('<li>').text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
             var l = $('<span></span>').addClass('legend');
-            l.get(0).style='background: ' + colors[j] + ' !important';
+            l.get(0).style.background = colors[j] + ' !important';
             li.prepend(l);
             ul.append(li);  
           }
@@ -297,20 +300,20 @@ function selectChartType (e) {
             var color = '#f0f0f0'
             if(v !== undefined && v.value !== undefined) {
               color = undefined;
-              for(var i = 0; i < limits.length; ++i) {
+              for(var i = 1; i < limits.length; ++i) {
                 if(opt.include = 'lte' && v.value <= limits[i]) {
-                  color = colors[mapLimitIndex(limits, i)];
+                  color = colors[mapLimitIndex(limits, i - 1)];
                   break;
                 } else if (opt.include = 'gte' && v.value < limits[i]) {
-                  color = colors[mapLimitIndex(limits, i)];
+                  color = colors[mapLimitIndex(limits, i - 1)];
                   break;
                 }
               }
-              if(!color) {
+              if(color === undefined) {
                 color = colors[colors.length - 1];
               }
             } else {
-              color = '#f0f0f0';
+              color = '#fff';
             }
 
             return {

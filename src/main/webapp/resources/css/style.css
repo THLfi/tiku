@@ -486,7 +486,7 @@ ul.tree-browser {
 	}
 	.pivot-header, .toolbar-control, .pivot-body, .pivot-sidebar,
 		.pivot-content, .pivot-footer {
-		position: unset;
+		position: initial;
 		height: auto;
 		top: auto;
 		left: auto;
@@ -498,7 +498,7 @@ ul.tree-browser {
 		position: relative;
 	}
 	#languages {
-		top: unset;
+		top: initial;
 		bottom: -3px;
 		right: 0;
 	}

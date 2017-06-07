@@ -111,7 +111,7 @@ public class CubeService {
         sw.stop();
 
         LOG.debug("data loaded");
-
+     
         sw.start("Create pivot");
         ModifiablePivot mPivot = new ModifiablePivot(dataSet);
         if (this.defaultMeasureUsed) {
@@ -121,10 +121,14 @@ public class CubeService {
         determineDimensions(mPivot, filter);
         sw.stop();
 
+        
         sw.start("apply filters");
         FilterablePivot fPivot = new FilterablePivot(mPivot);
+    
         applyFilters(fPivot);
   
+
+        
         this.pivot = fPivot;
         sw.stop();
 

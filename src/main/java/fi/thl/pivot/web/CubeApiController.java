@@ -52,6 +52,7 @@ public class CubeApiController extends AbstractCubeController {
     public void displayCubeAsJsonStat(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException {
         LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
+        
         try {
             CubeService cs = createCube(cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest, resolveSearchType(cubeRequest.getSearchType()), model);
 
