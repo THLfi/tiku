@@ -18,7 +18,7 @@ public interface Presentation {
 
         public static SuppressMode fromString(String attribute) {
             if(null == attribute) {
-                return all;
+                return none;
             }
             if("no".equalsIgnoreCase(attribute)) {
                 return none;
@@ -32,7 +32,7 @@ public interface Presentation {
             if("zero".equalsIgnoreCase(attribute)) {
                 return zero;
             }
-            return all;
+            return none;
         }
     }
 

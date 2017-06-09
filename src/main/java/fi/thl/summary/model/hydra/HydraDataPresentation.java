@@ -30,29 +30,36 @@ public class HydraDataPresentation extends DataPresentation {
     }
 
     public String getArea() {
-        for (SummaryItem item : delegate.getDimensions()) {
-            SummaryDimension s = ((SummaryDimension) item);
-            if (s.getDimension().equals("area")) {
-                String stage = s.getStage().getStage();
-                if ("nutsi".equals(stage)) {
-                    stage = "NUTS1";
-                } else if ("avi".equals(stage)) {
-                    stage = "ALUEHALLINTOVIRASTO";
-                } else if ("ely".equals(stage)) {
-                    stage = "ELY-KESKUS";
-                } else if ("root".equals(stage)) {
-                    stage = "MAA";
-                } else {
-                    stage = stage.toUpperCase();
+        String stage = "maa";
+        if (((HydraSummary) summary).getGeometry() != null) {
+            stage = ((HydraSummary) summary).getGeometry();
+        } else {
+            for (SummaryItem item : delegate.getDimensions()) {
+                SummaryDimension s = ((SummaryDimension) item);
+                if (s.getDimension().equals("area")) {
+                    stage = s.getStage().getStage();
+                    break;
                 }
-                return stage;
             }
         }
-        return "MAA";
+        if(stage == null) {
+            stage = "MAA";
+        } else if ("nutsi".equals(stage)) {
+            stage = "NUTS1";
+        } else if ("avi".equals(stage)) {
+            stage = "ALUEHALLINTOVIRASTO";
+        } else if ("ely".equals(stage)) {
+            stage = "ELY-KESKUS";
+        } else if ("root".equals(stage)) {
+            stage = "MAA";
+        } else {
+            stage = stage.toUpperCase();
+        }
+        return stage;
     }
 
     public DimensionNode getMeasure() {
-        if(delegate.hasMeasures()) {
+        if (delegate.hasMeasures()) {
             return getMeasureNodes().get(0);
         }
         return null;
@@ -144,7 +151,12 @@ public class HydraDataPresentation extends DataPresentation {
 
     private void appendDimensionNodes(UrlBuilder url) {
         for (SummaryItem d : getDimensions()) {
-            url.addParameter(((Extension) d).getDimension(), ((Extension) d).getNodes());
+            Extension extension = (Extension) d;
+            if("map".equals(delegate.getType()) && "area".equals(extension.getDimension()) && ((HydraSummary)summary).getGeometry() != null) {
+                url.addParameter(extension.getDimension(), extension.getNodes(((HydraSummary)summary).getGeometry()));
+            } else {
+                url.addParameter(extension.getDimension(), extension.getNodes());
+            }
             url.addColumns();
         }
     }

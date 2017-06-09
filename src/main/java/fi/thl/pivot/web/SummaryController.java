@@ -43,6 +43,8 @@ public class SummaryController extends AbstractController {
 
     public static class SummaryRequest extends AbstractRequest {
 
+        private String geometry;
+
         public String getSummaryUrl() {
             return getSummaryUrl(locale.getLanguage());
         }
@@ -58,6 +60,14 @@ public class SummaryController extends AbstractController {
         public String getSummaryUrl(String language, String id) {
             return String.format("%s/%s/%s/%s/summary_%s", env, language, subject, hydra, id);
         }
+
+        public void setGeometry(String geo) {
+            this.geometry = geo;
+        }
+
+        public String getGeometry() {
+            return geometry;
+        }
     }
 
     @Autowired
@@ -66,7 +76,7 @@ public class SummaryController extends AbstractController {
     @ModelAttribute
     public SummaryRequest getSummaryRequest(@PathVariable String env, @PathVariable String locale,
             @PathVariable String subject, @PathVariable String hydra,
-            @PathVariable String summaryId,
+            @PathVariable String summaryId, @RequestParam(value ="geo", required=false) String geo,
             @RequestParam(value = "run_id", required = false, defaultValue = "latest") String runId) {
         SummaryRequest sr = new SummaryRequest();
         sr.setEnv(env);
@@ -75,6 +85,7 @@ public class SummaryController extends AbstractController {
         sr.setHydra(hydra);
         sr.setCube(summaryId);
         sr.setRunId(runId);
+        sr.setGeometry(geo);
         return sr;
     }
 
@@ -116,6 +127,7 @@ public class SummaryController extends AbstractController {
 
         checkLoginRequirements(summaryRequest, model, source, cubeId);
         HydraSummary hSummary = constructHydraSummary(request, summary, source);
+        hSummary.setGeometry(summaryRequest.getGeometry());
         List<DimensionNode> drillNodes = determineDrillNodes(request, summary, hSummary);
 
         addAccessTokenForSummaryIfCubeAccessIsDenied(source, hSummary);

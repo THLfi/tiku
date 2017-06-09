@@ -49,6 +49,7 @@ public class HydraSummary extends Summary {
     private Map<String, List<DimensionNode>> drilledDimensions = Maps.newHashMap();
     private Map<String, DimensionLevel> dimensionMaxLevel = Maps.newHashMap();
     private Map<String, String> valueCache = Maps.newHashMap();
+    private String geometry;
 
     public HydraSummary(Summary theSummary, HydraSource theSource) {
         this.source = theSource;
@@ -204,7 +205,11 @@ public class HydraSummary extends Summary {
             if (p instanceof HydraDataPresentation) {
                 HydraDataPresentation hp = (HydraDataPresentation) p;
                 for (SummaryItem s : hp.getDimensions()) {
-                    nodes.addAll(((Extension) s).getNodes());
+                    if(hp.getType().equals("map") && getGeometry() != null && s instanceof DimensionExtension && ((DimensionExtension)s).getDimension().equals("area")) {
+                        nodes.addAll(((DimensionExtension) s).getNodes(getGeometry()));
+                    } else {
+                        nodes.addAll(((Extension) s).getNodes());
+                    }
                 }
                 nodes.addAll(hp.getMeasuresExtension().getNodes());
             }
@@ -384,6 +389,14 @@ public class HydraSummary extends Summary {
             }
         }
         return filter;
+    }
+
+    public void setGeometry(String geometry) {
+        this.geometry = geometry;
+    }
+    
+    public String getGeometry() {
+        return geometry;
     }
 
 }

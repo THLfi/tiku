@@ -96,4 +96,10 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
         return level == null;
     }
 
+    @Override
+    public List<DimensionNode> getNodes(String stage) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

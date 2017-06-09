@@ -570,14 +570,15 @@ public class SummaryReader {
                         }
                         if (stageDefinitionElements.contains(candidate.getNodeName())) {
                             items.add(candidate.getTextContent());
-                            break;
+                            candidate = getNextElementNode(candidate);
+                            continue;
                         }
                         break;
                     }
                     if (items.isEmpty()) {
                         boolean hasFilter = hasFilterForDimension(p, dimension);
                         items.add(hasFilter ? ":filter:" : DEFAULT_STAGE);
-                    }
+                    };
                     stages.add(new SummaryStage(type, items, dimension.getTextContent()));
                 }
             }

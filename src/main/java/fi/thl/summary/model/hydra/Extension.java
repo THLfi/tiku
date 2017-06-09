@@ -9,4 +9,5 @@ public interface Extension extends SummaryItem {
 
     List<DimensionNode> getNodes();
     String getDimension();
+    List<DimensionNode> getNodes(String stage);
 }

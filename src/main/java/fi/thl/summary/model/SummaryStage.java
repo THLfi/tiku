@@ -54,4 +54,10 @@ public class SummaryStage {
         return this.dimensionId;
     }
 
+    @Override
+    public String toString() {
+        return "SummaryStage [type=" + type + ", items=" + items + ", dimensionId=" + dimensionId + "]";
+    }
+    
+
 }

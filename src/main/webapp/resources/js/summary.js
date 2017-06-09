@@ -37,7 +37,7 @@ function selectChartType (e) {
 (function ($, d3) {
 
   function numberFormat(str) {
-    if(!str) {
+    if(str === undefined || str === '' || str === null) {
       return '';
     }
     return (''+str).replace(/(\d)(?=(\d{3})+(\.|$))/g, '$1\xa0') // Use non-breaking space as a thousands separator
@@ -55,35 +55,37 @@ function selectChartType (e) {
     if(doc.attr('width') !== undefined) {
       width = +doc.attr('width');
     }
-    if(doc.attr('viewBox') === undefined) {
-      doc.attr('viewBox', width + ' ' + height);
-    }
+
     var data;
     if(doc.attr('height')) {
-      data = doc.get(0).xmlns='http://www.w3.org/2000/svg';
       data = doc.parent().html();
     } else {
       data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + svgHeight + '" ');
+    }
+    data = data.replace(/&nbsp;/g,' ');
+    if(data.indexOf('xmlns') < 0) {
+      // xmlns is required to draw svg to canvas
+      data = data.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
     }
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
     var DOMURL = window.URL || window.webkitURL || window;
     var url = DOMURL.createObjectURL(blob);
-    $(img)
-      .on('load', function () {
-        try {
-          var canvas = $('<canvas>').attr('width', width + 20).attr('height', svgHeight + 20).get(0);
-          var ctx = canvas.getContext('2d');
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, 820, svgHeight + 20);
-          ctx.drawImage(img, 10, 10);
-          callback(canvas);
-          DOMURL.revokeObjectURL(url);
-        } catch (e) {
-          $(img).remove();
-        }
-      });
+    img.onload = function() {
+      try {
+        var canvas = $('<canvas>').attr('width', width + 20).attr('height', svgHeight + 20).get(0);
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 820, svgHeight + 20);
+        ctx.drawImage(img, 10, 10);
+        callback(canvas);
+        DOMURL.revokeObjectURL(url);
+      } catch (e) {
+        $(img).remove();
+      }
+    };
     img.src = url;
+    
   };
   thl.pivot.exportImg = function(opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
@@ -191,9 +193,6 @@ function selectChartType (e) {
         } else {
           colors = ['#edf8e9', '#bae4b3','#74c476', '#31a354', '#006d2c'];
         }
-        if(opt.order === 'desc') {
-          colors.reverse();
-        }
 
         var areaCodes = {}
         $.each(dimensionData, function(i, v) {
@@ -205,7 +204,7 @@ function selectChartType (e) {
         var limits;
         var values = []
         $.each(opt.dataset.Data(), function(i, v) {
-          if(v.value !== undefined) {
+          if(v.value !== undefined && v.value != null) {
             values.push(+v.value);
           }
         });
@@ -221,6 +220,18 @@ function selectChartType (e) {
           ];
         } else {
           limits = opt.limits.split(',');
+        }
+
+        function mapLimitIndex(limits, i) {
+          var j = i;
+          if(limits.length === 4) {
+            switch(j) {
+              case 0: j = 0; break;
+              case 1: j = 2; break;
+              case 2: j = 4; break;
+            }
+          }
+          return opt.order === 'desc' ? 4 - j : j;
         }
 
         function getFontSize(zoom) {
@@ -242,13 +253,17 @@ function selectChartType (e) {
         legend.update = function() {
           
           var ul = $('<ul>');
+          var lastBound = Number.MAX_VALUE;
           for(var i = 0; i < limits.length - 1; ++i) {
+            if(lastBound == limits[i + 1]) {
+              continue;
+            }
             var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
             var li = $('<li>').text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
-            var l = $('<span></span>').addClass('legend');
-            l.get(0).style.background = colors[j] + ' !important';
+            var l = $('<span></span>').addClass('l' + mapLimitIndex(limits, i));
             li.prepend(l);
             ul.append(li);  
+            lastBound = limits[i + 1];
           }
           $(this._div)
             .append($('<strong></strong>').text(opt.label))
@@ -259,18 +274,6 @@ function selectChartType (e) {
           this.update();
           return this._div;
         };
-       
-        function mapLimitIndex(limits, i) {
-          var j = i;
-          if(limits.length === 4) {
-            switch(j) {
-              case 1: return 0;
-              case 2: return 2;
-              case 3: return 4;
-            }
-          }
-          return j;
-        }
          
         var map = L.map(opt.target.get(0), {
           crs : crs,
@@ -298,19 +301,19 @@ function selectChartType (e) {
           style: function (feature) {
             var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
             var color = '#f0f0f0'
-            if(v !== undefined && v.value !== undefined) {
+            if(v !== undefined && v.value !== undefined && v.value != null) {
               color = undefined;
-              for(var i = 1; i < limits.length; ++i) {
-                if(opt.include = 'lte' && v.value <= limits[i]) {
+              for(var i = 1; i < limits.length - 1; ++i) {
+                if(opt.include = 'lte' && +v.value <= limits[i]) {
                   color = colors[mapLimitIndex(limits, i - 1)];
                   break;
-                } else if (opt.include = 'gte' && v.value < limits[i]) {
+                } else if (opt.include = 'gte' && +v.value < limits[i]) {
                   color = colors[mapLimitIndex(limits, i - 1)];
                   break;
                 }
               }
               if(color === undefined) {
-                color = colors[colors.length - 1];
+                color = colors[opt.order === 'desc' ? 0 : 4];
               }
             } else {
               color = '#fff';
@@ -328,7 +331,7 @@ function selectChartType (e) {
             layer.on({
               mouseover: function(e) {
                 var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
-                if(v !== undefined && v.value !== undefined) {
+                if(v !== undefined && v.value !== undefined && v.value != null) {
                   tooltip.text(feature.properties.name + ': ' + numberFormat(v.value));
                 } else {
                   tooltip.text(feature.properties.name);
@@ -364,8 +367,9 @@ function selectChartType (e) {
         }).addTo(map);
         legend.addTo(map);
         opt.target.append(tooltip);
-        opt.target.find('svg').attr('viewBox', '640 480');
+        opt.target.addClass(opt.palette)
         thl.pivot.exportImg(opt);
+
       },
       drawTable: function (opt) {
         /*

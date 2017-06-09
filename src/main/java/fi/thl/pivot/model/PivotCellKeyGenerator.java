@@ -249,7 +249,7 @@ class PivotCellKeyGenerator {
             // if it is
             for (int i = 0; i < lastDimensionIndex; ++i) {
                 DimensionNode d = dimensions[i];
-                if (d.getDimension().getId().equals(nd.getId())) {
+                if (d.getDimension() == nd) {
                     // Note that the continue is targetted to
                     // the outer loop that loops through constants!
                     continue outer;

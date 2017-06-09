@@ -181,6 +181,41 @@
       width: 16px;
       border-radius: 2px 2px 2px 2px;
     }
+
+    .map .legend .l0 { background: #edf8e9 !important; }
+    .map .legend .l1 { background: #bae4b3 !important; }
+    .map .legend .l2 { background: #74c476 !important; }
+    .map .legend .l3 { background: #31a354 !important; }
+    .map .legend .l4 { background: #006d2c !important; }
+    .map.gray .legend .l0 { background: #b2b2b2 !important; }
+    .map.gray .legend .l1 { background: #8c8c8c !important; }
+    .map.gray .legend .l2 { background: #666666 !important; }
+    .map.gray .legend .l3 { background: #3f3f3f !important; }
+    .map.gray .legend .l4 { background: #191919 !important; } 
+    .map.ranking .legend .l0 { background: #ef4848 !important; }
+    .map.ranking .legend .l1 { background: #EF9048 !important; }
+    .map.ranking .legend .l2 { background: #efd748 !important; }
+    .map.ranking .legend .l3 { background: #ABD257 !important; }
+    .map.ranking .legend .l4 { background: #66cc66 !important; }
+    @media print{
+      .map .legend .l0 { background: #edf8e9 !important; }
+      .map .legend .l1 { background: #bae4b3 !important; }
+      .map .legend .l2 { background: #74c476 !important; }
+      .map .legend .l3 { background: #31a354 !important; }
+      .map .legend .l4 { background: #006d2c !important; }
+      .map.gray .legend .l0 { background: #b2b2b2 !important; }
+      .map.gray .legend .l1 { background: #8c8c8c !important; }
+      .map.gray .legend .l2 { background: #666666 !important; }
+      .map.gray .legend .l3 { background: #3f3f3f !important; }
+      .map.gray .legend .l4 { background: #191919 !important; } 
+      .map.ranking .legend .l0 { background: #ef4848 !important; }
+      .map.ranking .legend .l1 { background: #EF9048 !important; }
+      .map.ranking .legend .l2 { background: #efd748 !important; }
+      .map.ranking .legend .l3 { background: #ABD257 !important; }
+      .map.ranking .legend .l4 { background: #66cc66 !important; }
+    
+    }
+          
     .map .maptip {
       position: absolute;
       background: rgba(255,255,255,0.8);

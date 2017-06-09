@@ -40,19 +40,36 @@
 
 <form id="summary-form" class="form form-horizontal" method="GET" action="#">
 
-[#--]
-[#if summary.drillEnabled]
-  ${summary.areaDimension}
-  [#if area??]
-  <div class="form-group">
-    <label for="area">[#if area.label??]${area.label.getValue(lang)}[#else]${area.id!}[/#if]</label>
-    <select class="form-control" name="area" id="area">
-      [@recursiveAreaOptions area.rootLevel /]
-    </select>
-  </div>
+[#list summary.presentations as presentation]
+  [#if presentation.type == "map"]
+    [#list presentation.dimensions as d]
+      [#if d.dimension == "area"]
+        [#assign mapLevels = d.levels /]
+      [/#if]
+    [/#list]
+    [#if mapLevels?? && mapLevels?size > 1]
+    <div class="form-group">
+      <label for="geo">
+        [#if lang="en"]Select region
+        [#elseif lang="sv"]Välj områden
+        [#else]Valitse aluejako
+        [/#if]
+      </label>
+      <select class="form-control" name="geo" id="geo">
+      [#list mapLevels as i]
+        <option value="${i.id}" [#if summary.geometry! == i.id]selected[/#if]>
+          ${i.label.getValue(lang)}
+        </option>
+      [/#list]
+      </select>
+    </div>
+    <hr />
+    [/#if]
   [/#if]
-[/#if]
---]
+
+[/#list]
+
+
 [#list summary.selections as filter]
     [#assign dim = filter.dimensionEntity /]
 
@@ -262,6 +279,7 @@
           </div>
           <hr />
       [#elseif "map" = presentation.type]
+      
       <div 
         id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
         class="presentation map"
@@ -279,9 +297,10 @@
           data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
         [#else]
         data-no-limits[/#if]
-        />     
-        [@export presentation "image" /]
-        <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+      >
+      [@export presentation "image" /]
+      <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+      </div>
       [#assign containsMap = true]
       [#else]
 
