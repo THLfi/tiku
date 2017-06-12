@@ -865,6 +865,7 @@ function selectChartType (e) {
         }
 
         function showToolTip () {
+          d3.event.preventDefault();
           var self = d3.select(this);
           self.attr('r', 3);
           self.attr('stroke-width', 3);
