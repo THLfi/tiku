@@ -4,23 +4,9 @@
     $('.glyphicon-resize-full').click(function() {
       var t = $(this);
       t.toggleClass('glyphicon-resize-full glyphicon-resize-small');
-      
-      if(t.is('.glyphicon-resize-full')) {
-        $('.pivot-sidebar, .pivot-header, .pivot-sidebar, .pivot-footer').show();
-         $('.pivot-content')
-          .css('width','80%')
-          .css('left','19.5%')
-          .css('position','absolute');
-        $('.pivot-body').css('top', '145px');
-      } else {
-        $('.pivot-sidebar, .pivot-header, .pivot-sidebar, .pivot-footer').hide();
-        $('.pivot-content')
-          .css('width','100%')
-          .css('left','initial')
-          .css('position','static');
-        $('.pivot-body').css('top', '0');
-      }
+      $('body').toggleClass('full-screen');
     });
+
 
     function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {

@@ -82,10 +82,18 @@
           [#if filter.searchable && !filter.multiple]
             <div class="dropdown">
               <div class="search-group">
-                <input class="form-control search-control" />
+                <input class="form-control search-control" placeholder="[#if filterStage.selected??]${filterStage.selected[0].label.getValue(lang)}[/#if]"/>
                 <span class="glyphicon glyphicon-search"></span>
               </div>
               <ul class="dropdown-menu">
+                <li><small class="pull-right" style="padding: 0 15px">
+                  <a href="#">
+                  [#if lang="en"]close
+                  [#elseif lang="sv"]stäng
+                  [#else]sulje
+                  [/#if]
+                  </a></small>
+                </li>
               </ul>
             </div>
           [/#if]

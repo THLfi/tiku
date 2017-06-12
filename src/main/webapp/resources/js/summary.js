@@ -209,7 +209,7 @@ function selectChartType (e) {
           }
         });
         values.sort(function (a,b) { return a-b;});
-        if(opt.limits === '') {
+        if(opt.limits === undefined || opt.limits === '') {
           limits = [
             values[0],
             values[Math.floor(values.length / 5)],
@@ -2219,6 +2219,9 @@ function selectChartType (e) {
         });
         search.closest('.form-group').find('select').hide();
       }
+      menu.find('small a').click(function (e) {
+        search.closest('.dropdown').toggleClass('open', false);
+      });
       search.keyup(function (e) {
         if (!select.prop('multiple')) {
           search.closest('.dropdown').toggleClass('open', true);
@@ -2237,7 +2240,10 @@ function selectChartType (e) {
               break;
           default:
             var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
-            menu.find('li').each(function () {
+            menu.find('li').each(function (i) {
+              if(i == 0) {
+                return;
+              }
               var self = $(this);
               if (searchValue.test(self.text().toLowerCase())) {
                 self.show();

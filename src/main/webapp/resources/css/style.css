@@ -596,3 +596,19 @@ ul.tree-browser {
 		z-index: 1000;
 	}
 }
+
+.full-screen .pivot-sidebar, 
+.full-screen .pivot-header, 
+.full-screen .pivot-sidebar, 
+.full-screen .pivot-footer {
+	display: none;
+}
+
+.full-screen .pivot-content {
+	width: 100%;
+	left: initial;
+	position: static;
+}
+.full-screen .pivot-body {
+	top: 0;
+}
