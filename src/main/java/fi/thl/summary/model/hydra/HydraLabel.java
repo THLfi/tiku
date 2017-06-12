@@ -1,24 +1,12 @@
 package fi.thl.summary.model.hydra;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.Selection;
 
 public class HydraLabel extends Label {
-
-    private static final Pattern tags = Pattern.compile("\\$\\$([^\\.]+)\\.([^\\$]+)\\$\\$");
-    
-    
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("\\$\\$([^\\.]+)\\.([^\\$]+)\\$\\$");
-        Matcher m  = pattern.matcher("$$lorem.value$$ a adfavasdf asdfa $$ipsum.meta:description$$");
-        while(m.find()) {
-            System.out.println(m.group(1) + " => " + m.group(2));
-        }
-    }
     
     private Label delegate;
     private HydraSummary summary;
@@ -31,18 +19,15 @@ public class HydraLabel extends Label {
     @Override
     public String getValue(String language) {
         String content = delegate.getValue(language);
-        
-        Matcher m = tags.matcher(content);
+        HydraLabelTagMatcher m = new HydraLabelTagMatcher(content);
         while(m.find()) {
-            String id = m.group(1);
-            String property = m.group(2);
-            String regex = m.group(0).replace("$", "\\$");
-            
-            Selection select = summary.getSelection(id);
+         
+            Selection select = summary.getSelection(m.getIdentifier());
             if(null != select) {
-                content = replaceFilterReference(language, content, regex, property, select);
+                content = replaceFilterReference(language, content, m, select);
             } else {
-                String v = summary.getValueOf(id);
+                String v = summary.getValueOf(m.getIdentifier());
+                String regex = m.getTag().replace("$", "\\$");
                 if(v == null) {
                     content = content.replaceAll(regex, "..");
                 } else {
@@ -50,25 +35,25 @@ public class HydraLabel extends Label {
                 }
             }
         }
-        
         return content;
     }
 
-    private String replaceFilterReference(String language, String content, String regex, String property,
+    private String replaceFilterReference(String language, String content, HydraLabelTagMatcher m,
             Selection select) {
         StringBuilder label = new StringBuilder();
         boolean first = true;
-        for(DimensionNode node : ((HydraFilter) select).getSelected()) {
+        String regex = m.getTag().replace("$", "\\$");
+        for(DimensionNode node : selectNodes(m, select)) {
             if(!first) {
                 label.append(", ");
             }
-            if("value".equals(property)) {
+            if("value".equals(m.getProperty())) {
                 label.append(node.getLabel().getValue(language));
-            } else if ("code".equals(property)) {
+            } else if ("code".equals(m.getProperty())) {
                 String code = node.getCode();
                 label.append(code == null ? ".." : code);
             } else {
-                Label p = node.getProperty(property);
+                Label p = node.getProperty(m.getProperty());
                 if(null == p) {
                     label.append("");
                 } else {
@@ -79,5 +64,15 @@ public class HydraLabel extends Label {
         }
         content = content.replaceAll(regex, label.toString());
         return content;
+    }
+
+    private List<DimensionNode> selectNodes(HydraLabelTagMatcher m, Selection select) {
+        List<DimensionNode> selected = null;
+        if(null == m.getStage()) {
+            selected = ((HydraFilter) select).getSelected();
+        } else {
+            selected = ((HydraFilter) select).getSelected(m.getStage());
+        }
+        return selected;
     }
 }

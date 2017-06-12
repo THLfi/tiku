@@ -2,6 +2,7 @@ package fi.thl.summary.model.hydra;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -65,6 +66,15 @@ public final class HydraFilter extends Selection {
         getFilterStages();
         List<DimensionNode> selected = filterStages.get(filterStages.size() - 1).getSelected();
         return selected;
+    }
+    
+    public List<DimensionNode> getSelected(String stage) {
+        for(FilterStage s : getFilterStages()) {
+            if(stage.equals(s.getId())) {
+                return s.getSelected();
+            }
+        }
+        return Collections.emptyList();
     }
 
     public String getId() {
@@ -147,6 +157,7 @@ public final class HydraFilter extends Selection {
             if (stages.size() > stageIndex && stages.get(stageIndex).equals(level.getId())) {
                 Label label = delegate.getLabelMode().equals(LabelMode.dimension) && stages.size() == 1 ? dim.getLabel() : level.getLabel();
                 FilterStage stage = new FilterStage(label, level.getNodes());
+                stage.setId(level.getId());
                 stage.setScheme(summary.getScheme());
                 stage.setParent(parent);
                 filterStages.add(stage);
