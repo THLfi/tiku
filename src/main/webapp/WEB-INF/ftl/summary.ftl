@@ -21,12 +21,12 @@
 [#macro show_filter_values presentation]
 
 [/#macro]
-[#macro summary_hierarchical_option option stages]
+[#macro summary_hierarchical_option option stages level=1]
   [#if stages?seq_contains(option.level.id)]
-    <option value="${option.surrogateId}" ${selected}>[@label option /]</option>
+    <option value="${option.surrogateId}" ${selected} data-level="l${level}">[@label option /]</option>
   [/#if]
   [#list option.children as child]
-    [@summary_hierarchical_option child stages /]
+    [@summary_hierarchical_option child stages level + 1/]
   [/#list]
 [/#macro]
 
@@ -112,8 +112,8 @@
                       [/#list]
                     [/#if]
                 [/#assign]
-                <option value="${option.surrogateId}" ${selected}>
-                  [#if filter.isCompleteDimension][#list (0..option.level.index) as i]&nbsp;&nbsp;[/#list][/#if][@label option /]
+                <option value="${option.surrogateId}" ${selected} data-level=[#if filter.isCompleteDimension]"${option.level.index}"[#else]"0"[/#if]>
+                  [@label option /]
                 </option>
             [/#list]
           </select>

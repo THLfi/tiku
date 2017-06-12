@@ -1977,10 +1977,12 @@ function selectChartType (e) {
     var nodeOptions = {}; // hash index for options for quicker handling
 
     group.find('select option').each(function () {
+      console.log(this);
       var option = $('<div></div>')
         .text(this.innerText)
         .attr('data-val', this.value)
-        .attr('data-sort', ++sort);
+        .attr('data-sort', ++sort)
+        .addClass('l' + $(this).attr('data-level'));
       selectable.append(option);
       if (this.selected) {
         selected.append(option.clone());
