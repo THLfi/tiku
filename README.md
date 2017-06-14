@@ -141,3 +141,5 @@ Currently supported visualisations include
 - bar charts
 - pie charts
 - gauge charts
+- radar charts
+- maps
