@@ -36,6 +36,33 @@ function selectChartType (e) {
 
 (function ($, d3) {
 
+
+  function wrap(text, width) {
+    // https://bl.ocks.org/mbostock/7555321
+    text.each(function() {
+      var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr('y'),
+          x = text.attr('x')
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+      while (word = words.pop()) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+        }
+      }
+    });
+  }
+
   function numberFormat(str) {
     if(str === undefined || str === '' || str === null) {
       return '';
@@ -1257,8 +1284,7 @@ function selectChartType (e) {
 
             var g = chart
               .append('g')
-              .attr('transform', 'translate(' + centerOffset + ',' + (opt.margin * 3)+ ')');
-
+             
       
             for(var j=0; j < axisTicks; j++){
               var levelFactor = factor*radius*((j+1)/axisTicks);
@@ -1288,9 +1314,9 @@ function selectChartType (e) {
                .attr("class", "legend")
                .style("font-family", "sans-serif")
                .style("font-size", "10px")
-               .attr("transform", "translate(" + (radius-levelFactor) + ", " + (radius-levelFactor) + ")")
+               .attr("transform", "translate(" + (radius-levelFactor + 2) + ", " + (radius-levelFactor) + ")")
                .attr("fill", "#737373")
-               .text(Math.round((j+1)*(maxValue-minValue)/axisTicks + minValue));
+               .text(numberFormat((j+1)*(maxValue-minValue)/axisTicks + minValue));
             }
             
 
@@ -1308,7 +1334,8 @@ function selectChartType (e) {
                   .style("stroke", "grey")
                   .style("stroke-width", "1px");
             
-              axis.append("text")
+              var maxAxisLabelHeight = 0;
+              var axisLabels = axis.append("text")
                 .attr("class", "legend")
                 .text(function(d){return labels[d]; })
                 .style("font-family", "sans-serif")
@@ -1317,7 +1344,20 @@ function selectChartType (e) {
                 .attr("dy", "1.5em")
                 .attr("transform", function(d, i){return "translate(0, -10)"})
                 .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-60*Math.sin((i+1)*radiansPerSegment);})
-                .attr("y", function(d, i){return radius*(1-Math.cos((i+1)*radiansPerSegment))-20*Math.cos((i+1)*radiansPerSegment);});
+                .attr("y", function(d, i){return radius*(1-Math.cos((i+1)*radiansPerSegment))-20*Math.cos((i+1)*radiansPerSegment);})
+                .call(wrap, 40 + radius*(1-Math.sin(1)*radiansPerSegment)-60*Math.sin(1*radiansPerSegment))
+                .call(function(text) {
+                  text.each(function(d, i) {
+                    var text = d3.select(this);
+                    maxAxisLabelHeight = Math.max(maxAxisLabelHeight, text.node().getBBox().height);
+                    if(i * radiansPerSegment < 0.5*Math.PI || i * radiansPerSegment > 1.25*Math.PI) {
+                      text.selectAll('tspan').attr('y', text.attr('y') - Math.cos((i+1)*radiansPerSegment) * text.node().getBBox().height);
+                    }
+                  });
+                });
+
+                var scaleFactor = 1 - maxAxisLabelHeight/opt.height;
+              g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight)+ ')');
 
              for (var series = 0; series < opt.series.length; ++series) {
               var sg = g
