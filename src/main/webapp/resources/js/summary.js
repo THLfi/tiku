@@ -901,6 +901,7 @@ function selectChartType (e) {
           tooltip.style('z-index', 1000);
           tooltip.style('border-color', self.attr('stroke') || self.attr('fill'));
           tooltip.text(self.text());
+          self.select('title').text('');
           return false;
         }
 
@@ -909,6 +910,7 @@ function selectChartType (e) {
           tooltip.style('visibility', 'hidden');
           self.attr('r', 4);
           self.attr('stroke-width', 2);
+          self.select('title').text(tooltip.text());
         }
 
         function moveToolTip () {

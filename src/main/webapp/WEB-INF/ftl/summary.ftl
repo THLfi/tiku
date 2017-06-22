@@ -560,14 +560,16 @@
     </script>
 
     [#if containsMap] 
+      [#assign mapLang][#if lang="sv"]sv[#elseif lang="en"]en[#else]fi[/#if][/#assign]
       <link href="${rc.contextPath}/resources/css/leaflet.css" rel="stylesheet">
       <script src="${rc.contextPath}/resources/js/leaflet.js"></script>
       <script src="${rc.contextPath}/resources/js/proj4.min.js"></script>
       <script src="${rc.contextPath}/resources/js/proj4leaflet.js"></script>
-      <script src="https://www.sotkanet.fi/sotkanet/fi/api/geojson/MAA"></script>
+      <script src="https://www.sotkanet.fi/sotkanet/${mapLang}/api/geojson/MAA"></script>
+
       [#list summary.presentations as presentation]
       [#if presentation.type == "map"]
-      <script src="https://www.sotkanet.fi/sotkanet/fi/api/geojson/${presentation.area}"></script>
+      <script src="https://www.sotkanet.fi/sotkanet/${mapLang}/api/geojson/${presentation.area}"></script>
       [/#if]
       [/#list]
     [/#if]
