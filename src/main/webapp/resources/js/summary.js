@@ -550,7 +550,7 @@ function selectChartType (e) {
          * row -> current row element
          * rowIndices -> array of value indices defined by the current row, used to query data from a jsonstat object
          */
-        function createRowValueCells (offset, row, rowIndices) {
+        function createRowValueCells (offset, row, rowIndices, columnWidths, cls) {
           var i = 0;
           var hasValue = false;
 
@@ -568,12 +568,16 @@ function selectChartType (e) {
               }
             } else {
               hasValue = hasValue || (+val.value != 0 || (opt.suppress != 'all' && opt.supress != 'zero'));
+              var span = $('<span></span>')
+                .text(numberFormat('' + val.value))
+                .addClass(cls + i);
+              var w = span.width();
+              if(columnWidths[i] === undefined || columnWidths[i] < w) {
+                columnWidths[i] = w;
+              }
               row.append(
                 $('<td>')
-                .append(
-                  $('<span></span>')
-                  .text(numberFormat('' + val.value))
-                )
+                .append(span)
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
               
@@ -590,6 +594,11 @@ function selectChartType (e) {
             .append(createTableHead());
         var body = $('<tbody>');
 
+
+        table.append(body);
+        tableContainer.append(table);
+        $(opt.target[0]).append(tableContainer);
+
         var dim = opt.dataset.Dimension();
         var cols = 1;
         var ri = 0;
@@ -603,10 +612,12 @@ function selectChartType (e) {
         for(var i = 0; i < opt.rowCount; ++i) {
           rowHeaders[i] = [];
         }
+        var columnWidths = {};
+        var cls = 'table-' + new Date().getTime() + '-';
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
           createRowHeaderCells(ri, row, rowVals, rowHeaders, rowIndex);
-          if (createRowValueCells(ri * cols, row, rowIndices)) {
+          if (createRowValueCells(ri * cols, row, rowIndices, columnWidths, cls)) {
             if (ari === 0) {
               thCount = $(row).find('th').size();
               ari += 1;
@@ -624,27 +635,6 @@ function selectChartType (e) {
           ri += 1;
         });
 
-        table.append(body);
-        tableContainer.append(table);
-        $(opt.target[0]).append(tableContainer);
-        var maxWidth = {};
-        table
-          .find('span')
-          .each(function () {
-            var self = $(this);
-            var w = self.width();
-            var i = self.closest('td').index();
-            var t = self.closest('tr').find('th').size();
-            i += thCount - t;
-            maxWidth[i] = maxWidth[i] === undefined || w > maxWidth[i] ? w : maxWidth[i];
-          })
-          .css('width', function () {
-            var self = $(this);
-            var i = self.closest('td').index();
-            var t = self.closest('tr').find('th').size();
-            i += thCount - t;
-            return maxWidth[i] + 'px';
-          });
         for (var i = 1; i < opt.rowCount + 1; ++i) {
           var previous;
           table.find('tbody tr th:nth-child(' + i + ')').each(function () {
@@ -656,6 +646,17 @@ function selectChartType (e) {
             }
           });
         }
+
+        var rules = '';
+        var column = 0;
+        for(w in columnWidths) {
+          rules += '.' + cls + (column++) + '{ width: ' + w + 'px; }';
+        }
+        $('body')
+          .append(
+            $('<style></style>')
+            .html(rules)
+          );
       },
 
       presentation: function (opt) {
@@ -2020,7 +2021,6 @@ function selectChartType (e) {
     var nodeOptions = {}; // hash index for options for quicker handling
 
     group.find('select option').each(function () {
-      console.log(this);
       var option = $('<div></div>')
         .text(this.innerText)
         .attr('data-val', this.value)
