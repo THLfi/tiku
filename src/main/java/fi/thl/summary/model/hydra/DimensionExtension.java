@@ -34,6 +34,9 @@ public class DimensionExtension extends SummaryDimension implements Extension {
     }
 
     public List<DimensionNode> getNodes() {
+        if(nodes.isEmpty()) {
+            throw new IllegalStateException("No dimensions found");
+        }
         return nodes;
     }
     

@@ -26,6 +26,15 @@ public class HydraTablePresentation extends TablePresentation {
         this.summary = summary;
     }
 
+    public boolean isValid() {
+        try {
+            getDataUrl();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @Override
     public int getGroupSize() {
         return delegate.getGroupSize();

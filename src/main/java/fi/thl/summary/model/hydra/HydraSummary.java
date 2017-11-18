@@ -150,13 +150,26 @@ public class HydraSummary extends Summary {
 
             @Override
             public Presentation apply(final Presentation p) {
-                if (p instanceof TextPresentation) {
-                    return new HydraTextPresentation((TextPresentation) p, HydraSummary.this);
-                } else if (p instanceof TablePresentation) {
-                    return new HydraTablePresentation(source, HydraSummary.this, p);
-                } else {
-                    return new HydraDataPresentation(source, HydraSummary.this, p);
+                try {
+                    if (p instanceof TextPresentation) {
+                        return new HydraTextPresentation((TextPresentation) p, HydraSummary.this);
+                    } else if (p instanceof TablePresentation) {
+                        return new HydraTablePresentation(source, HydraSummary.this, p);
+                    } else {
+                        return new HydraDataPresentation(source, HydraSummary.this, p);
+                    }
+                } catch (Exception e) {
+                    return errorPresentation(e);
                 }
+            }
+
+            private Presentation errorPresentation(Exception e) {
+                TextPresentation tp = new TextPresentation();
+                tp.setType("error");
+                Label msg = new Label();
+                msg.setValue("fi", e.getMessage());
+                tp.setContent(new HydraLabel(msg, HydraSummary.this));
+                return new HydraTextPresentation(tp, HydraSummary.this);
             }
         });
     }
@@ -204,6 +217,9 @@ public class HydraSummary extends Summary {
         for (Presentation p : getPresentations()) {
             if (p instanceof HydraDataPresentation) {
                 HydraDataPresentation hp = (HydraDataPresentation) p;
+                if(!hp.isValid()) {
+                    continue;
+                }
                 for (SummaryItem s : hp.getDimensions()) {
                     if(hp.getType().equals("map") && getGeometry() != null && s instanceof DimensionExtension && ((DimensionExtension)s).getDimension().equals("area")) {
                         nodes.addAll(((DimensionExtension) s).getNodes(getGeometry()));
@@ -215,6 +231,9 @@ public class HydraSummary extends Summary {
             }
             if (p instanceof HydraTablePresentation) {
                 HydraTablePresentation hp = (HydraTablePresentation) p;
+                if(!hp.isValid()) {
+                    continue;
+                }
                 addNodes(nodes, hp.getRows());
                 addNodes(nodes, hp.getColumns());
             }

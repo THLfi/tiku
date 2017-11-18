@@ -12,9 +12,11 @@ import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
 import fi.thl.summary.model.SummaryDimension;
 import fi.thl.summary.model.SummaryItem;
+import org.apache.log4j.Logger;
 
 public class HydraDataPresentation extends DataPresentation {
 
+    private final Logger LOG = Logger.getLogger(HydraDataPresentation.class);
     private final HydraSource source;
     private final DataPresentation delegate;
     private final Summary summary;
@@ -27,6 +29,16 @@ public class HydraDataPresentation extends DataPresentation {
         delegate = (DataPresentation) p;
         this.summary = summary;
         this.finder = new ItemFinder(summary);
+    }
+
+    public boolean isValid() {
+        try {
+            getDataUrl();
+            return true;
+        } catch (Exception e) {
+            LOG.warn("Invalid presentation " + e.getMessage());
+            return false;
+        }
     }
 
     public String getArea() {
@@ -120,6 +132,7 @@ public class HydraDataPresentation extends DataPresentation {
         // }
 
         return url.toString();
+
     }
 
     private void appendFilters(UrlBuilder url) {

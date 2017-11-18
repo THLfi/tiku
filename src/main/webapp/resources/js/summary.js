@@ -2147,10 +2147,16 @@ function selectChartType (e) {
       });
     });
 
+    if(typeof(labels) === 'undefined') { labels = []; }
+    if(typeof(dimensionData) === 'undefined') { dimensionData = {}; }
     var summary = thl.pivot.summary(labels, dimensionData);
     $('.presentation.map, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
+        if(/.*error$/.test($(p).data('ref'))) {
+            $(p).children('img').remove();
+            return;
+        }
         var callback = function (data) {
           if (data.dataset.value.length === 0) {
             $(p).children('img').remove();

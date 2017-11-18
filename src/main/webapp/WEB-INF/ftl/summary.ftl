@@ -177,7 +177,11 @@
           <div class="col-sm-${12/presentation.groupSize}">
       [/#if]
 
-      [#if "subtitle" = presentation.type]
+      [#if !presentation.valid]
+            <p>
+                ...
+            </p>
+      [#elseif "subtitle" = presentation.type]
           <h3>
               ${presentation.getContent(lang)}
           </h3>
@@ -311,7 +315,6 @@
       </div>
       [#assign containsMap = true]
       [#else]
-
       <h3>${presentation.type}</h3>
       <p>${presentation.content}</p>
       [/#if]

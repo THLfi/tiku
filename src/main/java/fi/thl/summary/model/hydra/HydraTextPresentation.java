@@ -16,6 +16,10 @@ public class HydraTextPresentation extends TextPresentation {
         this.summary = summary;
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     public void setId(String id) {
         p.setId(id);
     }
