@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import fi.thl.pivot.exception.CubeNotFoundException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -315,6 +316,10 @@ public class AmorDao {
             }
         } else {
             latestRunId = params[3];
+        }
+        if ("0".equals(latestRunId)) {
+            LOG.warn(String.format("Could not find run id for %s", Lists.newArrayList(params).toString()));
+            throw new CubeNotFoundException();
         }
         LOG.debug(String.format("Run id %s => %s", Lists.newArrayList(params).toString(), latestRunId));
         return latestRunId;
