@@ -91,8 +91,7 @@ public class LogSource {
             executorService.submit(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
-                    final String id = Hashing.md5().hashBytes((cube + System.currentTimeMillis()).getBytes())
-                            .toString();
+                    final String id = cube + System.nanoTime();
                     String c[] = cube.split("\\.");
                     jdbcTemplate.update(String.format(USAGE_TEMPLATE, schema), id, c[0], c[1], c[2],
                             c.length > 4 ? c[3] : "latest", req.getLocalAddr(), req.getRemoteAddr(),
