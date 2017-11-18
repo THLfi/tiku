@@ -231,7 +231,7 @@ function selectChartType (e) {
         var limits;
         var values = []
         $.each(opt.dataset.Data(), function(i, v) {
-          if(v.value !== undefined && v.value != null) {
+          if(/^\d+(\.\d+)?$/.test(v.value)) {
             values.push(+v.value);
           }
         });
@@ -328,7 +328,8 @@ function selectChartType (e) {
           style: function (feature) {
             var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
             var color = '#f0f0f0'
-            if(v !== undefined && v.value !== undefined && v.value != null) {
+
+            if(v !== undefined && /^\d+(\.\d+)?$/.test(v.value)) {
               color = undefined;
               for(var i = 1; i < limits.length - 1; ++i) {
                 if(opt.include = 'lte' && +v.value <= limits[i]) {
@@ -2153,10 +2154,6 @@ function selectChartType (e) {
     $('.presentation.map, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
-        if(/.*error$/.test($(p).data('ref'))) {
-            $(p).children('img').remove();
-            return;
-        }
         var callback = function (data) {
           if (data.dataset.value.length === 0) {
             $(p).children('img').remove();
