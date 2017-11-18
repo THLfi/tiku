@@ -597,18 +597,17 @@ ul.tree-browser {
 	}
 }
 
-.full-screen .pivot-sidebar, 
-.full-screen .pivot-header, 
-.full-screen .pivot-sidebar, 
+.full-screen .pivot-sidebar,
+.full-screen .pivot-header,
+.full-screen .pivot-sidebar,
 .full-screen .pivot-footer {
-	display: none;
-}
-
-.full-screen .pivot-content {
-	width: 100%;
-	left: initial;
-	position: static;
+    display: none;
 }
 .full-screen .pivot-body {
-	top: 0;
+    top: 0;
+}
+.full-screen .pivot-body > .pivot-content {
+    width: 100%;
+    left: initial;
+    position: static;
 }
