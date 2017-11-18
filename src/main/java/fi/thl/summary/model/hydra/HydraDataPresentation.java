@@ -1,6 +1,8 @@
 package fi.thl.summary.model.hydra;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.Lists;
 
@@ -33,8 +35,8 @@ public class HydraDataPresentation extends DataPresentation {
 
     public boolean isValid() {
         try {
-            getDataUrl();
-            return true;
+            String url = getDataUrl();
+            return url.contains("row=") && url.contains("column=");
         } catch (Exception e) {
             LOG.warn("Invalid presentation " + e.getMessage());
             return false;
@@ -102,18 +104,19 @@ public class HydraDataPresentation extends DataPresentation {
     }
 
     /**
-     * Constructs the URL to fetch data from the pivot api. Attemps to make sure
+     * Constructs the URL to fetch data from the pivot api. Attempts to make sure
      * that both row and column attributes are used in the data query. If not
      * then the pivot API will fail.
      * 
      * @return
      */
     public String getDataUrl() {
+        Set<String> closed = new HashSet<>();
         UrlBuilder url = new UrlBuilder();
         url.addRows();
-        appendDimensionNodes(url);
-        appendMeasureItems(url);
-        appendFilters(url);
+        appendDimensionNodes(url, closed);
+        appendMeasureItems(url, closed);
+        appendFilters(url, closed);
 
         url.suppress(delegate.getSuppress());
 
@@ -135,10 +138,15 @@ public class HydraDataPresentation extends DataPresentation {
 
     }
 
-    private void appendFilters(UrlBuilder url) {
+    private void appendFilters(UrlBuilder url, Set<String> closed) {
         for (Selection s : getFilters()) {
+            if(closed.contains(s.getDimension())) {
+                continue;
+            }
             if ("measure".equals(s.getDimension()) && !delegate.hasMeasures()) {
                 //
+            } else if (closed.size() == 2) {
+                url.addColumns();
             } else {
                 // We do not want extra dimension in the returned JSON-STAT
                 // resource
@@ -146,15 +154,19 @@ public class HydraDataPresentation extends DataPresentation {
                 url.addFilters();
             }
             List<DimensionNode> nodes = IncludeDescendants.apply(s);
-            url.addParameter(s.getDimension(), nodes);
+            if(!nodes.isEmpty()) {
+                closed.add(s.getDimension());
+                url.addParameter(s.getDimension(), nodes);
+            }
 
         }
     }
 
-    private void appendMeasureItems(UrlBuilder url) {
-        if (delegate.hasMeasures()) {
+    private void appendMeasureItems(UrlBuilder url, Set<String> closed) {
+        if (delegate.hasMeasures() && !closed.contains("measure")) {
             url.addParameter("measure", getMeasureNodes());
             url.addColumns();
+            closed.add("measure");
         }
     }
 
@@ -162,13 +174,22 @@ public class HydraDataPresentation extends DataPresentation {
         return new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes();
     }
 
-    private void appendDimensionNodes(UrlBuilder url) {
+    private void appendDimensionNodes(UrlBuilder url, Set<String> closed) {
         for (SummaryItem d : getDimensions()) {
             Extension extension = (Extension) d;
+            if(closed.contains(extension.getDimension())){
+                continue;
+            }
+
             if("map".equals(delegate.getType()) && "area".equals(extension.getDimension()) && ((HydraSummary)summary).getGeometry() != null) {
                 url.addParameter(extension.getDimension(), extension.getNodes(((HydraSummary)summary).getGeometry()));
+                closed.add(extension.getDimension());
             } else {
-                url.addParameter(extension.getDimension(), extension.getNodes());
+                List<DimensionNode> nodes = extension.getNodes();
+                if(!nodes.isEmpty()) {
+                    url.addParameter(extension.getDimension(), nodes);
+                    closed.add(extension.getDimension());
+                }
             }
             url.addColumns();
         }

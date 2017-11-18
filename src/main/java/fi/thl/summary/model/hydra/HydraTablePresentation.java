@@ -28,8 +28,8 @@ public class HydraTablePresentation extends TablePresentation {
 
     public boolean isValid() {
         try {
-            getDataUrl();
-            return true;
+            String url = getDataUrl();
+            return url.contains("row=") && url.contains("column=");
         } catch (Exception e) {
             return false;
         }

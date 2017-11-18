@@ -551,9 +551,7 @@ public class SummaryReader {
          * corresponding stage definitions. The stage definition may be missing
          * so we have to check if there is one and fall back on a default stage
          * if no stage definition is found.
-         * 
-         * @param dimensionsAndStages
-         * @param dimensionNodeNames
+         *
          */
         private void parseDimensions(DataPresentation p, List<SummaryStage> stages, String... dimensionNodeNames) {
             for (String nodeName : dimensionNodeNames) {
