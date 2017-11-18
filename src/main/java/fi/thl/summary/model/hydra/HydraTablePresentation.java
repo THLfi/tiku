@@ -126,7 +126,11 @@ public class HydraTablePresentation extends TablePresentation {
         // cubes with restricted access via summaries do not work .
         for (Selection s : getFilters()) {
             if ("measure".equals(s.getDimension())) {
-                url.addColumns();
+                if(hasMeasureDimension) {
+                    url.addFilters();
+                } else {
+                    url.addColumns();
+                }
                 url.addParameter(s.getDimension(), IncludeDescendants.apply(s));
             }
         }
