@@ -5,7 +5,7 @@
       var t = $(this);
       t.toggleClass('glyphicon-resize-full glyphicon-resize-small');
       $('body').toggleClass('full-screen');
-    });
+    }) ;
 
 
     function changeView (inputElement, value) {

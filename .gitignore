@@ -4,3 +4,6 @@
 /target
 /src/main/resources/jdbc.properties
 /src/test/resources/jdbc.properties
+.DS_Store
+.idea
+*.iml

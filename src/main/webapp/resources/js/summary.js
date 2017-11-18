@@ -568,18 +568,20 @@ function selectChartType (e) {
               }
             } else {
               hasValue = hasValue || (+val.value != 0 || (opt.suppress != 'all' && opt.supress != 'zero'));
+              var content = numberFormat('' + val.value);
               var span = $('<span></span>')
-                .text(numberFormat('' + val.value))
+                .text(content)
                 .addClass(cls + i);
-              var w = span.width();
-              if(columnWidths[i] === undefined || columnWidths[i] < w) {
-                columnWidths[i] = w;
-              }
               row.append(
                 $('<td>')
                 .append(span)
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
+              var w = content;
+              if(columnWidths[i] === undefined || columnWidths[i] < w) {
+                columnWidths[i] = w;
+              }
+
               
             }
             i += 1;
@@ -593,11 +595,6 @@ function selectChartType (e) {
             .addClass('table table-condensed')
             .append(createTableHead());
         var body = $('<tbody>');
-
-
-        table.append(body);
-        tableContainer.append(table);
-        $(opt.target[0]).append(tableContainer);
 
         var dim = opt.dataset.Dimension();
         var cols = 1;
@@ -617,13 +614,14 @@ function selectChartType (e) {
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
           createRowHeaderCells(ri, row, rowVals, rowHeaders, rowIndex);
+        
           if (createRowValueCells(ri * cols, row, rowIndices, columnWidths, cls)) {
             if (ari === 0) {
               thCount = $(row).find('th').size();
               ari += 1;
             }
-            body.append(row);
             rowIndex++;
+            body.append(row);  
           } else {
             for(var i = 0; i < opt.rowCount; ++i) {
               var th = rowHeaders[i][rowIndex];
@@ -634,6 +632,11 @@ function selectChartType (e) {
           }
           ri += 1;
         });
+
+        table.append(body);
+        tableContainer.append(table);
+        $(opt.target[0]).append(tableContainer);
+
 
         for (var i = 1; i < opt.rowCount + 1; ++i) {
           var previous;
@@ -650,7 +653,7 @@ function selectChartType (e) {
         var rules = '';
         var column = 0;
         for(w in columnWidths) {
-          rules += '.' + cls + (column++) + '{ width: ' + w + 'px; }';
+          rules += '.' + cls + (column++) + '{ width: ' + (7*w) + 'px; }';
         }
         $('body')
           .append(

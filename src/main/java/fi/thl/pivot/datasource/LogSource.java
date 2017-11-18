@@ -70,6 +70,10 @@ public class LogSource {
         }
     }
 
+
+    @Value("#{'${database.environment.schema}'}")
+    private String schema;
+
     private JdbcTemplate jdbcTemplate;
     private ExecutorService executorService;
 
@@ -89,7 +93,7 @@ public class LogSource {
                     final String id = Hashing.md5().hashBytes((cube + System.currentTimeMillis()).getBytes())
                             .toString();
                     String c[] = cube.split("\\.");
-                    jdbcTemplate.update(String.format(USAGE_TEMPLATE, env), id, c[0], c[1], c[2],
+                    jdbcTemplate.update(String.format(USAGE_TEMPLATE, schema), id, c[0], c[1], c[2],
                             c.length > 4 ? c[3] : "latest", req.getLocalAddr(), req.getRemoteAddr(),
                             req.getSession().getId(), view, cs.isZeroValuesFiltered() ? "t" : "f",
                             cs.isEmptyValuesFiltered() ? "t" : "f");
@@ -106,11 +110,11 @@ public class LogSource {
 
     @Transactional
     private void logSelectedValues(String env, final CubeService cs, final String id) {
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, schema),
                 new SelectionBatchSetter(id, cs.getColumnNodes(), "c"));
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, schema),
                 new SelectionBatchSetter(id, cs.getRowNodes(), "r"));
-        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, env),
+        jdbcTemplate.batchUpdate(String.format(SELECTION_TEMPLATE, schema),
                 new SelectionBatchSetter(id, cs.getFilterNodes(), "f"));
     }
 }
