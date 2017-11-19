@@ -5,6 +5,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import fi.thl.pivot.exception.SameDimensionAsRowAndColumnException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -65,6 +66,22 @@ public abstract class AbstractController {
         model.addObject("lang", ThreadRole.getLanguage());
         model.addObject("uiLanguage", ThreadRole.getLanguage());
         model.addObject("status", HttpServletResponse.SC_NOT_FOUND);
+        return model;
+    }
+
+    /**
+     * Provides a friendly error messages when content is not sensible
+     *
+     * @param resp
+     * @return
+     */
+    @ExceptionHandler(SameDimensionAsRowAndColumnException.class)
+    public ModelAndView handleSameDimensionAsRowsAndColumn(HttpServletResponse resp) {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        ModelAndView model = new ModelAndView("error");
+        model.addObject("lang", ThreadRole.getLanguage());
+        model.addObject("uiLanguage", ThreadRole.getLanguage());
+        model.addObject("status", -1000);
         return model;
     }
 

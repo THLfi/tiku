@@ -1,9 +1,8 @@
 package fi.thl.pivot.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
+import fi.thl.pivot.exception.SameDimensionAsRowAndColumnException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.xb.xsdschema.impl.ListDocumentImpl;
 import org.springframework.ui.Model;
@@ -98,6 +97,7 @@ public class CubeService {
 
         assignDefaultRowsAndColumns();
         final List<List<DimensionNode>> headerNodes = determineHeaderNodes();
+        checkIfSameDimensionUsedBothInRowsAndColumns();
 
         this.filterNodes = Lists.newArrayList(determineFilterNodes());
         if (!isMeasureDefined(headerNodes)) {
@@ -144,6 +144,32 @@ public class CubeService {
         LOG.debug(String.format("Cube pivot created (%d, %s)", pivot.getRowCount(), pivot.getColumnCount()));
         LOG.debug(sw.prettyPrint());
         this.cubeCreated = true;
+    }
+
+    private void checkIfSameDimensionUsedBothInRowsAndColumns() {
+        final Set<String> closed = new HashSet<>();
+        addRowDimensions(closed);
+        failIfRowDimensionInColumns(closed);
+    }
+
+    private void failIfRowDimensionInColumns(Set<String> closed) {
+        for(List<DimensionNode> list : columnNodes) {
+            for(DimensionNode node : list) {
+                if(closed.contains(node.getDimension().getId())) {
+                    throw new SameDimensionAsRowAndColumnException();
+                }
+                break; // First node is only needed
+            }
+        }
+    }
+
+    private void addRowDimensions(Set<String> closed) {
+        for(List<DimensionNode> list : rowNodes) {
+            for (DimensionNode node : list) {
+                closed.add(node.getDimension().getId());
+                break; // First node is only needed
+            }
+        }
     }
 
     public boolean isCubeCreated() {

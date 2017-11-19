@@ -45,7 +45,7 @@
     </div>
     <div class="summary-body container">
    	 	<div class="summary-content">
-			[#if "${status!}" == "404" || "${status!}" == "403"]
+			[#if "${status!}" == "404" || "${status!}" == "403" || "${status!}" == "-1000"]
 				<h2>${message("site.error.title.${status}")}</h2>
 				<p>${message("site.error.message.${status}")}</p>
 			[#else]
