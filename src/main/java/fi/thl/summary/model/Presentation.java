@@ -55,4 +55,6 @@ public interface Presentation {
 
     String getId();
 
+    Rule getRule();
+
 }

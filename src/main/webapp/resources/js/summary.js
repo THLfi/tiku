@@ -400,6 +400,7 @@ function selectChartType (e) {
 
       },
       drawTable: function (opt) {
+        var CHARACTER_WIDTH = (3*14)/5;
         /*
          * calculates how many child elements there are for each
          * each element per level. The span for level is the
@@ -578,7 +579,7 @@ function selectChartType (e) {
                 .append(span)
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
-              var w = content;
+              var w = content.length * CHARACTER_WIDTH;;
               if(columnWidths[i] === undefined || columnWidths[i] < w) {
                 columnWidths[i] = w;
               }
@@ -626,7 +627,7 @@ function selectChartType (e) {
           } else {
             for(var i = 0; i < opt.rowCount; ++i) {
               var th = rowHeaders[i][rowIndex];
-              if(th.attr('rowspan')) {
+              if(th.attr('rowspan')) {
                 th.attr('rowspan', +th.attr('rowspan') - 1);
               }
             }
@@ -653,9 +654,10 @@ function selectChartType (e) {
 
         var rules = '';
         var column = 0;
-        for(w in columnWidths) {
-          rules += '.' + cls + (column++) + '{ width: ' + (7*w) + 'px; }';
-        }
+        $.each(columnWidths, function (i, w) {
+            rules += '.' + cls + (column++) + '{ width: ' + (w) + 'px; }';
+        });
+
         $('body')
           .append(
             $('<style></style>')
@@ -1275,7 +1277,7 @@ function selectChartType (e) {
             var radians = 2 * Math.PI;
             var total = opt.data.length;
             var radius = factor*(opt.height - 10 * opt.margin)/2;
-            var offset = opt.data.length % 2 !== 0 ? 0 : 0.5;
+            var offset = opt.data.length % 2 !== 0 ? 0 : 0;
             var radiansPerSegment = radians/total;
             var axisTicks = 5;
             var centerOffset = opt.width/2 - radius;

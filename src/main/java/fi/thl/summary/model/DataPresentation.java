@@ -31,6 +31,8 @@ public class DataPresentation implements Presentation {
     private List<String> emphasize = new ArrayList<>();
     private String geometry;
 
+    private Rule rule;
+
     public void setId(String id) {
         this.id = id;
     }
@@ -178,4 +180,13 @@ public class DataPresentation implements Presentation {
         return geometry;
     }
 
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    @Override
+    public Rule getRule() {
+        return rule;
+    }
 }

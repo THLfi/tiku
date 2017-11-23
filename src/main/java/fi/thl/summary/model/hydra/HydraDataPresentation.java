@@ -261,4 +261,9 @@ public class HydraDataPresentation extends DataPresentation {
     public String getGeometry() {
         return delegate.getGeometry();
     }
+
+    public boolean isVisible() {
+        return new HydraRule(delegate.getRule(), ((HydraSummary) summary)).eval();
+    }
+
 }

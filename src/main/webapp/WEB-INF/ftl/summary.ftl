@@ -181,13 +181,17 @@
             <p>
                 ...
             </p>
+      [#elseif !presentation.visible]
+            <p>
+                hidden
+            </p>
       [#elseif "subtitle" = presentation.type]
           <h3>
               ${presentation.getContent(lang)}
           </h3>
       [#elseif "info" = presentation.type]
           <p>
-              ${presentation.getContent(lang)}
+                   ${presentation.getContent(lang)}
           </p>
       [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
           [@show_filter_values presentation /]

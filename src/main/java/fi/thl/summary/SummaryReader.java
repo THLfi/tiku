@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import fi.thl.summary.model.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -25,17 +26,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fi.thl.pivot.model.Label;
-import fi.thl.summary.model.DataPresentation;
-import fi.thl.summary.model.MeasureItem;
-import fi.thl.summary.model.Presentation;
-import fi.thl.summary.model.Section;
-import fi.thl.summary.model.Selection;
-import fi.thl.summary.model.Summary;
-import fi.thl.summary.model.SummaryItem;
-import fi.thl.summary.model.SummaryStage;
-import fi.thl.summary.model.TablePresentation;
-import fi.thl.summary.model.TextPresentation;
-import fi.thl.summary.model.Value;
 
 /**
  * <p>
@@ -534,6 +524,14 @@ public class SummaryReader {
             p.setFirst("begin".equals(attribute(node, "group")));
             p.setLast("end".equals(attribute(node, "group")));
 
+
+            Node ruleNode = firstChildNode(node, "rule");
+            if(null != ruleNode) {
+                Rule rule = new Rule();
+                rule.setExpression(ruleNode.getTextContent());
+                p.setRule(rule);
+            }
+
             return p;
         }
 
@@ -674,6 +672,14 @@ public class SummaryReader {
             p.setId(attribute(node, "id"));
             p.setType(firstChildNode(node, "type").getTextContent().toLowerCase());
             p.setContent(label(node, "content"));
+
+            Node ruleNode = firstChildNode(node, "rule");
+            if(null != ruleNode) {
+                Rule rule = new Rule();
+                rule.setExpression(ruleNode.getTextContent());
+                p.setRule(rule);
+            }
+
             return p;
         }
     }
@@ -702,7 +708,6 @@ public class SummaryReader {
         @Override
         public Node next() {
             return nodeList.item(i++);
-
         }
 
         @Override

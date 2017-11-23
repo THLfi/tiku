@@ -158,4 +158,8 @@ public class HydraTablePresentation extends TablePresentation {
     public SuppressMode getSuppress() {
         return delegate.getSuppress();
     }
+
+    public boolean isVisible() {
+        return new HydraRule(delegate.getRule(), ((HydraSummary) summary)).eval();
+    }
 }

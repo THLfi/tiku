@@ -76,4 +76,8 @@ public class HydraTextPresentation extends TextPresentation {
         return p.getSortMode();
     }
 
+    public boolean isVisible() {
+        return new HydraRule(p.getRule(), ((HydraSummary) summary)).eval();
+    }
+
 }

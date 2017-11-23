@@ -10,6 +10,7 @@ public class TextPresentation implements Presentation {
 
     private int groupSize;
     private boolean isFirst, isLast;
+    private Rule rule;
 
     public void setId(String id) {
         this.id = id;
@@ -65,4 +66,12 @@ public class TextPresentation implements Presentation {
         return SortMode.none;
     }
 
+    public void setRule(Rule rule) {
+        this.rule = rule;
+    }
+
+    @Override
+    public Rule getRule() {
+        return rule;
+    }
 }

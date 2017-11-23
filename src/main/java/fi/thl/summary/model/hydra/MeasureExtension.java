@@ -46,9 +46,7 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
     public List<DimensionNode> getNodes() {
         List<DimensionNode> nodes = Lists.newArrayList();
         findMatchingNodesFromEachLevel(summary.getItemLanguage(), nodes);
-        if(nodes.isEmpty()) {
-            throw new IllegalStateException("No measures found");
-        }
+
         return nodes;
     }
  
