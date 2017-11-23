@@ -684,7 +684,7 @@ function selectChartType (e) {
           MAX_LABEL_LENGTH = 300,
           MINIMUM_VALUE_LABEL_WIDTH = 50,
           CHARACTER_WIDTH = ((3 * 14) / 5.0),
-          BAR_GROUP_MARGIN = 15,
+          BAR_GROUP_MARGIN = 5,
           BAR_MARGIN = 5;
 
 
@@ -1462,32 +1462,37 @@ function selectChartType (e) {
                 return cScale(d[1]);
               });
 
-            // cScale is for drawing gauge background (uses radians)
-            var cScale = d3.scale.linear()
-              .range([
-                60 * (Math.PI / 180), 300 * (Math.PI / 180)
-              ])
-              .domain([
-                0, 100
-              ]);
-            // needleAngleScale is for drawing needles at right angle (uses degrees)
-            var needleAngleScale = d3.scale.linear()
-              .range([-120, 120])
-              .domain(
-                scaleValue.domain()
-            );
 
-            var scaleData = [
-              [
-                0, 25, 'low'
-              ],
-              [
-                25, 75, 'average'
-              ],
-              [
-                75, 100, 'high'
-              ]
-            ];
+            var limits;
+            if(opt.limits === undefined || opt.limits === '') {
+               limits = [0, 25, 75, 100];
+            } else {
+               var limits = opt.limits.split(',');
+            }
+            var scaleData = [];
+            var scaleMin = limits[0];
+            var scaleMax = limits[limits.length - 1];
+            var scaleFactor = 1.0 / (scaleMax - scaleMin) * 100.0;
+            for(var i = 1; i < limits.length; ++i) {
+              scaleData.push([limits[i-1] * scaleFactor, limits[i] * scaleFactor, '']);
+            }
+            scaleData.push([limits[limits.length-1] * scaleFactor, limits[limits.length-1] * scaleFactor]);
+
+          // cScale is for drawing gauge background (uses radians)
+                var cScale = d3.scale.linear()
+                  .range([
+                    60 * (Math.PI / 180), 300 * (Math.PI / 180)
+                  ])
+                  .domain([
+                    0, 100
+                  ]);
+                // needleAngleScale is for drawing needles at right angle (uses degrees)
+                var needleAngleScale = d3.scale.linear()
+                  .range([-120, 120])
+                  .domain(
+                    scaleValue.domain()
+                );
+
             var palette = [];
             switch (opt.palette) {
               case 'greenyellowred':
@@ -1500,20 +1505,64 @@ function selectChartType (e) {
                 palette = ['#ef4848', '#efd748', '#66cc66'];
             }
 
+
             chart.append('g')
               .attr('class', 'scale')
               .selectAll('path')
               .data(scaleData)
               .enter()
-              .append('path')
-              .attr('class', function (d) {
-                return 'scale ' + d[2];
-              })
-              .attr('fill', function (d, i) {
-                return palette[i];
-              })
-              .attr('d', scale)
-              .attr('transform', 'translate(200,200) rotate(180)');
+                  .append('path')
+                  .attr('class', function (d) {
+                    return 'scale ' + d[2];
+                  })
+                  .attr('fill', function (d, i) {
+                    return palette[i];
+                  })
+                  .attr('d', scale)
+                  .attr('transform', 'translate(200,200) rotate(180)');
+
+             chart.append('g')
+                  .attr('class', 'axistitle')
+                  .attr('transform', 'translate(200,200)')
+                  .selectAll('text')
+                  .data(scaleData)
+                  .enter()
+                        .append('text')
+                        .attr('x', function(d, i) {
+                            return (lineRadiusInner - 20) * Math.sin(-cScale(d[0] ))
+                         })
+                        .attr('y', function(d) {
+                            return (lineRadiusInner - 20) * Math.cos(-cScale(d[0]));
+                        })
+                        .attr(textStyle)
+                        .attr('text-anchor', function(d) {
+                            if(d[0] < 40) { return 'start'; }
+                            if(d[0] > 60) { return 'end'; }
+                            return 'middle';
+                        })
+                        .attr('title', function(d) { return numberFormat(d[0]); })
+                        .text(function(d) { return numberFormat(d[0]); });
+
+            chart.append('g')
+                  .attr('class', 'axistics')
+                  .attr('transform', 'translate(200,200)')
+                  .selectAll('line')
+                  .data(scaleData)
+                  .enter()
+                        .append('line')
+                        .attr('x1', function(d, i) {
+                            return (lineRadiusOuter - 10) * Math.sin(-cScale(d[0]))
+                         })
+                        .attr('y1', function(d) {
+                            return (lineRadiusOuter - 10) * Math.cos(-cScale(d[0]));
+                        })
+                        .attr('x2', function(d, i) {
+                            return (lineRadiusOuter) * Math.sin(-cScale(d[0] ))
+                         })
+                        .attr('y2', function(d) {
+                            return (lineRadiusOuter) * Math.cos(-cScale(d[0]));
+                        })
+                        .attr('stroke','#ddd')
 
             // Pelkkä pikseliviiva
             var arc = d3.svg.arc()
@@ -1531,16 +1580,6 @@ function selectChartType (e) {
               .style('fill', '#ddd')
               .attr('transform', 'translate(200,200) rotate(180)');
 
-            appendLine(chart, 62, 71, 279, 274, '#ddd');
-            appendLine(chart, 63, 72, 119, 124, '#ddd');
-            appendLine(chart, 327, 338, 125, 119, '#ddd');
-            appendLine(chart, 329, 338, 275, 280, '#ddd');
-
-            appendText(chart, 74, 277, textStyle, domainRange[0]);
-            appendText(chart, 74, 139, textStyle, Math.round((domainRange[1] - domainRange[0]) * 0.25));
-            appendText(chart, 310, 130, textStyle, Math.round((domainRange[1] - domainRange[0]) * 0.75));
-            appendText(chart, 307, 277, textStyle, domainRange[1]);
-
             // viisari svg path
             var needlepoints = 'M23.1,149.3L15.7,2.4C15.6,1.1,14.5,0,13.1,0s-2.6,1.1-2.6,2.4L2.9,149.3c-1.8,2.2-2.9,5-2.9,8 c0,7,5.8,12.7,13,12.7c7.2,0,13-5.7,13-12.7C26,154.3,24.9,151.5,23.1,149.3z';
             // needles
@@ -1553,7 +1592,7 @@ function selectChartType (e) {
               })
               .attr('transform', function (d, i) {
                 var v = opt.callback(0, i);
-                return 'translate(' + scaleRadiusOuter + ', ' + 45 + ') rotate(' + needleAngleScale(v) + ', 13, 157)';
+                return 'translate(' + (scaleRadiusOuter-3) + ', ' + 45 + ') rotate(' + needleAngleScale(v) + ', 13, 157)';
               })
               .style('cursor', function (d) {
                 if (canDrill(d)) {
@@ -2217,7 +2256,10 @@ function selectChartType (e) {
               range: [$(p).attr('data-min'), $(p).attr('data-max')],
               palette: $(p).attr('data-palette'),
               showCi: $(p).attr('data-ci') === 'true',
-              em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined
+              em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
+              limits: target.attr('data-limits'),
+              order: target.attr('data-limit-order'),
+              include: target.attr('data-limit-include')
             });
           }
           $(p).children('img').remove();

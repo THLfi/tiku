@@ -36,7 +36,7 @@ public class HydraDataPresentation extends DataPresentation {
     public boolean isValid() {
         try {
             String url = getDataUrl();
-            return url.contains("row=") && url.contains("column=");
+            return url.contains("row=") || url.contains("column=");
         } catch (Exception e) {
             LOG.warn("Invalid presentation " + e.getMessage());
             return false;

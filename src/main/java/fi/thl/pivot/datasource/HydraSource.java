@@ -68,7 +68,7 @@ public abstract class HydraSource {
     private static final String PREDICATE_DECIMALS = "decimals";
 
     private static final Pattern NAMED_VIEW_PATTERN = Pattern.compile("meta:namedview(\\d+)(_(.*))?");
-    private static final Pattern LIMIT_PATTERN = Pattern.compile("meta:limit(\\d+)");
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("^meta:limit(\\d+)$");
 
     /**
      * This callback handler is used when traversing the hydra metadata tree.

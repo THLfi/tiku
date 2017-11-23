@@ -208,6 +208,7 @@
           <hr />
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
           [@show_filter_values presentation /]
+          [#assign emindex = 0 /]
           <div
               id="$[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation column"
@@ -216,7 +217,7 @@
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
-              [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
+              [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n??][#if emindex>0],[/#if][#assign emindex=1/]${n.surrogateId}[/#if][/#list]"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}">
               [@export presentation "image" /]
@@ -269,7 +270,18 @@
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               [#if presentation.palette??]data-palette="${presentation.palette}"[/#if]
-              data-ref="${factTable}.json?${presentation.dataUrl}">
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+                   [#if presentation.measure?? && presentation.measure.limits??]
+                        [#assign limits = presentation.measure.limits /]
+                        data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
+                        data-limits="${limits}"
+                        data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+                      [#else]
+                        data-limit-order="asc"
+                        data-limits="0,25,75,100"
+                        data-limit-include="lte"
+                      [/#if]
+              >
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>
