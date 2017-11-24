@@ -32,6 +32,9 @@ function selectChartType (e) {
   if (e.is('.table')) {
     return 'table';
   }
+  if (e.is('.list')) {
+    return 'list';
+  }
 }
 
 (function ($, d3) {
@@ -406,6 +409,59 @@ function selectChartType (e) {
         thl.pivot.exportImg(opt);
 
       },
+      drawList: function(opt) {
+        var CHARACTER_WIDTH = (3*14)/5;
+        var wrapper = $('<div>').addClass('table-responsive')
+        var table = $('<table>').addClass('table table-condensed');
+        var thead = $('<thead>');
+        var thr = $('<tr>')
+        thr.append('<th></th>');
+        $.each(opt.dataset.Dimension(1).id, function(g, w) {
+            thr.append($('<th>').text(labels[w]));
+        });
+        thead.append(thr);
+        var tbody = $('<tbody>');
+        var cls = opt.target.attr('id') + '-col-';
+        var columnWidths = [];
+        $.each(opt.dataset.Dimension(0).id, function(k, v) {
+            var key = {};
+            key[opt.dataset.id[0]] = v;
+            var tr = $('<tr>');
+            tr.append($('<th>').text(labels[v]));
+            $.each(opt.dataset.Dimension(1).id, function(g, w) {
+                key[opt.dataset.id[1]] = w;
+                var val = opt.dataset.Data(key);
+                if(val == null || val.value == null) {
+                    val = '..';
+                } else {
+                    val = numberFormat('' + val.value);
+                    var width = val.length * CHARACTER_WIDTH;
+                    if(columnWidths[g] === undefined || columnWidths[g] < w) {
+                        columnWidths[g] = width;
+                    }
+                }
+                tr.append($('<td>').append($('<span></span>').text(val).addClass(cls + g)));
+            });
+            tbody.append(tr);
+        });
+
+        table.append(thead).append(tbody);
+        wrapper.append(table);
+        opt.target.append(wrapper);
+        opt.target.parent().find('img').remove();
+
+        var rules = '';
+        var column = 0;
+        $.each(columnWidths, function (i, w) {
+            rules += '.' + cls + (column++) + '{ width: ' + (w) + 'px; } ';
+        });
+
+        $('body')
+          .append(
+            $('<style></style>')
+            .html(rules)
+          );
+      },
       drawTable: function (opt) {
         var CHARACTER_WIDTH = (3*14)/5;
         /*
@@ -590,8 +646,6 @@ function selectChartType (e) {
               if(columnWidths[i] === undefined || columnWidths[i] < w) {
                 columnWidths[i] = w;
               }
-
-              
             }
             i += 1;
           });
@@ -2218,7 +2272,7 @@ function selectChartType (e) {
     if(typeof(labels) === 'undefined') { labels = []; }
     if(typeof(dimensionData) === 'undefined') { dimensionData = {}; }
     var summary = thl.pivot.summary(labels, dimensionData);
-    $('.presentation.map, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
+    $('.presentation.map, .presentation.list, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
         var callback = function (data) {
@@ -2264,6 +2318,12 @@ function selectChartType (e) {
                 align: target.attr('data-align').split(' '),
                 suppress: target.attr('data-suppress')
               });
+          } else if ('list' === type) {
+            summary
+                .drawList({
+                   target: $(p),
+                   dataset: dataset
+                });
           } else {
             summary.presentation({
               domTarget: p,

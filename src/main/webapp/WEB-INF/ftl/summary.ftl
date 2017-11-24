@@ -312,8 +312,17 @@
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>
           <hr />
+        [#elseif "list" = presentation.type]
+            [@show_filter_values presentation /]
+            <div
+                id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
+                class="presentation list"
+                data-ref="${factTable}.json?${presentation.dataUrl}"
+                [@export presentation "table" /]
+                <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
+            </div>
+            <hr />
       [#elseif "map" = presentation.type]
-      
       <div 
         id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
         class="presentation map"
