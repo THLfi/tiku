@@ -10,6 +10,8 @@ public class Limits {
 
     private DimensionNode limitMeasure;
     private Map<Integer, Double> limits = new TreeMap<>();
+    private Map<Integer, Label> labels = new TreeMap<>();
+
     private boolean isAscendingLimitOrder = true;
     private boolean isLimitLowerOrEqualTo = true;
 
@@ -73,8 +75,24 @@ public class Limits {
     public boolean isLessThanOrEqualTo() {
         return isLimitLowerOrEqualTo;
     }
+
     @Override
     public String toString() {
         return Joiner.on(',').join(getLimits());
+    }
+
+    public void setLabel(int index, String language, String value) {
+        if(!labels.containsKey(index)) {
+            labels.put(index, new Label());
+        }
+        labels.get(index).setValue(language, value);
+    }
+
+    public Label getLabel(int index) {
+        return labels.get(index);
+    }
+
+    public Collection<Label> getLabels() {
+        return labels.values();
     }
 }

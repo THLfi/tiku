@@ -280,6 +280,9 @@
                         data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
                         data-limits="${limits}"
                         data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+                        [#list limits.labels as limitLabel]
+                          data-limit-${limitLabel_index}="${limitLabel.getValue(lang)?html}"
+                        [/#list]
                       [#else]
                         data-limit-order="asc"
                         data-limits="0,25,75,100"
@@ -323,6 +326,9 @@
           data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
           data-limits="${limits}"
           data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+          [#list limits.labels as limitLabel]
+            data-limit-${limitLabel_index}="${limitLabel.getValue(lang)?html}"
+          [/#list]
         [#else]
         data-no-limits[/#if]
       >

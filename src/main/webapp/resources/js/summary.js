@@ -285,11 +285,17 @@ function selectChartType (e) {
             if(lastBound == limits[i + 1]) {
               continue;
             }
-            var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
-            var li = $('<li>').text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
+            var li = $('<li>')
+            var lbl = opt.limitLabels();
+            if(lbl.length > i) {
+                li.text(lbl[i]);
+            } else {
+                var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
+                li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
+            }
             var l = $('<span></span>').addClass('l' + mapLimitIndex(limits, i));
             li.prepend(l);
-            ul.append(li);  
+            ul.append(li);
             lastBound = limits[i + 1];
           }
           $(this._div)
@@ -1517,13 +1523,31 @@ function selectChartType (e) {
                   .attr('class', function (d) {
                     return 'scale ' + d[2];
                   })
+                  .attr('id', function(d,i) {return opt.domTarget.id + '-limit-' + i;})
                   .attr('fill', function (d, i) {
                     return palette[i];
                   })
                   .attr('d', scale)
                   .attr('transform', 'translate(200,200) rotate(180)');
 
-             chart.append('g')
+             var lbl = opt.limitLabels();
+
+             if(lbl.length > 0) {
+                 chart.append('g')
+                   .attr('class', 'axistitle')
+                   .selectAll('text')
+                   .data(scaleData)
+                   .enter()
+                    .append('text')
+                    .attr('text-anchor', 'start')
+                    .attr('dy', -6)
+                    .append('textPath')
+                    .attr('title', function(d, i) { return lbl[i];})
+                    .text(function(d, i) { return lbl[i];})
+                    .attr('xlink:href', function(d,i) {return '#' + opt.domTarget.id + '-limit-' + i;})
+                    ;
+             } else {
+                chart.append('g')
                   .attr('class', 'axistitle')
                   .attr('transform', 'translate(200,200)')
                   .selectAll('text')
@@ -1542,8 +1566,9 @@ function selectChartType (e) {
                             if(d[0] > 60) { return 'end'; }
                             return 'middle';
                         })
-                        .attr('title', function(d) { return numberFormat(d[0]); })
+                        .attr('title', function(d, i) { return numberFormat(d[0]); })
                         .text(function(d) { return numberFormat(d[0]); });
+            }
 
             chart.append('g')
                   .attr('class', 'axistics')
@@ -2204,7 +2229,7 @@ function selectChartType (e) {
             target = $(p),
             type = selectChartType(target);
 
-          if ('map' === type) {
+         if ('map' === type) {
             summary
             .drawMap({
               target: target,
@@ -2214,7 +2239,15 @@ function selectChartType (e) {
               limits: target.attr('data-limits'),
               order: target.attr('data-limit-order'),
               include: target.attr('data-limit-include'),
-              label: target.attr('data-label')
+              label: target.attr('data-label'),
+              limitLabels: function() {
+                  var l = target.attr('data-limits').split(',').length;
+                  var lbl = [];
+                  for(var i = 0; i < l - 1; ++i) {
+                      lbl.push(target.attr('data-limit-' + i));
+                  }
+                  return lbl;
+                }
             });
           } else if ('table' === type) {
             summary
@@ -2260,6 +2293,14 @@ function selectChartType (e) {
               showCi: $(p).attr('data-ci') === 'true',
               em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
               limits: target.attr('data-limits'),
+              limitLabels: function() {
+                var l = target.attr('data-limits').split(',').length;
+                var lbl = [];
+                for(var i = 0; i < l - 1; ++i) {
+                    lbl.push(target.attr('data-limit-' + i));
+                }
+                return lbl;
+              },
               order: target.attr('data-limit-order'),
               include: target.attr('data-limit-include')
             });

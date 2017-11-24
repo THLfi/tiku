@@ -69,6 +69,7 @@ public abstract class HydraSource {
 
     private static final Pattern NAMED_VIEW_PATTERN = Pattern.compile("meta:namedview(\\d+)(_(.*))?");
     private static final Pattern LIMIT_PATTERN = Pattern.compile("^meta:limit(\\d+)$");
+    private static final Pattern LABEL_PATTERN = Pattern.compile("^meta:label(\\d+)$");
 
     /**
      * This callback handler is used when traversing the hydra metadata tree.
@@ -603,23 +604,37 @@ public abstract class HydraSource {
         Limits limit = limits.get(ref);
         for(Property p : properties) {
             if (p.predicate.startsWith("meta:limit")) {
-                
-                Matcher m = LIMIT_PATTERN.matcher(p.predicate);
-                if (m.find()) {
-                    try {
-                        limit.setLimit(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
-                    } catch (NumberFormatException e) {
-                        
-                        LOG.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid
-                                + ". Limit is not valid number: '" + p.value + "'");
-                    }
-                }
+                setLimit(ref, limit, p);
+            } else if (p.predicate.startsWith("meta:label")) {
+                setLimitLabel(limit, p);
             } else if ("meta:order".equals(p.predicate)) {
                 limit.setLimitOrder(p.value);
             } else if ("meta:limitbound".equals(p.predicate)) {
                 limit.setLimitBound(p.value);
             } else {
-                LOG.warn("Unrecognize limit predicate " + p.predicate + " in " + runid);
+                LOG.warn("Unrecognized limit predicate " + p.predicate + " in " + runid);
+            }
+        }
+    }
+
+    private void setLimitLabel(Limits limit, Property p) {
+        Matcher m = LABEL_PATTERN.matcher(p.predicate);
+        if(m.find()) {
+            int index = Integer.parseInt(m.group(1));
+            limit.setLabel(index, p.lang, p.value);
+
+        }
+    }
+
+    private void setLimit(String ref, Limits limit, Property p) {
+        Matcher m = LIMIT_PATTERN.matcher(p.predicate);
+        if (m.find()) {
+            try {
+                limit.setLimit(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
+            } catch (NumberFormatException e) {
+
+                LOG.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid
+                        + ". Limit is not valid number: '" + p.value + "'");
             }
         }
     }
