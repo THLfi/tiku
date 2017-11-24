@@ -23,6 +23,7 @@ public class PivotCellImpl implements PivotCell {
     private String ciUpper;
     private String sampleSize;
     private int[] fullKey;
+    private Boolean isNumber;
 
     public PivotCellImpl(String value) {
         this.value = value;
@@ -49,11 +50,16 @@ public class PivotCellImpl implements PivotCell {
     }
 
     private String format(NumberFormat nf) {
-        int decimals = measure.determineDecimals(value);
-        nf.setMaximumFractionDigits(decimals);
-        nf.setMinimumFractionDigits(decimals);
-        nf.setRoundingMode(RoundingMode.HALF_UP);
-        return nf.format(getNumberValue());
+        try {
+            int decimals = measure.determineDecimals(value);
+            nf.setMaximumFractionDigits(decimals);
+            nf.setMinimumFractionDigits(decimals);
+            nf.setRoundingMode(RoundingMode.HALF_UP);
+            return nf.format(getNumberValue());
+        } catch (NumberFormatException e) {
+            isNumber = false;
+            return value;
+        }
     }
 
     public int getRowNumber() {
@@ -74,7 +80,10 @@ public class PivotCellImpl implements PivotCell {
 
     @Override
     public boolean isNumber() {
-        return null != value && value.length() > 0 && !"-".equals(value) && NUMBER.matcher(value).matches();
+        if(null == isNumber) {
+            isNumber = null != value && value.length() > 0 && !"-".equals(value) && NUMBER.matcher(value).matches();
+        }
+        return isNumber;
     }
 
     @Override
