@@ -2,6 +2,7 @@ package fi.thl.pivot.model;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -96,15 +97,15 @@ public class Query {
     }
 
     private void addDirectDescendants(DimensionNode dn, PivotLevel level) {
-        level.add(dn.getChildren());
+        level.add(dn.getChildren().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
         level.add(dn);
     }
 
     private void addAllNodesInLevel(DimensionNode dn, PivotLevel level) {
         for (DimensionNode d : dn.getLevel().getNodes()) {
-            level.add(d.getChildren());
+            level.add(d.getChildren().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
         }
-        level.add(dn.getLevel().getNodes());
+        level.add(dn.getLevel().getNodes().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
     }
 
     public boolean isRowSubset(int i) {

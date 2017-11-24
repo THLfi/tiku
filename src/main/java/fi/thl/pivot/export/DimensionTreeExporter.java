@@ -67,14 +67,17 @@ public class DimensionTreeExporter {
         writer.println(",\n\t\"children\": [");
         boolean firstNode = true;
         for (DimensionNode node : dimension.getRootLevel().getNodes()) {
-            exportNode(writer, node, firstNode, language);
-            firstNode = false;
+            firstNode = exportNode(writer, node, firstNode, language);
         }
         writer.print("]}");
         first = false;
     }
 
-    private void exportNode(PrintWriter writer, DimensionNode node, boolean first, String language) {
+    private boolean exportNode(PrintWriter writer, DimensionNode node, boolean first, String language) {
+        if(node.isHidden() && node.isMeasure()) {
+            return first;
+        }
+
         if (!first) {
             writer.println(',');
         }
@@ -115,7 +118,7 @@ public class DimensionTreeExporter {
             writer.println(",\n\t\"children\": []");
         }
         writer.print("\n}");
-        first = false;
+        return false;
     }
 
     private boolean attribute(PrintWriter writer, String attribute, String value, boolean isCommaNeeded) {

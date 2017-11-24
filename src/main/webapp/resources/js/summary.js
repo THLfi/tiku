@@ -249,6 +249,7 @@ function selectChartType (e) {
           limits = opt.limits.split(',');
         }
 
+
         function mapLimitIndex(limits, i) {
           var j = i;
           if(limits.length === 4) {
@@ -2244,7 +2245,11 @@ function selectChartType (e) {
                   var l = target.attr('data-limits').split(',').length;
                   var lbl = [];
                   for(var i = 0; i < l - 1; ++i) {
-                      lbl.push(target.attr('data-limit-' + i));
+                      var value = target.attr('data-limit-' + i);
+                      if(value !== undefined)
+                          lbl.push(value);
+                      else
+                          break;
                   }
                   return lbl;
                 }
@@ -2297,7 +2302,11 @@ function selectChartType (e) {
                 var l = target.attr('data-limits').split(',').length;
                 var lbl = [];
                 for(var i = 0; i < l - 1; ++i) {
-                    lbl.push(target.attr('data-limit-' + i));
+                    var value = target.attr('data-limit-' + i);
+                    if(value !== undefined)
+                        lbl.push(value);
+                    else
+                        break;
                 }
                 return lbl;
               },

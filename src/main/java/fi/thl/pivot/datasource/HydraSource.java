@@ -783,10 +783,14 @@ public abstract class HydraSource {
             } else if (GRAPH_PREDICATES.contains(p.predicate)) {
                 node.addEdge(p.predicate, nodesByRef.get(p.value));
             } else if ("meta:limits".equals(p.predicate)) {
-                if(!limits.containsKey(p.value)) {
+                if (!limits.containsKey(p.value)) {
                     limits.put(p.value, new Limits());
                 }
                 node.setLimits(limits.get(p.value));
+            } else if ("hidden".equals(p.predicate)) {
+                if("1".equals(p.value)) {
+                    node.hide();
+                }
             } else {
                 node.setProperty(p.predicate, p.lang, p.value);
             }

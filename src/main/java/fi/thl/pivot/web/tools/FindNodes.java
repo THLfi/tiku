@@ -2,6 +2,7 @@ package fi.thl.pivot.web.tools;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -63,7 +64,7 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         String nodeId = identifier.substring(dimensionIdentifierIndex(identifier) + 1, identifier.length() - 1);
         DimensionNode node = findNodeUsingSelectedSearchType(nodeId);
         if (null != node && node.canAccess()) {
-            nodes.addAll(node.getLevel().getNodes());
+            nodes.addAll(node.getLevel().getNodes().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
         }
         Collections.sort(nodes);
     }

@@ -126,8 +126,6 @@ public class CubeService {
         FilterablePivot fPivot = new FilterablePivot(mPivot);
     
         applyFilters(fPivot);
-  
-
         
         this.pivot = fPivot;
         sw.stop();
@@ -479,7 +477,7 @@ public class CubeService {
 
     /**
      * Maps list of identifiers or identifier lists to a list of lists of
-     * dimension nodes where each list of of lists represents a row or column
+     * dimension nodes where each list of lists represents a row or column
      * 
      * @param source
      * @param identifiers
@@ -502,8 +500,8 @@ public class CubeService {
     }
 
     private void addTotalNodeToLevel(List<String> identifiers, List<Boolean> modified, List<List<DimensionNode>> nodes) {
-        // Find out if the same dimension appers more than once
-        // If identifier with this kind of dimensions appers with the suffic
+        // Find out if the same dimension appears more than once
+        // If identifier with this kind of dimensions appears with the suffix
         // L (Show all nodes in level)
         // Add the sum node to the end
 

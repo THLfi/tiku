@@ -102,19 +102,22 @@
               <option value=""></option>
             [/#if]
             [#list filterStage.options as option]
-                [#assign selected]
-                    [#if filterStage.selected??]
-                      [#list filterStage.selected as s]
-                        [#if s.id == option.id]
-                          selected
-                          [#break /]
+                [#if option.hidden && option.measure]
+                [#else]
+                    [#assign selected]
+                        [#if filterStage.selected??]
+                          [#list filterStage.selected as s]
+                            [#if s.id == option.id]
+                              selected
+                              [#break /]
+                            [/#if]
+                          [/#list]
                         [/#if]
-                      [/#list]
-                    [/#if]
-                [/#assign]
-                <option value="${option.surrogateId}" ${selected} data-level=[#if filter.isCompleteDimension]"${option.level.index}"[#else]"0"[/#if]>
-                  [@label option /]
-                </option>
+                    [/#assign]
+                    <option value="${option.surrogateId}" ${selected} data-level=[#if filter.isCompleteDimension]"${option.level.index}"[#else]"0"[/#if]>
+                      [@label option /]
+                    </option>
+                [/#if]
             [/#list]
           </select>
         </div>

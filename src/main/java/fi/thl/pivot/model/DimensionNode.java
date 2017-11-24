@@ -44,6 +44,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
     private Map<String, DimensionNode> edges = new HashMap<>();
 
     private Limits limits;
+    private boolean hidden;
 
     public DimensionNode(DimensionLevel level, String id, Label label) {
         Preconditions.checkNotNull(id, "Dimension node must have a non-null identifier");
@@ -224,6 +225,12 @@ public class DimensionNode implements Comparable<DimensionNode> {
 
     @Override
     public int compareTo(DimensionNode o) {
+        if(this.hidden && !o.hidden) {
+            return 1;
+        }
+        if(!this.hidden && o.hidden) {
+            return -1;
+        }
         if (this.sort.isEmpty()) {
             String s1 = getLabel().getValue(ThreadRole.getLanguage());
             String s2 = o.getLabel().getValue(ThreadRole.getLanguage());
@@ -354,4 +361,11 @@ public class DimensionNode implements Comparable<DimensionNode> {
         this.limits = limits;
     }
 
+    public void hide() {
+        this.hidden = true;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
 }
