@@ -842,6 +842,7 @@ function selectChartType (e) {
               max = Math.max(max, sum);
             }
           }
+
         
           max = max * 1.2;
 
@@ -1174,6 +1175,7 @@ function selectChartType (e) {
               if (opt.showCi) {
                 var area =
                   d3.svg.area()
+                    .defined(function(d, i) { return null != opt.callback(series, i);})
                     .x(function (d, i) {
                       return ordinalScale(datum[i]) + spacing / 2.0 - 3;
                     })
@@ -1201,7 +1203,7 @@ function selectChartType (e) {
                 .datum(datum)
                 .attr('d', d3.svg.line()
                   .y(offsetColumn(series))
-                  .defined(function(d, i) { return null != opt.callback(series, i); })
+                  .defined(function(d, i) { return null != opt.callback(series, i);})
                   .x(function (d, i) {
                     return ordinalScale(d) + spacing / 2.0 - 3;
                   })
@@ -1527,34 +1529,62 @@ function selectChartType (e) {
 
 
             var limits;
+            var areas = opt.limitAreas();
+            var areaLimits = [];
+            for(var i = 0; i < areas.length; ++i) {
+                if(i == 0) {
+                    areaLimits[i] = 0
+                } else {
+                    areaLimits[i] = areaLimits[i-1] + areas[i - 1]
+                }
+            }
             if(opt.limits === undefined || opt.limits === '') {
-               limits = [0, 25, 75, 100];
+               var min = Number.MAX_VALUE, max = Number.MIN_VALUE;
+               $.each(opt.data, function(k) {
+                var v = opt.callback(0, k);
+                min = Math.min(min, v);
+                max = Math.max(max, v);
+               });
+               limits = [min, Math.round((0.25*(max-min)), 1), Math.round((0.75*(max-min)),1), max];
             } else {
                var limits = opt.limits.split(',');
+               for(var i = 0; i < limits.length; ++i) {
+                limits[i] = +limits[i];
+               }
             }
             var scaleData = [];
             var scaleMin = limits[0];
             var scaleMax = limits[limits.length - 1];
-            var scaleFactor = 1.0 / (scaleMax - scaleMin) * 100.0;
             for(var i = 1; i < limits.length; ++i) {
-              scaleData.push([limits[i-1] * scaleFactor, limits[i] * scaleFactor, '']);
+              scaleData.push([limits[i-1], limits[i], '']);
             }
-            scaleData.push([limits[limits.length-1] * scaleFactor, limits[limits.length-1] * scaleFactor]);
+            scaleData.push([limits[limits.length-1], limits[limits.length-1]]);
+
+            function transformAngle(a) {
+                if(areas.length > 0) {
+                    for(var i = 0; i < limits.length - 1; ++i) {
+                        if(a <= limits[i + 1]) {
+                            var r = ((a - limits[i]) / (limits[i + 1] - limits[i]));
+                            return areaLimits[i] + areas[i]*r;
+                        }
+                    }
+                } else {
+                    return a;
+                }
+            }
 
           // cScale is for drawing gauge background (uses radians)
-                var cScale = d3.scale.linear()
-                  .range([
-                    60 * (Math.PI / 180), 300 * (Math.PI / 180)
-                  ])
-                  .domain([
-                    0, 100
-                  ]);
-                // needleAngleScale is for drawing needles at right angle (uses degrees)
-                var needleAngleScale = d3.scale.linear()
-                  .range([-120, 120])
-                  .domain(
-                    scaleValue.domain()
-                );
+            var cScale = d3.scale.linear()
+              .range([
+                60 * (Math.PI / 180), 300 * (Math.PI / 180)
+              ])
+              .domain([
+                scaleMin, scaleMax
+              ]);
+            // needleAngleScale is for drawing needles at right angle (uses degrees)
+            var needleAngleScale = d3.scale.linear()
+              .range([-120, 120])
+              .domain([scaleMin, scaleMax]);
 
             var palette = [];
             switch (opt.palette) {
@@ -1582,7 +1612,9 @@ function selectChartType (e) {
                   .attr('fill', function (d, i) {
                     return palette[i];
                   })
-                  .attr('d', scale)
+                  .attr('d', function(d,i) {
+                    return scale([transformAngle(d[0]), transformAngle(d[1])]);
+                  })
                   .attr('transform', 'translate(200,200) rotate(180)');
 
              var lbl = opt.limitLabels();
@@ -1610,15 +1642,15 @@ function selectChartType (e) {
                   .enter()
                         .append('text')
                         .attr('x', function(d, i) {
-                            return (lineRadiusInner - 20) * Math.sin(-cScale(d[0] ))
+                            return (lineRadiusInner - 20) * Math.sin(-cScale(transformAngle(d[0])))
                          })
                         .attr('y', function(d) {
-                            return (lineRadiusInner - 20) * Math.cos(-cScale(d[0]));
+                            return (lineRadiusInner - 20) * Math.cos(-cScale(transformAngle(d[0])));
                         })
                         .attr(textStyle)
                         .attr('text-anchor', function(d) {
-                            if(d[0] < 40) { return 'start'; }
-                            if(d[0] > 60) { return 'end'; }
+                            if(transformAngle(d[0]) < 40) { return 'start'; }
+                            if(transformAngle(d[0]) > 60) { return 'end'; }
                             return 'middle';
                         })
                         .attr('title', function(d, i) { return numberFormat(d[0]); })
@@ -1633,16 +1665,16 @@ function selectChartType (e) {
                   .enter()
                         .append('line')
                         .attr('x1', function(d, i) {
-                            return (lineRadiusOuter - 10) * Math.sin(-cScale(d[0]))
+                            return (lineRadiusOuter - 10) * Math.sin(-cScale(transformAngle(d[0])))
                          })
                         .attr('y1', function(d) {
-                            return (lineRadiusOuter - 10) * Math.cos(-cScale(d[0]));
+                            return (lineRadiusOuter - 10) * Math.cos(-cScale(transformAngle(d[0])));
                         })
                         .attr('x2', function(d, i) {
-                            return (lineRadiusOuter) * Math.sin(-cScale(d[0] ))
+                            return (lineRadiusOuter) * Math.sin(-cScale(transformAngle(d[0])))
                          })
                         .attr('y2', function(d) {
-                            return (lineRadiusOuter) * Math.cos(-cScale(d[0]));
+                            return (lineRadiusOuter) * Math.cos(-cScale(transformAngle(d[0])));
                         })
                         .attr('stroke','#ddd')
 
@@ -1674,7 +1706,7 @@ function selectChartType (e) {
               })
               .attr('transform', function (d, i) {
                 var v = opt.callback(0, i);
-                return 'translate(' + (scaleRadiusOuter-3) + ', ' + 45 + ') rotate(' + needleAngleScale(v) + ', 13, 157)';
+                return 'translate(' + (scaleRadiusOuter-3) + ', ' + 45 + ') rotate(' + needleAngleScale(transformAngle(v)) + ', 13, 157)';
               })
               .style('cursor', function (d) {
                 if (canDrill(d)) {
@@ -1963,6 +1995,7 @@ function selectChartType (e) {
          * index for each domain id.
          */
         function sortData (sortMode) {
+
           if (sortMode === 'asc' || sortMode === 'desc') {
             var data = opt.data.slice();
             data.sort(function (a, b) {
@@ -2296,6 +2329,9 @@ function selectChartType (e) {
               include: target.attr('data-limit-include'),
               label: target.attr('data-label'),
               limitLabels: function() {
+                  if(target.attr('data-limits') === undefined) {
+                      return [];
+                  }
                   var l = target.attr('data-limits').split(',').length;
                   var lbl = [];
                   for(var i = 0; i < l - 1; ++i) {
@@ -2306,7 +2342,7 @@ function selectChartType (e) {
                           break;
                   }
                   return lbl;
-                }
+                },
             });
           } else if ('table' === type) {
             summary
@@ -2342,7 +2378,14 @@ function selectChartType (e) {
                   val = dataset.Data([i, series]);
                 } else {
                   // Multiple series and measure
-                  val = dataset.Data([i, series, measure]);
+                  var key = [];
+                  key[0] = i;
+                  key[1] = series;
+                  for(var i = 2; i < dataset.Dimension().length - 1; ++i) {
+                    key[i] = 0;
+                  }
+                  key[dataset.Dimension().length - 1] = measure;
+                  val = dataset.Data(key);
                 }
                 val = val && val.value !== null ? +(val.value.replace(',', '.')) : null;
                 val = isNaN(val) ? null : val;
@@ -2359,6 +2402,9 @@ function selectChartType (e) {
               em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
               limits: target.attr('data-limits'),
               limitLabels: function() {
+                if(target.attr('data-limits') === undefined) {
+                    return [];
+                }
                 var l = target.attr('data-limits').split(',').length;
                 var lbl = [];
                 for(var i = 0; i < l - 1; ++i) {
@@ -2369,6 +2415,21 @@ function selectChartType (e) {
                         break;
                 }
                 return lbl;
+              },
+              limitAreas: function() {
+                if(target.attr('data-limits') === undefined) {
+                    return [];
+                }
+                var l = target.attr('data-limits').split(',').length;
+                var area = [];
+                for(var i = 0; i < l - 1; ++i) {
+                    var value = target.attr('data-limitarea-' + i);
+                    if(value !== undefined)
+                        area.push(+value);
+                    else
+                        break;
+                }
+                return area;
               },
               order: target.attr('data-limit-order'),
               include: target.attr('data-limit-include')

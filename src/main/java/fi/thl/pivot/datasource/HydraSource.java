@@ -68,7 +68,7 @@ public abstract class HydraSource {
     private static final String PREDICATE_DECIMALS = "decimals";
 
     private static final Pattern NAMED_VIEW_PATTERN = Pattern.compile("meta:namedview(\\d+)(_(.*))?");
-    private static final Pattern LIMIT_PATTERN = Pattern.compile("^meta:limit(\\d+)$");
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("^meta:limit(\\d+)");
     private static final Pattern LABEL_PATTERN = Pattern.compile("^meta:label(\\d+)$");
 
     /**
@@ -630,7 +630,11 @@ public abstract class HydraSource {
         Matcher m = LIMIT_PATTERN.matcher(p.predicate);
         if (m.find()) {
             try {
-                limit.setLimit(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
+                if(p.predicate.endsWith("_area")) {
+                    limit.setLimitArea(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
+                } else {
+                    limit.setLimit(Integer.parseInt(m.group(1)), Double.parseDouble(p.value.replaceAll(",", ".")));
+                }
             } catch (NumberFormatException e) {
 
                 LOG.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid

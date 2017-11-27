@@ -10,6 +10,7 @@ public class Limits {
 
     private DimensionNode limitMeasure;
     private Map<Integer, Double> limits = new TreeMap<>();
+    private Map<Integer, Double> area = new TreeMap<>();
     private Map<Integer, Label> labels = new TreeMap<>();
 
     private boolean isAscendingLimitOrder = true;
@@ -94,5 +95,11 @@ public class Limits {
 
     public Collection<Label> getLabels() {
         return labels.values();
+    }
+    public Collection<Double> getAreas() { return area.values(); }
+
+
+    public void setLimitArea(int order, double area) {
+        this.area.put(order, area);
     }
 }

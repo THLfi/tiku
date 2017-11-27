@@ -283,6 +283,9 @@
                         data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
                         data-limits="${limits}"
                         data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+                        [#list limits.areas as limitArea]
+                          data-limitarea-${limitArea_index}="${limitArea}"
+                        [/#list]
                         [#list limits.labels as limitLabel]
                           data-limit-${limitLabel_index}="${limitLabel.getValue(lang)?html}"
                         [/#list]
