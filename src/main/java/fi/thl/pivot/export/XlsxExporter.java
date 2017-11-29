@@ -61,25 +61,7 @@ public class XlsxExporter {
         Map<String, ?> params = model.asMap();
         Workbook wb = new XSSFWorkbook();
 
-        valueFont = createValueFont(wb);
-
-        this.defaultStyle = wb.createCellStyle();
-        defaultStyle.setFont(valueFont);
-        defaultStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-
-        this.numberStyle = wb.createCellStyle();
-        numberStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("#,##0"));
-        numberStyle.setFont(valueFont);
-        numberStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-
-        Font headerFont = createHeaderFont(wb);
-        createHeaderStyle(wb, headerFont);
-
-        this.headerLastRowStyle = wb.createCellStyle();
-        headerLastRowStyle.setFont(headerFont);
-        headerLastRowStyle.setWrapText(true);
-        headerLastRowStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        headerLastRowStyle.setBorderBottom((short) 1);
+        createExportStyles(wb);
 
         Sheet sheet = wb
                 .createSheet(WorkbookUtil.createSafeSheetName(((Label) params.get("cubeLabel")).getValue(language)));
@@ -101,6 +83,37 @@ public class XlsxExporter {
 
         wb.write(out);
         wb.close();
+    }
+
+    private void createExportStyles(Workbook wb) {
+        valueFont = createValueFont(wb);
+
+        createDefaultStyle(wb);
+        createNumberStyle(wb);
+        Font headerFont = createHeaderFont(wb);
+        createHeaderStyle(wb, headerFont);
+        createLastRowStyle(wb, headerFont);
+    }
+
+    private void createDefaultStyle(Workbook wb) {
+        this.defaultStyle = wb.createCellStyle();
+        defaultStyle.setFont(valueFont);
+        defaultStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+    }
+
+    private void createNumberStyle(Workbook wb) {
+        this.numberStyle = wb.createCellStyle();
+        numberStyle.setDataFormat(wb.getCreationHelper().createDataFormat().getFormat("#,##0"));
+        numberStyle.setFont(valueFont);
+        numberStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+    }
+
+    private void createLastRowStyle(Workbook wb, Font headerFont) {
+        this.headerLastRowStyle = wb.createCellStyle();
+        headerLastRowStyle.setFont(headerFont);
+        headerLastRowStyle.setWrapText(true);
+        headerLastRowStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        headerLastRowStyle.setBorderBottom((short) 1);
     }
 
     private Font createValueFont(Workbook wb) {
@@ -195,7 +208,7 @@ public class XlsxExporter {
        if(r == 0) {
            return true;
        }
-       for(int cc = c; cc > 0; --cc) {
+       for(int cc = c; cc >= 0; --cc) {
            DimensionNode a = pivot.getRowAt(cc, r);
            DimensionNode b = pivot.getRowAt(cc, r - 1);
            if(a.getSurrogateId() != b.getSurrogateId()) {
