@@ -138,37 +138,37 @@ function selectChartType (e) {
      * Color palette for charts
      */
     var colors = [
-        '#3961A8',
-        '#8FCED6',
-        '#501A56',
-        '#72AC43',
-        '#B14A72',
-        '#340E7A',
-        '#479653',
-        '#CDCB7E',
-        '#111F44',
-        '#50A3A2',
-        '#C17FC7',
-        '#2D481A',
-        '#9982C7',
-        '#295E32',
-        '#A49C41',
-        '#7C99D1',
-        '#1F404B',
-        '#8D3E94',
-        '#8EB06E',
-        '#712942',
-        '#623EA9',
-        '#9CD3AB',
-        '#595622'
+        '#2f62ad',
+        '#7cd0d8',
+        '#571259',
+        '#5faf2c',
+        '#2f62ad',
+        '#3b007f',
+        '#16994a',
+        '#cccc72',
+        '#0e1e47',
+        '#25a5a2',
+        '#cc7acc',
+        '#244911',
+        '#9f7fcc',
+        '#06602b',
+        '#a59c2b',
+        '#7699d6',
+        '#11414c',
+        '#993499',
+        '#84b266',
+        '#7a2242',
+        '#6938af',
+        '#71cc96',
+        '#595616'
       ],
       /*
        * Color palette for good, average and bad values
        */
       trafficLightColors = [
-        '#ef4848',
-        '#efd748',
-        '#66cc66'
+        '#d888a9',
+        '#b2b2b2',
+        '#7699d6'
       ],
       canDrill = function (nodeId) {
         if (typeof dimensionData[nodeId] === 'undefined') {
@@ -219,9 +219,9 @@ function selectChartType (e) {
         if(opt.palette === 'gray') {
           colors = ['#b2b2b2', '#8c8c8c','#666666','#3f3f3f','#191919'];
         } else if (opt.palette == 'ranking') {
-          colors = ['#B14A72', '#CD8CA9','#B2B2B2','#7C99D1', '#3961A8'];
+          colors = ['#bf4073', '#d888a9','#B2B2B2','#7699d6', '#2f62ad'];
         } else {
-          colors = ['#b2b2b2', '#8FCED6','#7C99D1', '#3961A8', '#111F44'];
+          colors = ['#b2b2b2', '#7cd0d8','#7699d6', '#2f61ad', '#0e1e47'];
         }
 
         var areaCodes = {}
@@ -256,10 +256,21 @@ function selectChartType (e) {
         function mapLimitIndex(limits, i) {
           var j = i;
           if(limits.length === 4) {
-            switch(j) {
-              case 0: j = 0; break;
-              case 1: j = 2; break;
-              case 2: j = 4; break;
+            if(opt.palette === 'ranking') {
+              switch(j) {
+                case 0: j = 1; break;
+                case 1: j = 2; break;
+                case 2: 
+                case 3:
+                case 4: j = 3; break;
+              }
+            } else {
+              switch(j) {
+                case 0: j = 2; break;
+                case 1: j = 3; break;
+                case 2:
+                case 3: j = 4; break;
+              }
             }
           }
           return opt.order === 'desc' ? 4 - j : j;
@@ -282,7 +293,6 @@ function selectChartType (e) {
         var tooltip = $('<span></span>').addClass('maptip').hide();
 
         legend.update = function() {
-          
           var ul = $('<ul>');
           var lastBound = Number.MAX_VALUE;
           for(var i = 0; i < limits.length - 1; ++i) {
@@ -297,7 +307,8 @@ function selectChartType (e) {
                 var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
                 li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
             }
-            var l = $('<span></span>').addClass('l' + mapLimitIndex(limits, i));
+            var l = $('<span></span>')
+              .css('background', colors[mapLimitIndex(limits, i)]);
             li.prepend(l);
             ul.append(li);
             lastBound = limits[i + 1];
@@ -326,10 +337,10 @@ function selectChartType (e) {
         L.Proj.geoJson(maps.features.MAA, {
           style: {
               fillColor : '#f2f2f2',
-              weight : 1,
-              opacity : 0.7,
-              fillOpacity : 0.7,
-              color : '#808080'
+              weight : 2,
+              opacity : 1,
+              fillOpacity : 1,
+              color : '#666666'
           }
         }).addTo(map);
      
@@ -351,7 +362,7 @@ function selectChartType (e) {
                 }
               }
               if(color === undefined) {
-                color = colors[opt.order === 'desc' ? 0 : 4];
+                color = colors[mapLimitIndex(limits, 4)];
               }
             } else {
               color = '#f2f2f2';
@@ -360,9 +371,9 @@ function selectChartType (e) {
             return {
                 fillColor : color,
                 weight : 1,
-                opacity : 0.3,
+                opacity : 1,
                 fillOpacity : 1,
-                color : '#606060'
+                color : '#666666'
             };
           },
           onEachFeature: function(feature, layer) {
@@ -389,7 +400,7 @@ function selectChartType (e) {
                 layer.setStyle({
                     weight : 2,
                     dashArray : '',
-                    fillOpacity : 0.9
+                    fillOpacity : 1
                 });
               },
               mouseout : function (e) {
@@ -1589,13 +1600,13 @@ function selectChartType (e) {
             var palette = [];
             switch (opt.palette) {
               case 'greenyellowred':
-                palette = ['#66cc66', '#efd748', '#ef4848'];
+                palette = ['#7699d6', '#b2b2b2', '#d888a9'];
                 break;
               case 'gray':
                 palette = ['#8c8c8c', '#b2b2b2', '#8c8c8c'];
                 break;
               default:
-                palette = ['#ef4848', '#efd748', '#66cc66'];
+                palette = ['#d888a9', '#b2b2b2', '#7699d6'];
             }
 
 
