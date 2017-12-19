@@ -138,29 +138,29 @@ function selectChartType (e) {
      * Color palette for charts
      */
     var colors = [
-        '#2f62ad',
-        '#7cd0d8',
-        '#571259',
-        '#5faf2c',
-        '#bf4073',
-        '#3b007f',
-        '#16994a',
-        '#cccc72',
-        '#0e1e47',
-        '#25a5a2',
-        '#cc7acc',
-        '#244911',
-        '#9f7fcc',
-        '#0660a2',
-        '#a59c2b',
-        '#7699d6',
-        '#11414c',
-        '#993499',
-        '#84b266',
-        '#7a2242',
-        '#6938af',
-        '#71cc96',
-        '#595616'
+        '#3961A8',
+        '#8FCED6',
+        '#501A56',
+        '#72AC43',
+        '#B14A72',
+        '#340E7A',
+        '#479653',
+        '#CDCB7E',
+        '#111F44',
+        '#50A3A2',
+        '#C17FC7',
+        '#2D481A',
+        '#9982C7',
+        '#295E32',
+        '#A49C41',
+        '#7C99D1',
+        '#1F404B',
+        '#8D3E94',
+        '#8EB06E',
+        '#712942',
+        '#623EA9',
+        '#9CD3AB',
+        '#595622'
       ],
       /*
        * Color palette for good, average and bad values
@@ -219,9 +219,9 @@ function selectChartType (e) {
         if(opt.palette === 'gray') {
           colors = ['#b2b2b2', '#8c8c8c','#666666','#3f3f3f','#191919'];
         } else if (opt.palette == 'ranking') {
-          colors = ['#ef4848', '#EF9048','#efd748','#ABD257', '#66cc66'];
+          colors = ['#B14A72', '#CD8CA9','#B2B2B2','#7C99D1', '#3961A8'];
         } else {
-          colors = ['#edf8e9', '#bae4b3','#74c476', '#31a354', '#006d2c'];
+          colors = ['#b2b2b2', '#8FCED6','#7C99D1', '#3961A8', '#111F44'];
         }
 
         var areaCodes = {}
@@ -325,7 +325,7 @@ function selectChartType (e) {
 
         L.Proj.geoJson(maps.features.MAA, {
           style: {
-              fillColor : '#f0f0f0',
+              fillColor : '#f2f2f2',
               weight : 1,
               opacity : 0.7,
               fillOpacity : 0.7,
@@ -337,7 +337,7 @@ function selectChartType (e) {
         geojson = L.Proj.geoJson(maps.features[opt.stage], {
           style: function (feature) {
             var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
-            var color = '#f0f0f0'
+            var color = '#f2f2f2'
 
             if(v !== undefined && /^\d+(\.\d+)?$/.test(v.value)) {
               color = undefined;
@@ -354,7 +354,7 @@ function selectChartType (e) {
                 color = colors[opt.order === 'desc' ? 0 : 4];
               }
             } else {
-              color = '#fff';
+              color = '#f2f2f2';
             }
 
             return {
@@ -362,7 +362,7 @@ function selectChartType (e) {
                 weight : 1,
                 opacity : 0.3,
                 fillOpacity : 1,
-                color : '#303030'
+                color : '#606060'
             };
           },
           onEachFeature: function(feature, layer) {
