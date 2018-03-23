@@ -139,14 +139,16 @@ public class HydraDataPresentation extends DataPresentation {
     }
 
     private void appendFilters(UrlBuilder url, Set<String> closed) {
+        boolean containsColumns = !(closed.size() <= 2);
         for (Selection s : getFilters()) {
             if(closed.contains(s.getDimension())) {
                 continue;
             }
             if ("measure".equals(s.getDimension()) && !delegate.hasMeasures()) {
                 //
-            } else if (closed.size() == 2) {
+            } else if (!containsColumns) {
                 url.addColumns();
+                containsColumns = true;
             } else {
                 // We do not want extra dimension in the returned JSON-STAT
                 // resource
