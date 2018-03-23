@@ -142,7 +142,7 @@ public class HydraDataPresentation extends DataPresentation {
         boolean containsColumns = !(closed.size() <= 2);
         for (Selection s : getFilters()) {
             if(closed.contains(s.getDimension())) {
-                continue;
+                url.addFilters();
             }
             if ("measure".equals(s.getDimension()) && !delegate.hasMeasures()) {
                 //
