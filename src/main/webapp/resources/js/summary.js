@@ -142,7 +142,7 @@ function selectChartType (e) {
         '#7cd0d8',
         '#571259',
         '#5faf2c',
-        '#2f62ad',
+        '#B14A72',
         '#3b007f',
         '#16994a',
         '#cccc72',
