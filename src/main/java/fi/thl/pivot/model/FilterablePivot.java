@@ -208,9 +208,21 @@ public class FilterablePivot extends AbstractPivotForwarder {
                 }
             }
         }
-        if(node instanceof InputtedDimensionNode && ((InputtedDimensionNode) node).getLevelNumber() != 0) {
-            // Case: We are only interested in the total and nothing but the total
-            return true;
+
+        if(node instanceof InputtedDimensionNode) {
+            int targetLevel = 0;
+
+            for(int i = 0; i < parents.size(); ++i) {
+                if(parents.get(i).getDimension().equals(node.getDimension())) {
+                    targetLevel = i;
+                    break;
+                }
+            }
+
+            if (((InputtedDimensionNode) node).getLevelNumber() != targetLevel) {
+                // Case: We are only interested in the total and nothing but the total
+                return true;
+            }
         }
         return shouldInclude;
     }
