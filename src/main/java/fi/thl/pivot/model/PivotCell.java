@@ -16,7 +16,7 @@ public interface PivotCell extends Comparable<PivotCell> {
 
     void setIndices(List<List<Integer>> indices);
 
-    DimensionNode getMeasure();
+    IDimensionNode getMeasure();
 
     String getConfidenceLowerLimit();
 

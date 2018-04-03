@@ -38,8 +38,8 @@ class PivotCellKeyGenerator {
      */
     private final int total;
 
-    private final DimensionNode[] constants;
-    private final DimensionNode[] dimensions;
+    private final IDimensionNode[] constants;
+    private final IDimensionNode[] dimensions;
 
     private final int[] key;
     private final int[] fullKey;
@@ -64,21 +64,21 @@ class PivotCellKeyGenerator {
      * of the measure here so that we don't have to go through all the keys
      * again when we assign the measure to the cell
      */
-    private DimensionNode measure;
+    private IDimensionNode measure;
 
-    private DimensionNode constantMeasure = null;
+    private IDimensionNode constantMeasure = null;
     private boolean constantsAdded = false;
     private int constantKeySize = 0;
     
     private int prevRow = -1;
     private int prevRowKeySize = 0;
-    private DimensionNode prevRowMeasure = null;
+    private IDimensionNode prevRowMeasure = null;
     private int prevColumn = -1;
     private int prevColumnKeySize = 0;
-    private DimensionNode prevColumnMeasure = null;
+    private IDimensionNode prevColumnMeasure = null;
 
 
-    public PivotCellKeyGenerator(Pivot pivot, Collection<DimensionNode> constants) {
+    public PivotCellKeyGenerator(Pivot pivot, Collection<IDimensionNode> constants) {
         this.pivot = pivot;
         this.rows = pivot.getRows().size();
         this.columns = pivot.getColumns().size();
@@ -87,13 +87,13 @@ class PivotCellKeyGenerator {
         // and not the count we have to add 2
         this.total = rows + columns + constants.size();
 
-        this.constants = constants.toArray(new DimensionNode[constants.size()]);
-        this.dimensions = new DimensionNode[total];
+        this.constants = constants.toArray(new IDimensionNode[constants.size()]);
+        this.dimensions = new IDimensionNode[total];
         this.key = new int[total];
         this.fullKey = new int[rows + columns];
     }
 
-    public DimensionNode getMeasure() {
+    public IDimensionNode getMeasure() {
         return measure;
     }
 
@@ -147,7 +147,7 @@ class PivotCellKeyGenerator {
 //        } else {
 //            int keyIndex = lastKeyIndex;
             for (int i = 0; i < rows; ++i) {
-                DimensionNode node = pivot.getRowAt(i, row);
+                IDimensionNode node = pivot.getRowAt(i, row);
                 prevRowMeasure = addNode(node, i);
             }
 //            prevRow = row;
@@ -158,7 +158,7 @@ class PivotCellKeyGenerator {
     /**
      * Iterates over each column header level and adds the node to the cell key
      * 
-     * @param row
+     * @param column
      */
     private void addColumns(int column, int offset) {
 //        if(column == prevColumn) {
@@ -177,7 +177,7 @@ class PivotCellKeyGenerator {
 //         }
         
         for (int i = 0; i < columns; ++i) {
-            DimensionNode node = pivot.getColumnAt(i, column);
+            IDimensionNode node = pivot.getColumnAt(i, column);
             addNode(node, i + offset);
         }
     }
@@ -189,13 +189,13 @@ class PivotCellKeyGenerator {
      * 
      * @param node
      */
-    private DimensionNode addNode(final DimensionNode node, int position) {
-        DimensionNode nodeMeasure = null;
+    private IDimensionNode addNode(final IDimensionNode node, int position) {
+        IDimensionNode nodeMeasure = null;
         final int id = node.getSurrogateId();
         final int oldNodeIndex = putDimIfAbsent(node);
         fullKey[position] = node.getSurrogateId();
         if (oldNodeIndex >= 0) {
-            final DimensionNode oldNode = dimensions[oldNodeIndex];
+            final IDimensionNode oldNode = dimensions[oldNodeIndex];
             if (node.ancestorOf(oldNode)) {
                 // A more specific node is found from the same
                 // dimension tree, skip
@@ -241,14 +241,14 @@ class PivotCellKeyGenerator {
 
     private void buildNewConstants() {
         outer: for (int j = 0; j < constants.length; ++j) {
-            DimensionNode node = constants[j];
+            IDimensionNode node = constants[j];
             Dimension nd = node.getDimension();
 
             // Check if constant dimension is already
             // present in the key and skip the dimension
             // if it is
             for (int i = 0; i < lastDimensionIndex; ++i) {
-                DimensionNode d = dimensions[i];
+                IDimensionNode d = dimensions[i];
                 if (d.getDimension() == nd) {
                     // Note that the continue is targetted to
                     // the outer loop that loops through constants!
@@ -274,10 +274,10 @@ class PivotCellKeyGenerator {
         }
     }
 
-    private int putDimIfAbsent(DimensionNode node) {
+    private int putDimIfAbsent(IDimensionNode node) {
         Dimension nodeDimension = node.getDimension();
         for (int i = 0; i < lastDimensionIndex; ++i) {
-            DimensionNode n = dimensions[i];
+            IDimensionNode n = dimensions[i];
             if (n.getDimension() == nodeDimension) {
                 return i;
             }

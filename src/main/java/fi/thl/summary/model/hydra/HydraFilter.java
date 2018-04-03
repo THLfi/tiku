@@ -8,10 +8,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
+import fi.thl.pivot.model.*;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
 
@@ -62,13 +59,13 @@ public final class HydraFilter extends Selection {
      * 
      * @return
      */
-    public List<DimensionNode> getSelected() {
+    public List<IDimensionNode> getSelected() {
         getFilterStages();
-        List<DimensionNode> selected = filterStages.get(filterStages.size() - 1).getSelected();
+        List<IDimensionNode> selected = filterStages.get(filterStages.size() - 1).getSelected();
         return selected;
     }
     
-    public List<DimensionNode> getSelected(String stage) {
+    public List<IDimensionNode> getSelected(String stage) {
         for(FilterStage s : getFilterStages()) {
             if(stage.equals(s.getId())) {
                 return s.getSelected();
@@ -123,7 +120,7 @@ public final class HydraFilter extends Selection {
             for (Dimension dim : source.getDimensionsAndMeasures()) {
                 if (dim.getId().equalsIgnoreCase(getDimension())) {
                     if (!getItems().isEmpty() || !getSets().isEmpty()) {
-                        List<DimensionNode> options = new ArrayList<>();
+                        List<IDimensionNode> options = new ArrayList<>();
 
                         FilterStage stage = new FilterStage(dim.getLabel(), options);
                         stage.setScheme(summary.getScheme());
@@ -168,34 +165,34 @@ public final class HydraFilter extends Selection {
         }
     }
 
-    private void createStageContainingEnumeratedItems(Dimension dim, FilterStage stage, List<DimensionNode> options) {
+    private void createStageContainingEnumeratedItems(Dimension dim, FilterStage stage, List<IDimensionNode> options) {
         if (getItems().isEmpty()) {
             return;
         }
         options.addAll(finder.findItems(getItems(), dim));
     }
 
-    private void createStageContainingAllNodesInSets(Dimension dim, FilterStage stage, List<DimensionNode> options) {
+    private void createStageContainingAllNodesInSets(Dimension dim, FilterStage stage, List<IDimensionNode> options) {
         if (getSets().isEmpty()) {
             return;
         }
-        List<DimensionNode> sets = finder.findItems(getSets(), dim);
-        for (DimensionNode set : sets) {
+        List<IDimensionNode> sets = finder.findItems(getSets(), dim);
+        for (IDimensionNode set : sets) {
             options.addAll(set.getChildren());
         }
     }
 
     private void createStageContainingAllNodes(Dimension dim) {
-        List<DimensionNode> options = Lists.newArrayList();
-        List<DimensionNode> candidates = Lists.newArrayList(dim.getRootNode());
+        List<IDimensionNode> options = Lists.newArrayList();
+        List<IDimensionNode> candidates = Lists.newArrayList(dim.getRootNode());
         populateDepthFirst(options, candidates);
         FilterStage stage = new FilterStage(dim.getLabel(), options);
         stage.setScheme(summary.getScheme());
         filterStages.add(stage);
     }
 
-    private void populateDepthFirst(List<DimensionNode> options, Collection<DimensionNode> candidates) {
-        for (DimensionNode candidate : candidates) {
+    private void populateDepthFirst(List<IDimensionNode> options, Collection<IDimensionNode> candidates) {
+        for (IDimensionNode candidate : candidates) {
             options.add(candidate);
             populateDepthFirst(options, candidate.getChildren());
         }

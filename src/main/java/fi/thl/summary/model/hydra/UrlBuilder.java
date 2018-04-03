@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.Presentation.SortMode;
 import fi.thl.summary.model.Presentation.SuppressMode;
 
@@ -31,7 +31,7 @@ public class UrlBuilder {
         this.parameterName = "filter";
     }
 
-    public void addParameter(String dimensionId, List<DimensionNode> nodes) {
+    public void addParameter(String dimensionId, List<IDimensionNode> nodes) {
         if (!nodes.isEmpty()) {
             sb
                     .append("&")

@@ -8,7 +8,7 @@ import com.google.common.base.Joiner;
 
 public class Limits {
 
-    private DimensionNode limitMeasure;
+    private IDimensionNode limitMeasure;
     private Map<Integer, Double> limits = new TreeMap<>();
     private Map<Integer, Double> area = new TreeMap<>();
     private Map<Integer, Label> labels = new TreeMap<>();
@@ -21,11 +21,11 @@ public class Limits {
      * contain limit values of a meaasure.
      * @return
      */
-    public DimensionNode getLimitMeasure() {
+    public IDimensionNode getLimitMeasure() {
         return limitMeasure;
     }
 
-    public void setLimitMeasure(DimensionNode dimensionNode) {
+    public void setLimitMeasure(IDimensionNode dimensionNode) {
         this.limitMeasure = dimensionNode;
     }
 

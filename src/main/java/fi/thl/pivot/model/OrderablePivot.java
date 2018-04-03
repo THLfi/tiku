@@ -55,12 +55,12 @@ public class OrderablePivot extends AbstractPivotForwarder {
     }
 
     @Override
-    public DimensionNode getRowAt(int level, int row) {
+    public IDimensionNode getRowAt(int level, int row) {
         return super.getRowAt(level, rowOrder.get(row));
     }
 
     @Override
-    public DimensionNode getColumnAt(int level, int column) {
+    public IDimensionNode getColumnAt(int level, int column) {
         return super.getColumnAt(level, columnOrder.get(column));
     }
 

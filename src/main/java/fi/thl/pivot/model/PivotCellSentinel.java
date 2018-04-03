@@ -55,7 +55,7 @@ public class PivotCellSentinel implements PivotCell {
     }
 
     @Override
-    public DimensionNode getMeasure() {
+    public IDimensionNode getMeasure() {
         // TODO Auto-generated method stub
         return null;
     }

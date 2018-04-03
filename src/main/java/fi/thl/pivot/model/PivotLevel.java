@@ -9,17 +9,17 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
-public class PivotLevel implements Iterable<DimensionNode> {
+public class PivotLevel implements Iterable<IDimensionNode> {
 
     private static final boolean ASSERT_ENABLED = PivotLevel.class.desiredAssertionStatus();
     
     private static final Logger LOG = Logger.getLogger(PivotLevel.class);
     private Dimension dimension;
-    private List<DimensionNode> nodes = Lists.newArrayList();
+    private List<IDimensionNode> nodes = Lists.newArrayList();
 
     boolean isSubsetLevel;
     private boolean includeTotal;
-    private DimensionNode selectedNode;
+    private IDimensionNode selectedNode;
     private int repetitionFactor;
 
     public PivotLevel() {
@@ -53,26 +53,26 @@ public class PivotLevel implements Iterable<DimensionNode> {
         isSubsetLevel = true;
     }
 
-    public void add(Collection<DimensionNode> someNodes) {
+    public void add(Collection<IDimensionNode> someNodes) {
         this.nodes.addAll(someNodes);
         if (null == dimension && !this.nodes.isEmpty()) {
             dimension = this.nodes.get(0).getDimension();
         }
     }
 
-    public void add(DimensionNode node) {
+    public void add(IDimensionNode node) {
         if (null == dimension) {
             dimension = node.getDimension();
         }
         this.nodes.add(node);
     }
 
-    public List<DimensionNode> getNodes() {
+    public List<IDimensionNode> getNodes() {
         return nodes;
     }
 
     @Override
-    public Iterator<DimensionNode> iterator() {
+    public Iterator<IDimensionNode> iterator() {
         return nodes.iterator();
     }
 
@@ -80,11 +80,11 @@ public class PivotLevel implements Iterable<DimensionNode> {
         return nodes.size();
     }
 
-    public void retainAll(List<DimensionNode> retainable) {
+    public void retainAll(List<IDimensionNode> retainable) {
         nodes.retainAll(retainable);
     }
 
-    public DimensionNode get(int i) {
+    public IDimensionNode get(int i) {
         if(ASSERT_ENABLED) {
             if (i < 0 || i >= nodes.size()) {
                 LOG.warn(String.format("User attempted to access node in %d but only %d nodes available", i, nodes.size()));
@@ -94,7 +94,7 @@ public class PivotLevel implements Iterable<DimensionNode> {
         return nodes.get(i);
     }
 
-    public DimensionNode getLastNode() {
+    public IDimensionNode getLastNode() {
         return get(size() - 1);
     }
 
@@ -119,11 +119,11 @@ public class PivotLevel implements Iterable<DimensionNode> {
         return includeTotal;
     }
 
-    public DimensionNode getSelectedNode() {
+    public IDimensionNode getSelectedNode() {
         return selectedNode;
     }
 
-    public void setSelectedNode(DimensionNode selectedNode) {
+    public void setSelectedNode(IDimensionNode selectedNode) {
         this.selectedNode = selectedNode;
     }
 
@@ -139,7 +139,7 @@ public class PivotLevel implements Iterable<DimensionNode> {
         return this.repetitionFactor;
     }
 
-    public DimensionNode getElement(List<PivotLevel> levels, int level, int element) {
+    public IDimensionNode getElement(List<PivotLevel> levels, int level, int element) {
         int repetitionFactor = getRepetitionFactor(levels, level);
         return nodes.get((element / repetitionFactor) % nodes.size());
     }

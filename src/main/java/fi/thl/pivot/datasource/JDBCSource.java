@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -29,13 +30,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
-import fi.thl.pivot.model.Query;
-import fi.thl.pivot.model.Tuple;
 import fi.thl.pivot.util.Constants;
 
 /**
@@ -69,8 +63,8 @@ public class JDBCSource extends HydraSource {
 
         private ResultSet rs;
 
-        protected JDBCTreeCallbackHandler(Map<String, Dimension> dimensions, Map<String, DimensionNode> nodes, Map<String, DimensionNode> nodesByRef,
-                Map<String, DimensionLevel> dimensionLevels) {
+        protected JDBCTreeCallbackHandler(Map<String, Dimension> dimensions, Map<String, IDimensionNode> nodes, Map<String, IDimensionNode> nodesByRef,
+                                          Map<String, DimensionLevel> dimensionLevels) {
             super(dimensions, nodes, nodesByRef, dimensionLevels);
         }
 
@@ -236,7 +230,7 @@ public class JDBCSource extends HydraSource {
         jdbcTemplate.query(buildFactQuery(), new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                List<DimensionNode> keys = new ArrayList<>(columns);
+                List<IDimensionNode> keys = new ArrayList<>(columns);
                 for (int i = 1; i <= columns; ++i) {
                     keys.add(getNode(rs.getString(i)));
                 }
@@ -248,13 +242,13 @@ public class JDBCSource extends HydraSource {
     }
 
     @Override
-    public Dataset loadSubset(Query queryNodes, List<DimensionNode> filter) {
+    public Dataset loadSubset(Query queryNodes, List<IDimensionNode> filter) {
         return loadSubset(queryNodes, filter, false);
     }
 
     @Override
     @Transactional
-    public Dataset loadSubset(Query queryNodes, List<DimensionNode> filter, boolean showValueTypes) {
+    public Dataset loadSubset(Query queryNodes, List<IDimensionNode> filter, boolean showValueTypes) {
         final Dataset newDataSet = new Dataset();
         final String query = buildFactQuery(queryNodes.getNodesPerDimension().values(), filter, showValueTypes);
         LOG.debug("Loading subset of facts using :" + query);
@@ -262,7 +256,7 @@ public class JDBCSource extends HydraSource {
         jdbcTemplate.query(query, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                DimensionNode[] keys = new DimensionNode[getColumns().size()];
+                IDimensionNode[] keys = new IDimensionNode[getColumns().size()];
                 for (int i = 1; i <= getColumns().size(); ++i) {
                     keys[i - 1] = getNode(rs.getString(i));
                 }
@@ -281,7 +275,7 @@ public class JDBCSource extends HydraSource {
     }
 
     protected void loadNodes(final Map<String, Dimension> newDimensions, final Map<String, DimensionLevel> dimensionLevels,
-            final Map<String, DimensionNode> newNodes, final Map<String, DimensionNode> nodesByRef) {
+                             final Map<String, IDimensionNode> newNodes, final Map<String, IDimensionNode> nodesByRef) {
         jdbcTemplate.setFetchSize(FETCH_SIZE);
         jdbcTemplate.query(String.format(queries.getProperty("traverse-tree-using-bfs"), treeTable, schema),
                 new JDBCTreeCallbackHandler(newDimensions, newNodes, nodesByRef, dimensionLevels));
@@ -325,7 +319,7 @@ public class JDBCSource extends HydraSource {
         return String.format(FACT_QUERY_TEMPLATE, Joiner.on(',').join(getColumns()), factTable, ALWAYS_TRUE);
     }
 
-    private String buildFactQuery(Collection<DimensionNode> shown, List<DimensionNode> filter, boolean showValueTypes) {
+    private String buildFactQuery(Collection<IDimensionNode> shown, List<IDimensionNode> filter, boolean showValueTypes) {
         Multimap<String, String> shownDimensionNodes = determineFilterationRules(shown, filter, showValueTypes);
         if (shownDimensionNodes.isEmpty()) {
             return String.format(FACT_QUERY_TEMPLATE, Joiner.on(',').join(getColumns()), factTable, ALWAYS_FALSE);
@@ -335,9 +329,9 @@ public class JDBCSource extends HydraSource {
         }
     }
 
-    private Multimap<String, String> determineFilterationRules(Collection<DimensionNode> shown, List<DimensionNode> filter, boolean showValueTypes) {
+    private Multimap<String, String> determineFilterationRules(Collection<IDimensionNode> shown, List<IDimensionNode> filter, boolean showValueTypes) {
         Multimap<String, String> shownDimensionNodes = ArrayListMultimap.create();
-        Set<DimensionNode> expandedFilter = Sets.newHashSet();
+        Set<IDimensionNode> expandedFilter = Sets.newHashSet();
 
         expandedFilter.addAll(filter);
         removeFilteredNodes(shown, expandedFilter);
@@ -347,10 +341,10 @@ public class JDBCSource extends HydraSource {
         return shownDimensionNodes;
     }
 
-    private void removeFilteredNodes(Collection<DimensionNode> shown, Set<DimensionNode> expandedFilter) {
-        for (DimensionNode hiddenFilterNode : expandedFilter) {
-            for (Iterator<DimensionNode> it = shown.iterator(); it.hasNext();) {
-                DimensionNode shownFilterNode = it.next();
+    private void removeFilteredNodes(Collection<IDimensionNode> shown, Set<IDimensionNode> expandedFilter) {
+        for (IDimensionNode hiddenFilterNode : expandedFilter) {
+            for (Iterator<IDimensionNode> it = shown.iterator(); it.hasNext();) {
+                IDimensionNode shownFilterNode = it.next();
                 if (nodesInSameDimension(hiddenFilterNode, shownFilterNode) && !shownFilterNode.descendentOf(hiddenFilterNode)) {
                     it.remove();
                 }
@@ -358,7 +352,7 @@ public class JDBCSource extends HydraSource {
         }
     }
 
-    private boolean nodesInSameDimension(DimensionNode hiddenFilterNode, DimensionNode shownFilterNode) {
+    private boolean nodesInSameDimension(IDimensionNode hiddenFilterNode, IDimensionNode shownFilterNode) {
         return shownFilterNode.getDimension().getId().equals(hiddenFilterNode.getDimension().getId());
     }
 
@@ -371,21 +365,21 @@ public class JDBCSource extends HydraSource {
         return c;
     }
 
-    private void addHiddenDimensionsAsFilter(Collection<DimensionNode> filter, Multimap<String, String> conditions, boolean showValueTypes) {
-        for (DimensionNode h : filter) {
+    private void addHiddenDimensionsAsFilter(Collection<IDimensionNode> filter, Multimap<String, String> conditions, boolean showValueTypes) {
+        for (IDimensionNode h : filter) {
             conditions.put(h.getDimension().getId(), "'" + h.getId() + "'");
             addValueTypes(conditions, showValueTypes, h);
         }
     }
 
-    private void addShownDimensionNodesAsFilter(Collection<DimensionNode> shown, Multimap<String, String> conditions, boolean showValueTypes) {
-        for (DimensionNode h : shown) {
+    private void addShownDimensionNodesAsFilter(Collection<IDimensionNode> shown, Multimap<String, String> conditions, boolean showValueTypes) {
+        for (IDimensionNode h : shown) {
             conditions.put(h.getDimension().getId(), "'" + h.getId() + "'");
             addValueTypes(conditions, showValueTypes, h);
         }
     }
 
-    private void addValueTypes(Multimap<String, String> conditions, boolean showValueTypes, DimensionNode h) {
+    private void addValueTypes(Multimap<String, String> conditions, boolean showValueTypes, IDimensionNode h) {
         if(showValueTypes && Constants.MEASURE.equals(h.getDimension().getId())) {
            putMeasureIfNotNull(conditions, h.getConfidenceLowerLimitNode());
            putMeasureIfNotNull(conditions, h.getConfidenceUpperLimitNode());
@@ -394,7 +388,7 @@ public class JDBCSource extends HydraSource {
         }
     }
 
-    private void putMeasureIfNotNull(Multimap<String, String> conditions, DimensionNode node) {
+    private void putMeasureIfNotNull(Multimap<String, String> conditions, IDimensionNode node) {
         if(null != node) {
             conditions.put(Constants.MEASURE, "'" + node.getId() + "'");
         }

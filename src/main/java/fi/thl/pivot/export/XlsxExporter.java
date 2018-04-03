@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import fi.thl.pivot.model.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -19,12 +20,6 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.Model;
-
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
 
 public class XlsxExporter {
 
@@ -153,7 +148,7 @@ public class XlsxExporter {
         if (!(Boolean) params.get("multipleMeasuresShown")) {
             Cell c1 = sheet.getRow(0).getCell(0);
             c1.setCellStyle(headerStyle);
-            for (DimensionNode f : (Collection<DimensionNode>) params.get("filters")) {
+            for (IDimensionNode f : (Collection<IDimensionNode>) params.get("filters")) {
                 if ("measure".equals(f.getDimension().getId())) {
                     c1.setCellValue(f.getLabel().getValue(language));
                 }
@@ -188,7 +183,7 @@ public class XlsxExporter {
             int firstRowWithSameHeader = 0;
             int lastRowWithSameHeader = 0;
             for (int r = 0; r < pivot.getRowCount(); ++r) {
-                DimensionNode node = pivot.getRowAt(c, r);
+                IDimensionNode node = pivot.getRowAt(c, r);
                 if (c == 0 && node.getSurrogateId() == lastNodeId) {
                     ++lastRowWithSameHeader;
                 } else if (node.getSurrogateId() == lastNodeId && matchesLeft(pivot, c, r)) {
@@ -209,8 +204,8 @@ public class XlsxExporter {
            return true;
        }
        for(int cc = c; cc >= 0; --cc) {
-           DimensionNode a = pivot.getRowAt(cc, r);
-           DimensionNode b = pivot.getRowAt(cc, r - 1);
+           IDimensionNode a = pivot.getRowAt(cc, r);
+           IDimensionNode b = pivot.getRowAt(cc, r - 1);
            if(a.getSurrogateId() != b.getSurrogateId()) {
                return false;
            }
@@ -224,8 +219,8 @@ public class XlsxExporter {
         }
         for(int rr = r; rr > 0; --rr) {
             System.out.println(rr + " " + c);
-            DimensionNode a = pivot.getColumnAt(rr, c);
-            DimensionNode b = pivot.getColumnAt(rr - 1, c);
+            IDimensionNode a = pivot.getColumnAt(rr, c);
+            IDimensionNode b = pivot.getColumnAt(rr - 1, c);
             if(a.getSurrogateId() != b.getSurrogateId()) {
                 return false;
             }
@@ -265,7 +260,7 @@ public class XlsxExporter {
         sheet.addMergedRegion(new CellRangeAddress(rowNumber, rowNumber, 0, columns - 1));
 
         for (Dimension d : (Collection<Dimension>) params.get("dimensions")) {
-            for (DimensionNode f : (Collection<DimensionNode>) params.get("filters")) {
+            for (IDimensionNode f : (Collection<IDimensionNode>) params.get("filters")) {
                 if (f.getDimension().getId().equals(d.getId())) {
                     Row filterRow = sheet.createRow(++rowNumber);
                     Cell cell1 = filterRow.createCell(0);
@@ -323,7 +318,7 @@ public class XlsxExporter {
         Row row = sheet.createRow(rowNumber);
         for (int rowLevel = 0; rowLevel < pivot.getRows().size(); ++rowLevel) {
             Cell c = row.createCell(rowLevel);
-            DimensionNode node = pivot.getRowAt(rowLevel, dataRowNumber);
+            IDimensionNode node = pivot.getRowAt(rowLevel, dataRowNumber);
             if (showCodes) {
                 c.setCellValue(node.getCode() + " - " + node.getLabel().getValue(language));
             } else {
@@ -345,7 +340,7 @@ public class XlsxExporter {
             int lastNodeId = 0;
 
             for (int column = 0; column < pivot.getColumnCount(); ++column) {
-                DimensionNode node = pivot.getColumnAt(columnLevel, column);
+                IDimensionNode node = pivot.getColumnAt(columnLevel, column);
                 if (columnLevel == 0 && node.getSurrogateId() == lastNodeId) {
                     ++lastColumnWithSameHeader;
                 } else if(node.getSurrogateId() == lastNodeId && matchesTop(pivot, columnLevel, column)) {

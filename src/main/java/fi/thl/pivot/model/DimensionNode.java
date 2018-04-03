@@ -23,15 +23,15 @@ import fi.thl.pivot.util.ThreadRole;
  * @author aleksiyrttiaho
  * 
  */
-public class DimensionNode implements Comparable<DimensionNode> {
+public class DimensionNode implements IDimensionNode {
 
     private static final Collator COLLATOR = Collator.getInstance(new Locale("fi"));
     private static final String DEFAULT = "default";
     private final DimensionLevel level;
     private String id;
     private final Label label;
-    private final List<DimensionNode> children;
-    private DimensionNode parent;
+    private final List<IDimensionNode> children;
+    private IDimensionNode parent;
 
     private Map<String, Long> sort = new HashMap<>();
     private String code;
@@ -41,7 +41,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
     private int hashCode;
     private List<String> passwords = new ArrayList<>();
     private String reference;
-    private Map<String, DimensionNode> edges = new HashMap<>();
+    private Map<String, IDimensionNode> edges = new HashMap<>();
 
     private Limits limits;
     private boolean hidden;
@@ -57,14 +57,17 @@ public class DimensionNode implements Comparable<DimensionNode> {
         children = new ArrayList<>();
     }
 
+    @Override
     public boolean isMeasure() {
         return level.getDimension().isMeasure();
     }
 
+    @Override
     public Set<Map.Entry<String, Label>> getProperties() {
         return properties.entrySet();
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -72,40 +75,46 @@ public class DimensionNode implements Comparable<DimensionNode> {
     // FIXME: Ids should be permanent but currently root level nodes
     // are automatically created and this is the only way the id can
     // be set.
+    @Override
     public void setId(String id) {
         this.id = id;
     }
 
+    @Override
     public Label getLabel() {
         return label;
     }
 
+    @Override
     public Dimension getDimension() {
         return level.getDimension();
     }
 
+    @Override
     public boolean isRootLevelNode() {
         return getDimension().getRootLevel().getNodes().contains(this);
     }
 
-    public DimensionNode getParent() {
+    @Override
+    public IDimensionNode getParent() {
         return parent;
     }
 
-    public Collection<DimensionNode> getChildren() {
+    @Override
+    public Collection<IDimensionNode> getChildren() {
         final boolean canAccess = canAccess();
         Collections.sort(children);
-        return Collections2.filter(children, new Predicate<DimensionNode>() {
+        return Collections2.filter(children, new Predicate<IDimensionNode>() {
 
             @Override
-            public boolean apply(DimensionNode input) {
+            public boolean apply(IDimensionNode input) {
                 if (!canAccess) {
                     return false;
                 }
-                if (input.passwords.isEmpty()) {
+                if (input.getPasswords().isEmpty()) {
                     return true;
                 }
-                if (ThreadRole.getRole() != null && ThreadRole.getRole().matches(input.passwords)) {
+                if (ThreadRole.getRole() != null && ThreadRole.getRole().matches(input.getPasswords())) {
                     return true;
                 }
                 return false;
@@ -113,15 +122,18 @@ public class DimensionNode implements Comparable<DimensionNode> {
         });
     }
 
-    public DimensionNode getFirstChild() {
+    @Override
+    public IDimensionNode getFirstChild() {
         return new ArrayList<>(getChildren()).get(0);
     }
 
+    @Override
     public void sortChildren() {
         Collections.sort(children);
     }
 
-    void setParent(final DimensionNode node) {
+    @Override
+    public void setParent(final IDimensionNode node) {
         if (null != parent) {
             parent.removeChild(this);
         }
@@ -131,11 +143,13 @@ public class DimensionNode implements Comparable<DimensionNode> {
         }
     }
 
-    protected void addChild(DimensionNode node) {
+    @Override
+    public void addChild(IDimensionNode node) {
         this.children.add(node);
     }
 
-    protected void removeChild(DimensionNode node) {
+    @Override
+    public void removeChild(IDimensionNode node) {
         this.children.remove(node);
     }
 
@@ -151,8 +165,8 @@ public class DimensionNode implements Comparable<DimensionNode> {
         if (obj == null) {
             return false;
         }
-        DimensionNode other = (DimensionNode) obj;
-        return surrogateId == other.surrogateId;
+        IDimensionNode other = (IDimensionNode) obj;
+        return surrogateId == other.getSurrogateId();
     }
 
     @Override
@@ -160,24 +174,36 @@ public class DimensionNode implements Comparable<DimensionNode> {
         return "DimensionNode [id=" + id + ", label=" + label + ", surrogateId=" + surrogateId + "]";
     }
 
-    public boolean ancestorOf(DimensionNode node) {
-        if (node == this || node.equals(this)) {
+    @Override
+    public boolean ancestorOf(IDimensionNode node) {
+        if (node.equals(this)) {
             return true;
         }
-        DimensionNode aParent = node.parent;
+        if(node.getSurrogateId() == getSurrogateId()) {
+            // FIXME: This is needed because of a bug in equals.
+            return true;
+        }
+        IDimensionNode aParent = node.getParent();
         while (aParent != null) {
             if (aParent == this || aParent.equals(this)) {
                 return true;
             }
-            aParent = aParent.parent;
+            aParent = aParent.getParent();
         }
         return false;
     }
 
+    @Override
+    public List<String> getPasswords() {
+        return passwords;
+    }
+
+    @Override
     public DimensionLevel getLevel() {
         return this.level;
     }
 
+    @Override
     public void setSort(String language, Long sort) {
         if (null == language || language.length() == 0) {
             language = DEFAULT;
@@ -185,6 +211,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
         this.sort.put(language, sort);
     }
 
+    @Override
     public Long getSort() {
         Long s = sort.get(ThreadRole.getLanguage());
         if (null == s) {
@@ -196,22 +223,27 @@ public class DimensionNode implements Comparable<DimensionNode> {
         return null == s ? 0 : s;
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }
 
+    @Override
     public int getDecimals() {
         return decimals;
     }
 
+    @Override
     public void setDecimals(int decimals) {
         this.decimals = decimals;
     }
 
+    @Override
     public void setProperty(String predicate, String language, String value) {
         if (properties.containsKey(predicate)) {
             properties.get(predicate).setValue(language, value);
@@ -224,11 +256,11 @@ public class DimensionNode implements Comparable<DimensionNode> {
     }
 
     @Override
-    public int compareTo(DimensionNode o) {
-        if(this.hidden && !o.hidden) {
+    public int compareTo(IDimensionNode o) {
+        if(this.hidden && !o.isHidden()) {
             return 1;
         }
-        if(!this.hidden && o.hidden) {
+        if(!this.hidden && o.isHidden()) {
             return -1;
         }
         if (this.sort.isEmpty()) {
@@ -240,10 +272,12 @@ public class DimensionNode implements Comparable<DimensionNode> {
         }
     }
 
+    @Override
     public void setSurrogateId(Integer surrogateId) {
         this.surrogateId = surrogateId;
     }
 
+    @Override
     public int getSurrogateId() {
         return surrogateId;
     }
@@ -258,7 +292,8 @@ public class DimensionNode implements Comparable<DimensionNode> {
      *         degree
      *         <li>false if parent canditate is this node or non ancestor
      */
-    public boolean descendentOf(DimensionNode parentCandidate) {
+    @Override
+    public boolean descendentOf(IDimensionNode parentCandidate) {
         if (null == this.parent) {
             return false;
         }
@@ -274,6 +309,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
      * 
      * @param value
      */
+    @Override
     public void setPassword(String value) {
         this.passwords.add(value);
     }
@@ -285,6 +321,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
      * 
      * @return
      */
+    @Override
     public boolean canAccess() {
         if (!ThreadRole.isAuthenticated()) {
             return true;
@@ -299,30 +336,37 @@ public class DimensionNode implements Comparable<DimensionNode> {
         return ThreadRole.getRole().matches(passwords);
     }
 
+    @Override
     public void setReference(String key) {
         this.reference = key;
     }
 
+    @Override
     public String getReference() {
         return reference;
     }
 
-    public void addEdge(String value, DimensionNode dimensionNode) {
+    @Override
+    public void addEdge(String value, IDimensionNode dimensionNode) {
         this.edges.put(value, dimensionNode);
     }
 
-    public DimensionNode getConfidenceUpperLimitNode() {
+    @Override
+    public IDimensionNode getConfidenceUpperLimitNode() {
         return edges.get(Constants.CONFIDENCE_INTERVAL_UPPER_LIMIT);
     }
 
-    public DimensionNode getConfidenceLowerLimitNode() {
+    @Override
+    public IDimensionNode getConfidenceLowerLimitNode() {
         return edges.get(Constants.CONFIDENCE_INTERVAL_LOWER_LIMIT);
     }
 
-    public DimensionNode getSampleSizeNode() {
+    @Override
+    public IDimensionNode getSampleSizeNode() {
         return edges.get(Constants.SAMPLE_SIZE);
     }
 
+    @Override
     public boolean isDecimalsSet() {
         return 0 <= decimals;
     }
@@ -332,6 +376,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
      * value must be determined dynamically
      * @return
      */
+    @Override
     public int determineDecimals(String value) {
         if (isDecimalsSet()) {
             return decimals;
@@ -341,6 +386,7 @@ public class DimensionNode implements Comparable<DimensionNode> {
         }
     }
 
+    @Override
     public Label getProperty(String property) {
         if ("code".equals(property)) {
             Label l = new Label();
@@ -353,18 +399,22 @@ public class DimensionNode implements Comparable<DimensionNode> {
         }
     }
 
+    @Override
     public Limits getLimits() {
         return limits;
     }
 
+    @Override
     public void setLimits(Limits limits) {
         this.limits = limits;
     }
 
+    @Override
     public void hide() {
         this.hidden = true;
     }
 
+    @Override
     public boolean isHidden() {
         return hidden;
     }

@@ -6,24 +6,22 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Maps;
 
-import fi.thl.pivot.model.DimensionNode;
-
 final class ModelTestUtil {
 
     private static Map<String, Integer> surrogateIds = Maps.newHashMap();
     private static int sequence;
 
-    static DimensionNode mockNode(String label) {
+    static IDimensionNode mockNode(String label) {
         return mockNode(label, "MOCK");
     }
     
-    static DimensionNode mockNode(String label, String dimension) {
+    static IDimensionNode mockNode(String label, String dimension) {
         return mockNode(label, mockDimension(dimension));
     }
 
-    static DimensionNode mockNode(String label, Dimension d1) {
+    static IDimensionNode mockNode(String label, Dimension d1) {
 
-        DimensionNode n1 = Mockito.mock(DimensionNode.class);
+        IDimensionNode n1 = Mockito.mock(DimensionNode.class);
         Mockito.when(n1.getLabel()).thenReturn(Label.create("fi", label));
         Mockito.when(n1.getId()).thenReturn(label);
         Mockito.when(n1.getDimension()).thenReturn(d1);

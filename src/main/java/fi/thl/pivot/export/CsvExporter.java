@@ -7,15 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
 import org.supercsv.io.CsvListWriter;
 import org.supercsv.prefs.CsvPreference;
-
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
-import fi.thl.pivot.model.PivotLevel;
 
 /**
  * <p>
@@ -101,7 +97,7 @@ public class CsvExporter {
 
     private void valueRow(int rowNum, int colNum, PivotCell cell, boolean showCodes) {
         for (int i = 0; i < columnLevelCount; ++i) {
-            DimensionNode node = pivot.getColumnAt(i, colNum);
+            IDimensionNode node = pivot.getColumnAt(i, colNum);
             if (showCodes) {
                 columns.add(node.getCode());
             }
@@ -109,7 +105,7 @@ public class CsvExporter {
 
         }
         for (int i = 0; i < rowLevelCount; ++i) {
-            DimensionNode node = pivot.getRowAt(i, rowNum);
+            IDimensionNode node = pivot.getRowAt(i, rowNum);
             if (showCodes) {
                 columns.add(node.getCode());
             }

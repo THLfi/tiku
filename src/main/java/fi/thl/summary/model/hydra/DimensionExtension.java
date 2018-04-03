@@ -7,7 +7,7 @@ import java.util.List;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.SummaryDimension;
 import fi.thl.summary.model.SummaryStage;
 
@@ -20,11 +20,11 @@ import fi.thl.summary.model.SummaryStage;
  */
 public class DimensionExtension extends SummaryDimension implements Extension {
 
-    private List<DimensionNode> nodes;
+    private List<IDimensionNode> nodes;
     private SummaryDimension delegate;
     private HydraSource source;
 
-    DimensionExtension(HydraSource source, SummaryDimension d, List<DimensionNode> nodes) {
+    DimensionExtension(HydraSource source, SummaryDimension d, List<IDimensionNode> nodes) {
         super(d.getDimension(), d.getStage());
         this.delegate = d;
         this.source = source;
@@ -33,11 +33,11 @@ public class DimensionExtension extends SummaryDimension implements Extension {
         this.align(d.getValueAlign(), d.getHeaderAlign(), null);
     }
 
-    public List<DimensionNode> getNodes() {
+    public List<IDimensionNode> getNodes() {
         return nodes;
     }
     
-    public List<DimensionNode> getNodes(String stage) {
+    public List<IDimensionNode> getNodes(String stage) {
         DimensionLevel level = source.getDimension(delegate.getDimension()).getLevel(stage);
         return level == null ? Collections.emptyList() : level.getNodes();
     }

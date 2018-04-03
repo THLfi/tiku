@@ -362,28 +362,28 @@ public class PivotImplTest {
         return pivot.getColumns().get(level).get(node).getLabel().getValue("fi");
     }
 
-    private void addTestDimensions(DimensionNode... constants) {
+    private void addTestDimensions(IDimensionNode... constants) {
         Dimension d1 = mockDimension("d1");
         Dimension d2 = mockDimension("d2");
         Dimension d3 = mockDimension("d3");
 
-        ArrayList<DimensionNode> c1 = Lists.newArrayList(mockNode("1.1", d1), mockNode("1.2", d1));
+        ArrayList<IDimensionNode> c1 = Lists.newArrayList(mockNode("1.1", d1), mockNode("1.2", d1));
         appendColumn(c1);
-        ArrayList<DimensionNode> c2 = Lists.newArrayList(mockNode("2.1", d2), mockNode("2.2", d2), mockNode("2.3", d2));
+        ArrayList<IDimensionNode> c2 = Lists.newArrayList(mockNode("2.1", d2), mockNode("2.2", d2), mockNode("2.3", d2));
         appendColumn(c2);
-        ArrayList<DimensionNode> c3 = Lists.newArrayList(mockNode("3.1", d3), mockNode("3.2", d3), mockNode("3.3", d3));
+        ArrayList<IDimensionNode> c3 = Lists.newArrayList(mockNode("3.1", d3), mockNode("3.2", d3), mockNode("3.3", d3));
         appendRow(c3);
 
-        for (DimensionNode c : constants) {
+        for (IDimensionNode c : constants) {
             ((ModifiablePivot) pivot).appendConstant(c);
         }
 
         Joiner joiner = Joiner.on(";");
-        for (DimensionNode n1 : c1) {
-            for (DimensionNode n2 : c2) {
-                for (DimensionNode n3 : c3) {
-                    List<DimensionNode> keys = Lists.newArrayList(n1, n2, n3);
-                    for (DimensionNode c : constants) {
+        for (IDimensionNode n1 : c1) {
+            for (IDimensionNode n2 : c2) {
+                for (IDimensionNode n3 : c3) {
+                    List<IDimensionNode> keys = Lists.newArrayList(n1, n2, n3);
+                    for (IDimensionNode c : constants) {
                         keys.add(c);
                     }
                     String label = joiner.join(keys);
@@ -393,19 +393,19 @@ public class PivotImplTest {
         }
     }
 
-    private void appendColumn(ArrayList<DimensionNode> newArrayList) {
+    private void appendColumn(ArrayList<IDimensionNode> newArrayList) {
         PivotLevel level = new PivotLevel();
         level.add(newArrayList);
         ((ModifiablePivot) pivot).appendColumn(level);
     }
 
-    private void appendRow(ArrayList<DimensionNode> newArrayList) {
+    private void appendRow(ArrayList<IDimensionNode> newArrayList) {
         PivotLevel level = new PivotLevel();
         level.add(newArrayList);
         ((ModifiablePivot) pivot).appendRow(level);
     }
 
-    private String label(DimensionNode n) {
+    private String label(IDimensionNode n) {
         return n.getLabel().getValue("fi");
     }
 }

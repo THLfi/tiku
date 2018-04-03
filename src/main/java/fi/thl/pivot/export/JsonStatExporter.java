@@ -9,16 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
 
 import com.google.common.base.Joiner;
 
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
-import fi.thl.pivot.model.PivotLevel;
 import fi.thl.pivot.util.ThreadRole;
 
 public class JsonStatExporter {
@@ -176,11 +172,11 @@ public class JsonStatExporter {
             List<String> nodes = new ArrayList<>();
             int i = 0;
             if (isSet(model, "surrogate")) {
-                for (DimensionNode node : level.getNodes()) {
+                for (IDimensionNode node : level.getNodes()) {
                     nodes.add(String.format("\n\"%s\": %d", node.getSurrogateId(), i++));
                 }
             } else {
-                for (DimensionNode node : level.getNodes()) {
+                for (IDimensionNode node : level.getNodes()) {
                     nodes.add(String.format("\n\"%s\": %d", escape(node.getId()), i++));
                 }
             }
@@ -192,13 +188,13 @@ public class JsonStatExporter {
             nodes = new ArrayList<>();
             i = 0;
             if (isSet(model, "surrogate")) {
-                for (DimensionNode node : level.getNodes()) {
+                for (IDimensionNode node : level.getNodes()) {
                     nodes.add(String.format("\n\"%s\": \"%s\"", node.getSurrogateId(),
                             escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
 
                 }
             } else {
-                for (DimensionNode node : level.getNodes()) {
+                for (IDimensionNode node : level.getNodes()) {
                     nodes.add(String.format("\n\"%s\": \"%s\"", escape(node.getId()),
                             escape(node.getLabel().getValue(ThreadRole.getLanguage()))));
                 }

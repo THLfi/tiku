@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,6 @@ import com.google.common.collect.Sets;
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.exception.CubeNotFoundException;
-import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Report;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
@@ -128,7 +128,7 @@ public class SummaryController extends AbstractController {
         checkLoginRequirements(summaryRequest, model, source, cubeId);
         HydraSummary hSummary = constructHydraSummary(request, summary, source);
         hSummary.setGeometry(summaryRequest.getGeometry());
-        List<DimensionNode> drillNodes = determineDrillNodes(request, summary, hSummary);
+        List<IDimensionNode> drillNodes = determineDrillNodes(request, summary, hSummary);
 
         addAccessTokenForSummaryIfCubeAccessIsDenied(source, hSummary);
 
@@ -201,12 +201,12 @@ public class SummaryController extends AbstractController {
         return hSummary;
     }
 
-    private List<DimensionNode> determineDrillNodes(WebRequest request, Summary summary, HydraSummary hSummary) {
-        List<DimensionNode> drillNodes = Lists.newArrayList();
+    private List<IDimensionNode> determineDrillNodes(WebRequest request, Summary summary, HydraSummary hSummary) {
+        List<IDimensionNode> drillNodes = Lists.newArrayList();
         if (summary.isDrillEnabled()) {
             for (Map.Entry<String, String[]> parameter : request.getParameterMap().entrySet()) {
                 if (isDrillParameter(parameter)) {
-                    DimensionNode node = hSummary.drillTo(drillDimension(parameter), drillNode(parameter));
+                    IDimensionNode node = hSummary.drillTo(drillDimension(parameter), drillNode(parameter));
                     drillNodes.add(node);
                     break;
                 }

@@ -4,12 +4,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
-
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
-import fi.thl.pivot.model.PivotLevel;
 
 /**
  * Simple pivot rendered that provides a csv output with N row and M column
@@ -78,7 +74,7 @@ public class TextView {
                 writer.print(";");
             }
 
-            for (DimensionNode node : cl) {
+            for (IDimensionNode node : cl) {
 
                 // If last column header level, we can simply add the
                 // node
@@ -100,12 +96,12 @@ public class TextView {
         }
     }
 
-    private void appendNodeLabel(PrintWriter writer, DimensionNode node) {
+    private void appendNodeLabel(PrintWriter writer, IDimensionNode node) {
         writer.print(nodeLabel(node));
         writer.print(";");
     }
 
-    private String nodeLabel(DimensionNode node) {
+    private String nodeLabel(IDimensionNode node) {
         return node != null ? node.getLabel().getValue(language) : "";
     }
 

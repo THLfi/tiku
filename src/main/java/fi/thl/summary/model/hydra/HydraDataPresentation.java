@@ -7,7 +7,7 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.DataPresentation;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
@@ -24,7 +24,7 @@ public class HydraDataPresentation extends DataPresentation {
     private final Summary summary;
     private ItemFinder finder;
     private boolean emphasizedNodeCached;
-    private List<DimensionNode> emphasizedNode;
+    private List<IDimensionNode> emphasizedNode;
 
     HydraDataPresentation(HydraSource source, Summary summary, Presentation p) {
         this.source = source;
@@ -72,7 +72,7 @@ public class HydraDataPresentation extends DataPresentation {
         return stage;
     }
 
-    public DimensionNode getMeasure() {
+    public IDimensionNode getMeasure() {
         if (delegate.hasMeasures()) {
             return getMeasureNodes().get(0);
         }
@@ -155,7 +155,7 @@ public class HydraDataPresentation extends DataPresentation {
                 // so we use filters
                 url.addFilters();
             }
-            List<DimensionNode> nodes = IncludeDescendants.apply(s);
+            List<IDimensionNode> nodes = IncludeDescendants.apply(s);
             if(!nodes.isEmpty()) {
                 closed.add(s.getDimension());
                 url.addParameter(s.getDimension(), nodes);
@@ -172,7 +172,7 @@ public class HydraDataPresentation extends DataPresentation {
         }
     }
 
-    private List<DimensionNode> getMeasureNodes() {
+    private List<IDimensionNode> getMeasureNodes() {
         return new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes();
     }
 
@@ -187,7 +187,7 @@ public class HydraDataPresentation extends DataPresentation {
                 url.addParameter(extension.getDimension(), extension.getNodes(((HydraSummary)summary).getGeometry()));
                 closed.add(extension.getDimension());
             } else {
-                List<DimensionNode> nodes = extension.getNodes();
+                List<IDimensionNode> nodes = extension.getNodes();
                 if(!nodes.isEmpty()) {
                     url.addParameter(extension.getDimension(), nodes);
                     closed.add(extension.getDimension());
@@ -247,7 +247,7 @@ public class HydraDataPresentation extends DataPresentation {
         return delegate.getEmphasize();
     }
 
-    public List<DimensionNode> getEmphasizedNode() {
+    public List<IDimensionNode> getEmphasizedNode() {
         if (emphasizedNodeCached) {
             return emphasizedNode;
         }

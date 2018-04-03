@@ -3,14 +3,13 @@ package fi.thl.summary.model.hydra;
 import java.util.List;
 import java.util.Set;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.MeasureItem;
 import fi.thl.summary.model.SummaryMeasure;
 
@@ -43,17 +42,17 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
         delegate.addMeasure(measure);
     }
 
-    public List<DimensionNode> getNodes() {
-        List<DimensionNode> nodes = Lists.newArrayList();
+    public List<IDimensionNode> getNodes() {
+        List<IDimensionNode> nodes = Lists.newArrayList();
         findMatchingNodesFromEachLevel(summary.getItemLanguage(), nodes);
 
         return nodes;
     }
  
-    private void findMatchingNodesFromEachLevel(String language, List<DimensionNode> nodes) {
+    private void findMatchingNodesFromEachLevel(String language, List<IDimensionNode> nodes) {
         for (MeasureItem mi : delegate.getMeasures()) {
             if (MeasureItem.Type.LABEL.equals(mi.getType())) {
-                DimensionNode node = findNode(language, mi.getCode());
+                IDimensionNode node = findNode(language, mi.getCode());
                 if (null != node) {
                     nodes.add(node);
                 }
@@ -64,11 +63,11 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
 
     }
 
-    private DimensionNode findNode(String language, String item) {
+    private IDimensionNode findNode(String language, String item) {
         for (fi.thl.pivot.model.Dimension dim : source.getMeasures()) {
             DimensionLevel level = dim.getRootLevel();
             while (!leafLevelReached(level)) {
-                DimensionNode node = findMatchingNodes(language, level, item);
+                IDimensionNode node = findMatchingNodes(language, level, item);
                 if (null != node) {
                     return node;
                 }
@@ -78,10 +77,10 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
         return null;
     }
 
-    private DimensionNode findMatchingNodes(String language, DimensionLevel level, String item) {
+    private IDimensionNode findMatchingNodes(String language, DimensionLevel level, String item) {
         DimensionLevel iterableLevel = level;
         do {
-            for (DimensionNode node : iterableLevel.getNodes()) {
+            for (IDimensionNode node : iterableLevel.getNodes()) {
                 if (item.equals(node.getLabel().getValue(language))) {
                     return node;
                 }
@@ -98,7 +97,7 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
     }
 
     @Override
-    public List<DimensionNode> getNodes(String stage) {
+    public List<IDimensionNode> getNodes(String stage) {
         // TODO Auto-generated method stub
         return null;
     }

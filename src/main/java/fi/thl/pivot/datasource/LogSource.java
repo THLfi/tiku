@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.google.common.hash.Hashing;
-
-import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.web.CubeService;
 
 @Component
@@ -34,10 +32,10 @@ public class LogSource {
 
     private final class SelectionBatchSetter implements BatchPreparedStatementSetter {
         private final String id;
-        private final List<List<DimensionNode>> nodes;
+        private final List<List<IDimensionNode>> nodes;
         private final String usage;
 
-        private SelectionBatchSetter(String id, List<List<DimensionNode>> nodes, String usage) {
+        private SelectionBatchSetter(String id, List<List<IDimensionNode>> nodes, String usage) {
             this.id = id;
             this.nodes = nodes;
             this.usage = usage;
@@ -49,10 +47,10 @@ public class LogSource {
             ps.setString(4, usage);
 
             int i = 0;
-            for (List<DimensionNode> level : nodes) {
+            for (List<IDimensionNode> level : nodes) {
 
                 if (index < i + level.size()) {
-                    DimensionNode dn = level.get(index - i);
+                    IDimensionNode dn = level.get(index - i);
                     ps.setString(2, dn.getDimension().getId());
                     ps.setString(3, dn.getId());
                     break;
@@ -64,7 +62,7 @@ public class LogSource {
         @Override
         public int getBatchSize() {
             int i = 0;
-            for (List<DimensionNode> level : nodes) {
+            for (List<IDimensionNode> level : nodes) {
                 i += level.size();
             }
             return i;

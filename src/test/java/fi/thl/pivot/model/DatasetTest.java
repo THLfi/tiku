@@ -11,9 +11,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.DimensionNode;
-
 public class DatasetTest {
 
     private Dataset dataset;
@@ -44,8 +41,8 @@ public class DatasetTest {
 
     @Test
     public void shouldIgnoreNullKeys() {
-        dataset.put("1", (List<DimensionNode>) null);
-        dataset.put("1", Collections.<DimensionNode> emptyList());
+        dataset.put("1", (List<IDimensionNode>) null);
+        dataset.put("1", Collections.<IDimensionNode> emptyList());
     }
 
     @Test
@@ -56,13 +53,13 @@ public class DatasetTest {
     }
 
     private void assertValueIsPut(String value, String... key) {
-        List<DimensionNode> keys = keys(key);
+        List<IDimensionNode> keys = keys(key);
         dataset.put(value, keys);
         assertEquals(value, dataset.get(keys));
     }
 
-    private List<DimensionNode> keys(String... key) {
-        List<DimensionNode> keys = Lists.newArrayList();
+    private List<IDimensionNode> keys(String... key) {
+        List<IDimensionNode> keys = Lists.newArrayList();
         for (String k : key) {
             keys.add(mockNode(k));
         }

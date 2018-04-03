@@ -33,7 +33,7 @@ public class ModifiablePivot implements Pivot {
      */
     private Map<Object, PivotCell> cellCache = Maps.newHashMap();
 
-    private Set<DimensionNode> constants = Sets.newLinkedHashSet();
+    private Set<IDimensionNode> constants = Sets.newLinkedHashSet();
 
     int columnCount;
     int rowCount;
@@ -43,8 +43,8 @@ public class ModifiablePivot implements Pivot {
     private int fullColumnCount;
 
     private CumulativeStopWatch sw = new CumulativeStopWatch();
-    private DimensionNode defaultMeasure;
-    private List<DimensionNode> filterNodes;
+    private IDimensionNode defaultMeasure;
+    private List<IDimensionNode> filterNodes;
     private PivotCellKeyGenerator cellKeyGenerator;
 
     public ModifiablePivot(Dataset dataset) {
@@ -93,7 +93,7 @@ public class ModifiablePivot implements Pivot {
         rowCount = calculateHeaderCount(rowCount, nodes);
     }
 
-    public void appendConstant(DimensionNode node) {
+    public void appendConstant(IDimensionNode node) {
         Preconditions.checkNotNull(node, "Cannot add null as constant");
         constants.add(node);
     }
@@ -138,7 +138,7 @@ public class ModifiablePivot implements Pivot {
         String datum = dataset.getWithIds(key);
         if (null != datum) {
             PivotCellImpl cell = null;
-            DimensionNode measure = cellKeyGenerator.getMeasure();
+            IDimensionNode measure = cellKeyGenerator.getMeasure();
 
             cell = new PivotCellImpl(datum);
             cell.setKey(cellKeyGenerator.getKey());
@@ -166,14 +166,14 @@ public class ModifiablePivot implements Pivot {
         return cacheKey;
     }
 
-    private void setSampleSize(SortedSet<Integer> key, DimensionNode measure, PivotCellImpl cell) {
+    private void setSampleSize(SortedSet<Integer> key, IDimensionNode measure, PivotCellImpl cell) {
         if (null != measure && measure.getSampleSizeNode() != null) {
             cell.setSampleSize(getValueWithModifiedKey(key, measure.getSurrogateId(),
                     measure.getSampleSizeNode().getSurrogateId()));
         }
     }
 
-    private void setConfidenceInterval(SortedSet<Integer> key, DimensionNode measure, PivotCellImpl cell) {
+    private void setConfidenceInterval(SortedSet<Integer> key, IDimensionNode measure, PivotCellImpl cell) {
         if (null != measure && measure.getConfidenceLowerLimitNode() != null) {
             cell.setConfidenceLowerLimit(getValueWithModifiedKey(key, measure.getSurrogateId(),
                     measure.getConfidenceLowerLimitNode().getSurrogateId()));
@@ -192,7 +192,7 @@ public class ModifiablePivot implements Pivot {
     }
 
     @Override
-    public DimensionNode getColumnAt(int level, int column) {
+    public IDimensionNode getColumnAt(int level, int column) {
         if (ASSERT_ENABLED) {
             Preconditions.checkArgument(level >= 0 && level < columns.size(),
                     String.format("Column level is out of bounds %d / %d", level, columns.size()));
@@ -202,7 +202,7 @@ public class ModifiablePivot implements Pivot {
     }
 
     @Override
-    public DimensionNode getRowAt(int level, int row) {
+    public IDimensionNode getRowAt(int level, int row) {
         if (ASSERT_ENABLED) {
             Preconditions.checkArgument(level >= 0 && level < rows.size(),
                     String.format("Row level is out of bounds %d / %d", level, rows.size()));
@@ -230,7 +230,7 @@ public class ModifiablePivot implements Pivot {
      * @param key
      *            List of row and column headers for requested cell
      */
-    private DimensionNode getNodeAt(List<PivotLevel> nodes, int level, int element) {
+    private IDimensionNode getNodeAt(List<PivotLevel> nodes, int level, int element) {
         return nodes.get(level).getElement(nodes, level, element);
     }
 
@@ -267,11 +267,11 @@ public class ModifiablePivot implements Pivot {
                 String.format("Column index out of bounds %d / %d", column, columnCount));
     }
 
-    public void setDefaultMeasure(DimensionNode defaultMeasure) {
+    public void setDefaultMeasure(IDimensionNode defaultMeasure) {
         this.defaultMeasure = defaultMeasure;
     }
 
-    public DimensionNode getDefaultMeasure() {
+    public IDimensionNode getDefaultMeasure() {
         if (null != defaultMeasure) {
             return defaultMeasure;
         }
@@ -285,7 +285,7 @@ public class ModifiablePivot implements Pivot {
                 return null;
             }
         }
-        for (DimensionNode l : filterNodes) {
+        for (IDimensionNode l : filterNodes) {
             if (Constants.MEASURE.equals(l.getDimension().getId())) {
                 return l;
             }
@@ -293,7 +293,7 @@ public class ModifiablePivot implements Pivot {
         return null;
     }
 
-    public void setFilterNodes(List<DimensionNode> filterNodes) {
+    public void setFilterNodes(List<IDimensionNode> filterNodes) {
         this.filterNodes = filterNodes;
     }
 

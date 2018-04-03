@@ -60,7 +60,7 @@ public interface Pivot extends Iterable<PivotCell> {
      *            column number in table
      * @return header node
      */
-    DimensionNode getColumnAt(int level, int column);
+    IDimensionNode getColumnAt(int level, int column);
 
     /**
      * Returns the header node of row at the given header level
@@ -71,7 +71,7 @@ public interface Pivot extends Iterable<PivotCell> {
      *            row number in table
      * @return header node
      */
-    DimensionNode getRowAt(int level, int row);
+    IDimensionNode getRowAt(int level, int row);
 
     boolean isFirstColumn(int column);
     

@@ -15,7 +15,7 @@ public class PivotCellImpl implements PivotCell {
     private String value;
     private int rowNumber;
     private int columnNumber;
-    private DimensionNode measure;
+    private IDimensionNode measure;
     private int[] key;
     private List<List<Integer>> indices;
     private long hashKey;
@@ -91,12 +91,12 @@ public class PivotCellImpl implements PivotCell {
         return Double.parseDouble(value.replaceAll(",", "."));
     }
 
-    public void setMeasure(DimensionNode measure) {
+    public void setMeasure(IDimensionNode measure) {
         this.measure = measure;
     }
 
     @Override
-    public DimensionNode getMeasure() {
+    public IDimensionNode getMeasure() {
         return measure;
     }
 

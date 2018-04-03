@@ -12,8 +12,8 @@ import com.google.common.collect.Maps;
 
 public class DimensionLevel {
 
-    private final Map<String, DimensionNode> nodeMap = Maps.newHashMap();
-    private final List<DimensionNode> nodes = Lists.newArrayList();
+    private final Map<String, IDimensionNode> nodeMap = Maps.newHashMap();
+    private final List<IDimensionNode> nodes = Lists.newArrayList();
 
     public static DimensionLevel SENTINEL = new DimensionLevel("nil",null,Integer.MAX_VALUE);
     
@@ -33,20 +33,20 @@ public class DimensionLevel {
         this.index = index;
     }
 
-    public void addNodes(DimensionNode root) {
+    public void addNodes(IDimensionNode root) {
         nodes.add(root);
         sorted = false;
     }
 
-    public List<DimensionNode> getNodes() {
+    public List<IDimensionNode> getNodes() {
         if (!sorted) {
             Collections.sort(nodes);
             sorted = true;
         }
 
-        return Lists.newArrayList(Collections2.filter(nodes, new Predicate<DimensionNode>() {
+        return Lists.newArrayList(Collections2.filter(nodes, new Predicate<IDimensionNode>() {
             @Override
-            public boolean apply(DimensionNode input) {
+            public boolean apply(IDimensionNode input) {
                 return input.canAccess();
             }
         }));
@@ -68,7 +68,7 @@ public class DimensionLevel {
         return child;
     }
 
-    public DimensionNode createNode(String id, Label label, DimensionNode parent) {
+    public IDimensionNode createNode(String id, Label label, IDimensionNode parent) {
         Preconditions.checkArgument(!nodeMap.containsKey(id), "A node with id " + id + " already exists");
         nodeMap.put(id, new DimensionNode(this, id, label));
         nodes.add(nodeMap.get(id));

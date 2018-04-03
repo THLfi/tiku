@@ -1,10 +1,11 @@
 package fi.thl.pivot.web;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import fi.thl.pivot.exception.SameDimensionAsRowAndColumnException;
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.impl.xb.xsdschema.impl.ListDocumentImpl;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
 
@@ -14,16 +15,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.FilterablePivot;
-import fi.thl.pivot.model.ModifiablePivot;
-import fi.thl.pivot.model.OrderablePivot;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
-import fi.thl.pivot.model.PivotLevel;
-import fi.thl.pivot.model.Query;
 import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.web.tools.FilterBuilder;
 import fi.thl.pivot.web.tools.FilterEmpty;
@@ -36,9 +27,9 @@ import fi.thl.pivot.web.tools.TableHelper;
 
 public class CubeService {
 
-    private final class FirstElementInList implements Function<List<DimensionNode>, DimensionNode> {
+    private final class FirstElementInList implements Function<List<IDimensionNode>, IDimensionNode> {
         @Override
-        public DimensionNode apply(List<DimensionNode> input) {
+        public IDimensionNode apply(List<IDimensionNode> input) {
             return input.get(0);
         }
     }
@@ -62,14 +53,14 @@ public class CubeService {
 
     private HydraSource source;
 
-    private List<DimensionNode> filterNodes;
+    private List<IDimensionNode> filterNodes;
 
     private Pivot pivot;
 
     private boolean cubeCreated;
 
-    private List<List<DimensionNode>> rowNodes;
-    private List<List<DimensionNode>> columnNodes;
+    private List<List<IDimensionNode>> rowNodes;
+    private List<List<IDimensionNode>> columnNodes;
     private List<Boolean> rowNodesModified = new ArrayList<>();
     private List<Boolean> columnNodesModified = new ArrayList<>();
 
@@ -79,7 +70,7 @@ public class CubeService {
 
     private boolean defaultMeasureUsed;
 
-    private DimensionNode defaultMeasure;
+    private IDimensionNode defaultMeasure;
 
     private CubeRequest request;
 
@@ -96,14 +87,14 @@ public class CubeService {
         sw.start("Construct cube definition");
 
         assignDefaultRowsAndColumns();
-        final List<List<DimensionNode>> headerNodes = determineHeaderNodes();
+        final List<List<IDimensionNode>> headerNodes = determineHeaderNodes();
         checkIfSameDimensionUsedBothInRowsAndColumns();
 
         this.filterNodes = Lists.newArrayList(determineFilterNodes());
         if (!isMeasureDefined(headerNodes)) {
             assignDefaultMeasureIfNonSpecified(headerNodes);
         }
-        final List<DimensionNode> filter = new FilterBuilder(source, headerNodes, filterNodes).asFilter();
+        final List<IDimensionNode> filter = new FilterBuilder(source, headerNodes, filterNodes).asFilter();
         sw.stop();
 
         sw.start("Load data");
@@ -151,8 +142,8 @@ public class CubeService {
     }
 
     private void failIfRowDimensionInColumns(Set<String> closed) {
-        for(List<DimensionNode> list : columnNodes) {
-            for(DimensionNode node : list) {
+        for(List<IDimensionNode> list : columnNodes) {
+            for(IDimensionNode node : list) {
                 if(closed.contains(node.getDimension().getId())) {
                     throw new SameDimensionAsRowAndColumnException();
                 }
@@ -162,8 +153,8 @@ public class CubeService {
     }
 
     private void addRowDimensions(Set<String> closed) {
-        for(List<DimensionNode> list : rowNodes) {
-            for (DimensionNode node : list) {
+        for(List<IDimensionNode> list : rowNodes) {
+            for (IDimensionNode node : list) {
                 closed.add(node.getDimension().getId());
                 break; // First node is only needed
             }
@@ -174,16 +165,16 @@ public class CubeService {
         return cubeCreated;
     }
 
-    public List<List<DimensionNode>> getRowNodes() {
+    public List<List<IDimensionNode>> getRowNodes() {
         return rowNodes;
     }
 
-    public List<List<DimensionNode>> getColumnNodes() {
+    public List<List<IDimensionNode>> getColumnNodes() {
         return columnNodes;
     }
 
-    public List<List<DimensionNode>> getFilterNodes() {
-        List<List<DimensionNode>> nodes = Lists.newArrayList();
+    public List<List<IDimensionNode>> getFilterNodes() {
+        List<List<IDimensionNode>> nodes = Lists.newArrayList();
         nodes.add(filterNodes);
         return nodes;
     }
@@ -309,27 +300,27 @@ public class CubeService {
         return pivot;
     }
 
-    private List<List<DimensionNode>> determineHeaderNodes() {
+    private List<List<IDimensionNode>> determineHeaderNodes() {
         this.rowNodes = selectRows();
         this.columnNodes = selectColumns();
-        final List<List<DimensionNode>> headerNodes = Lists.newArrayList(rowNodes);
+        final List<List<IDimensionNode>> headerNodes = Lists.newArrayList(rowNodes);
         headerNodes.addAll(columnNodes);
         return headerNodes;
     }
 
-    private List<DimensionNode> determineFilterNodes() {
-        List<DimensionNode> newFilterNodes = new ArrayList<>();
-        for(List<DimensionNode> nodes : asNodes(source, filterValues, null)) {
+    private List<IDimensionNode> determineFilterNodes() {
+        List<IDimensionNode> newFilterNodes = new ArrayList<>();
+        for(List<IDimensionNode> nodes : asNodes(source, filterValues, null)) {
             newFilterNodes.addAll(nodes);
         }
         newFilterNodes.addAll(Lists.transform(asNodes(source, measureValues, null), new FirstElementInList()));
         return newFilterNodes;
     }
 
-    private void assignDefaultMeasureIfNonSpecified(final List<List<DimensionNode>> headerNodes) {
+    private void assignDefaultMeasureIfNonSpecified(final List<List<IDimensionNode>> headerNodes) {
         this.defaultMeasureUsed = true;
         for (Dimension d : source.getMeasures()) {
-            DimensionNode dn = d.getRootNode();
+            IDimensionNode dn = d.getRootNode();
             while (!dn.getChildren().isEmpty()) {
                 dn = dn.getFirstChild();
             }
@@ -355,14 +346,14 @@ public class CubeService {
         }
     }
 
-    private boolean isMeasureDefined(List<List<DimensionNode>> headerNodes) {
-        for (DimensionNode dn : filterNodes) {
+    private boolean isMeasureDefined(List<List<IDimensionNode>> headerNodes) {
+        for (IDimensionNode dn : filterNodes) {
             if (dn.getDimension().isMeasure()) {
                 return true;
             }
         }
-        for (List<DimensionNode> dns : headerNodes) {
-            for (DimensionNode dn : dns) {
+        for (List<IDimensionNode> dns : headerNodes) {
+            for (IDimensionNode dn : dns) {
                 if (dn.getDimension().isMeasure()) {
                     return true;
                 }
@@ -372,7 +363,7 @@ public class CubeService {
         return false;
     }
 
-    private void determineDimensions(ModifiablePivot mPivot, final List<DimensionNode> filter) {
+    private void determineDimensions(ModifiablePivot mPivot, final List<IDimensionNode> filter) {
         int i = 0;
         for (PivotLevel column : query.getColumns()) {
             setLevelProperties(i, column, columnHeaders, columnNodesModified);
@@ -386,7 +377,7 @@ public class CubeService {
             i++;
         }
 
-        for (DimensionNode constant : filter) {
+        for (IDimensionNode constant : filter) {
             mPivot.appendConstant(constant);
         }
     }
@@ -398,7 +389,7 @@ public class CubeService {
         if (SearchType.IDENTIFIER.equals(searchType) || headers.get(i).contains(".") || headers.get(i).contains(";")) {
             level.setSelectedNode(level.getLastNode());
         } else {
-            for (DimensionNode node : level.getNodes()) {
+            for (IDimensionNode node : level.getNodes()) {
                 if (String.valueOf(node.getSurrogateId()).equals(headers.get(i).replace("L", "").replace(node.getDimension().getId() + "-", ""))) {
                     level.setSelectedNode(node);
                 }
@@ -432,15 +423,15 @@ public class CubeService {
 
     }
 
-    private List<List<DimensionNode>> selectRows() {
-        final List<List<DimensionNode>> newRowNodes = asNodes(source, rowHeaders, rowNodesModified);
+    private List<List<IDimensionNode>> selectRows() {
+        final List<List<IDimensionNode>> newRowNodes = asNodes(source, rowHeaders, rowNodesModified);
         query.addRowNode(newRowNodes, selectSubsets(rowHeaders));
         checkIfMultipleMeasuresAreShown(newRowNodes);
         return newRowNodes;
     }
 
-    private List<List<DimensionNode>> selectColumns() {
-        final List<List<DimensionNode>> newColumnNodes = asNodes(source, columnHeaders, columnNodesModified);
+    private List<List<IDimensionNode>> selectColumns() {
+        final List<List<IDimensionNode>> newColumnNodes = asNodes(source, columnHeaders, columnNodesModified);
         query.addColumnNode(newColumnNodes, selectSubsets(columnHeaders));
         checkIfMultipleMeasuresAreShown(newColumnNodes);
         return newColumnNodes;
@@ -453,8 +444,8 @@ public class CubeService {
      * 
      * @param rowNodes
      */
-    private void checkIfMultipleMeasuresAreShown(final List<List<DimensionNode>> rowNodes) {
-        for (List<DimensionNode> dns : rowNodes) {
+    private void checkIfMultipleMeasuresAreShown(final List<List<IDimensionNode>> rowNodes) {
+        for (List<IDimensionNode> dns : rowNodes) {
             isMultipleMeasuresShown = isMultipleMeasuresShown || (!dns.isEmpty() && dns.get(0).getDimension().isMeasure());
         }
     }
@@ -483,11 +474,11 @@ public class CubeService {
      * @param identifiers
      * @return
      */
-    private List<List<DimensionNode>> asNodes(HydraSource source, List<String> identifiers, List<Boolean> modified) {
-        List<List<DimensionNode>> nodes = Lists.newArrayList();
-        nodes.addAll(Collections2.filter(Lists.transform(identifiers, new FindNodes(source, searchType)), new Predicate<List<DimensionNode>>() {
+    private List<List<IDimensionNode>> asNodes(HydraSource source, List<String> identifiers, List<Boolean> modified) {
+        List<List<IDimensionNode>> nodes = Lists.newArrayList();
+        nodes.addAll(Collections2.filter(Lists.transform(identifiers, new FindNodes(source, searchType)), new Predicate<List<IDimensionNode>>() {
             @Override
-            public boolean apply(List<DimensionNode> input) {
+            public boolean apply(List<IDimensionNode> input) {
                 return input != null;
             }
         }));
@@ -499,7 +490,7 @@ public class CubeService {
         return nodes;
     }
 
-    private void addTotalNodeToLevel(List<String> identifiers, List<Boolean> modified, List<List<DimensionNode>> nodes) {
+    private void addTotalNodeToLevel(List<String> identifiers, List<Boolean> modified, List<List<IDimensionNode>> nodes) {
         // Find out if the same dimension appears more than once
         // If identifier with this kind of dimensions appears with the suffix
         // L (Show all nodes in level)
@@ -507,16 +498,20 @@ public class CubeService {
 
         for (int i = 0; i < identifiers.size(); ++i) {
             modified.add(false);
+        }
+        for (int i = identifiers.size() - 1; i >= 0; --i) {
             String identifier = identifiers.get(i);
             if (identifier.endsWith("L") && !nodes.get(i).isEmpty()) {
                 Dimension dim = nodes.get(i).get(0).getDimension();
+
                 for (int j = i - 1; j >= 0; --j) {
                     if (!nodes.get(j).isEmpty() && dim.equals(nodes.get(j).get(0).getDimension())) {
-                        nodes.get(i).add(nodes.get(j).get(nodes.get(j).size() - 1));
+                        final int levelNumber = j;
+                        nodes.get(i).addAll(nodes.get(j).stream().map(x -> new InputtedDimensionNode(x, levelNumber, false)).collect(Collectors.toList()));
                         modified.set(i, true);
-                        break;
                     }
                 }
+
             }
         }
     }

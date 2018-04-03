@@ -55,7 +55,7 @@
                 [#if rowspan.next(r_index)]
                     [#assign rh = pivot.getRowAt(r_index, rowNum)]
                     [#assign span = rowspan.assign(r_index, tableHelper.getRowSpanAt(r_index, rowNum)) /]
-                    <th class="row-target [#if r_index = pivot.rows?size -1]leaf[/#if]" [#if span > 1]rowspan="${span}"[/#if] data-level="${r_index}" data-ref="${cell.actualRowNumber}">
+                    <th class="row-target [#if r_index = pivot.rows?size - 1]leaf[/#if]" [#if span > 1]rowspan="${span}"[/#if] data-level="${r_index}" data-ref="${cell.actualRowNumber}">
                         <a href="#" data-ref="${rh.dimension.id}${dimensionSeparator}${rh.surrogateId}">
                             [@label rh /] [#if RequestParameters.sc?? && rh.code??](${rh.code!})[/#if]
                         </a>

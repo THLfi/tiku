@@ -66,7 +66,7 @@ final class PivotIterator implements Iterator<PivotCell> {
 
     private void addNodesToIndex(PivotLevel l) {
         List<Integer> index = new ArrayList<>();
-        for (DimensionNode n : l.getNodes()) {
+        for (IDimensionNode n : l.getNodes()) {
             index.add(n.getSurrogateId());
         }
         indices.add(index);

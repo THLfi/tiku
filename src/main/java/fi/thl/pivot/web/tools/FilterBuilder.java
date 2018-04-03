@@ -3,13 +3,13 @@ package fi.thl.pivot.web.tools;
 import java.util.Collection;
 import java.util.List;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionNode;
 
 /**
  * <p>
@@ -31,21 +31,21 @@ import fi.thl.pivot.model.DimensionNode;
 public class FilterBuilder {
 
     private static final Logger LOG = Logger.getLogger(FilterBuilder.class);
-    private List<DimensionNode> filter;
+    private List<IDimensionNode> filter;
     private HydraSource source;
-    private List<List<DimensionNode>> headerNodes;
-    private List<DimensionNode> filterNodes;
+    private List<List<IDimensionNode>> headerNodes;
+    private List<IDimensionNode> filterNodes;
 
     public FilterBuilder(HydraSource source,
-            List<List<DimensionNode>> headerNodes,
-            List<DimensionNode> filterNodes) {
+            List<List<IDimensionNode>> headerNodes,
+            List<IDimensionNode> filterNodes) {
         this.source = source;
         this.headerNodes = headerNodes;
         this.filterNodes = filterNodes;
         this.filter = Lists.newArrayList();
     }
 
-    public List<DimensionNode> asFilter() {
+    public List<IDimensionNode> asFilter() {
         filterBasedOn(source.getDimensions());
         filterBasedOn(source.getMeasures());
         LOG.debug(String.format(
@@ -66,8 +66,8 @@ public class FilterBuilder {
     }
 
     private boolean isDimensionUsedAsHeader(Dimension d) {
-        for (List<DimensionNode> level : headerNodes) {
-            for (DimensionNode dn : level) {
+        for (List<IDimensionNode> level : headerNodes) {
+            for (IDimensionNode dn : level) {
                 if (dn.getDimension().getId().equals(d.getId())) {
                     return true;
                 }
@@ -78,7 +78,7 @@ public class FilterBuilder {
 
     private boolean assignFilterNode(Dimension d) {
         boolean filterAdded = false;
-        for (DimensionNode fn : filterNodes) {
+        for (IDimensionNode fn : filterNodes) {
             if (fn.getDimension() == null) {
                 // Nopcd .
             } else if (fn.getDimension().equals(d)) {

@@ -47,7 +47,7 @@ public class PivotCellForwarder implements PivotCell {
         delegate.setIndices(indices);
     }
 
-    public DimensionNode getMeasure() {
+    public IDimensionNode getMeasure() {
         return delegate.getMeasure();
     }
 

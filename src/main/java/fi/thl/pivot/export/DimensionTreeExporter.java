@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 import org.springframework.ui.Model;
 
 import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.Label;
 
 public class DimensionTreeExporter {
@@ -66,14 +66,14 @@ public class DimensionTreeExporter {
         isCommaNeeded = attribute(writer, "label", label(dimension.getLabel().getValue(language)), isCommaNeeded);
         writer.println(",\n\t\"children\": [");
         boolean firstNode = true;
-        for (DimensionNode node : dimension.getRootLevel().getNodes()) {
+        for (IDimensionNode node : dimension.getRootLevel().getNodes()) {
             firstNode = exportNode(writer, node, firstNode, language);
         }
         writer.print("]}");
         first = false;
     }
 
-    private boolean exportNode(PrintWriter writer, DimensionNode node, boolean first, String language) {
+    private boolean exportNode(PrintWriter writer, IDimensionNode node, boolean first, String language) {
         if(node.isHidden() && node.isMeasure()) {
             return first;
         }
@@ -105,11 +105,11 @@ public class DimensionTreeExporter {
             writer.print("\n\t}");
         }
 
-        Collection<DimensionNode> children = node.getChildren();
+        Collection<IDimensionNode> children = node.getChildren();
         if (!children.isEmpty()) {
             writer.println(",\n\t\"children\": [");
             boolean firstNode = true;
-            for (DimensionNode child : children) {
+            for (IDimensionNode child : children) {
                 exportNode(writer, child, firstNode, language);
                 firstNode = false;
             }

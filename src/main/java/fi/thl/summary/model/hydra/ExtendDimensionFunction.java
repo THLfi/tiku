@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.Summary;
 import fi.thl.summary.model.SummaryDimension;
 import fi.thl.summary.model.SummaryItem;
@@ -52,7 +52,7 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
             } else if (":all:".equals(stage.getStage())) {
                 return new DimensionExtension(source, dim, allNodesIn(dim));
             } else {
-                List<DimensionNode> nodes = findNodes(dim.getDimension(), stage.getStage());
+                List<IDimensionNode> nodes = findNodes(dim.getDimension(), stage.getStage());
                 if(dim.includeTotal()) {
                     extendParentLevel(nodes);
                 }
@@ -63,18 +63,18 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         }
     }
 
-    private void extendParentLevel(List<DimensionNode> nodes) {
+    private void extendParentLevel(List<IDimensionNode> nodes) {
         if(!nodes.isEmpty()) {
-        DimensionNode parent = nodes.get(0).getParent();
+        IDimensionNode parent = nodes.get(0).getParent();
         if(parent != null) {
             nodes.addAll(nodes.get(0).getParent().getLevel().getNodes());
         }
         }
     }
 
-    private List<DimensionNode> drilledNodesIn(final SummaryDimension dim) {
-        List<DimensionNode> nodes = Lists.newArrayList();
-        for (DimensionNode drilled : summary.getDrilledNodes(dim.getDimension())) {
+    private List<IDimensionNode> drilledNodesIn(final SummaryDimension dim) {
+        List<IDimensionNode> nodes = Lists.newArrayList();
+        for (IDimensionNode drilled : summary.getDrilledNodes(dim.getDimension())) {
             nodes.addAll(drilled.getChildren());
             if (dim.includeTotal()) {
                 nodes.add(drilled);
@@ -84,8 +84,8 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         return nodes;
     }
 
-    private List<DimensionNode> allNodesIn(final SummaryDimension dim) {
-        List<DimensionNode> nodes = new ArrayList<>();
+    private List<IDimensionNode> allNodesIn(final SummaryDimension dim) {
+        List<IDimensionNode> nodes = new ArrayList<>();
         for (Dimension dimension : source.getDimensions()) {
             if (dimension.getId().equals(dim.getDimension())) {
                 addDepthFirst(nodes, Lists.newArrayList(dimension.getRootNode()));
@@ -94,15 +94,15 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         return nodes;
     }
 
-    private void addDepthFirst(List<DimensionNode> nodes, Collection<DimensionNode> candidates) {
-        for (DimensionNode c : candidates) {
+    private void addDepthFirst(List<IDimensionNode> nodes, Collection<IDimensionNode> candidates) {
+        for (IDimensionNode c : candidates) {
             nodes.add(c);
             addDepthFirst(nodes, c.getChildren());
         }
 
     }
 
-    private List<DimensionNode> findNodes(String dimension, String stage) {
+    private List<IDimensionNode> findNodes(String dimension, String stage) {
         for (Dimension dim : source.getDimensionsAndMeasures()) {
             if (dim.getId().equals(dimension)) {
                 DimensionLevel level = dim.getRootLevel();
@@ -110,7 +110,7 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
                     level = level.getChildLevel();
                 }
                 if (null != level) {
-                    List<DimensionNode> nodes = Lists.newArrayList(level.getNodes());
+                    List<IDimensionNode> nodes = Lists.newArrayList(level.getNodes());
                    
                     return nodes;
                 } else {
@@ -121,8 +121,8 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         return Collections.emptyList();
     }
 
-    private List<DimensionNode> findNodes(String dim, List<String> items) {
-        List<DimensionNode> nodes = new ArrayList<>();
+    private List<IDimensionNode> findNodes(String dim, List<String> items) {
+        List<IDimensionNode> nodes = new ArrayList<>();
         for (Dimension dimension : source.getDimensionsAndMeasures()) {
             if (dimension.getId().equals(dim)) {
                 if (Summary.Scheme.Reference.equals(summary.getScheme())) {
@@ -138,11 +138,11 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         return nodes;
     }
 
-    private void findNodesByName(Dimension dimension, List<String> items, List<DimensionNode> nodes) {
+    private void findNodesByName(Dimension dimension, List<String> items, List<IDimensionNode> nodes) {
         DimensionLevel level = dimension.getRootLevel();
         List<String> itemsNotFound = new ArrayList<>(items);
         while (level != null) {
-            for (DimensionNode node : level.getNodes()) {
+            for (IDimensionNode node : level.getNodes()) {
                 for (Iterator<String> i = items.iterator(); i.hasNext();) {
                     String item = i.next();
                     if (node.getLabel().getValue(summary.getItemLanguage()).equals(item)) {

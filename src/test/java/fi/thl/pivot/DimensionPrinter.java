@@ -2,7 +2,7 @@ package fi.thl.pivot;
 
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 
 public class DimensionPrinter {
 
@@ -25,7 +25,7 @@ public class DimensionPrinter {
 		addIndent(indent);
 		sb.append("+" + level.getId() + ":\n");
 		print(level.getChildLevel(), indent + 2);
-		for (DimensionNode node : level.getNodes()) {
+		for (IDimensionNode node : level.getNodes()) {
 			addIndent(indent);
 			sb.append("-" + node + "\n");
 		}

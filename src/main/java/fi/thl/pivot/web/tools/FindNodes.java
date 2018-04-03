@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.util.Constants;
 
 /**
@@ -29,7 +29,7 @@ import fi.thl.pivot.util.Constants;
  * @author aleksiyrttiaho
  *
  */
-public final class FindNodes implements Function<String, List<DimensionNode>> {
+public final class FindNodes implements Function<String, List<IDimensionNode>> {
 
     public static enum SearchType {
         SURROGATE, IDENTIFIER, URI
@@ -45,8 +45,8 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         this.searchType = searchType;
     }
 
-    public List<DimensionNode> apply(String identifier) {
-        List<DimensionNode> nodes = Lists.newArrayList();
+    public List<IDimensionNode> apply(String identifier) {
+        List<IDimensionNode> nodes = Lists.newArrayList();
 
         if (SearchType.SURROGATE.equals(searchType) && isLevelIdentifier(identifier)) {
             useAllNodesInLevel(identifier, nodes);
@@ -60,9 +60,9 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         return nodes.isEmpty() ? null : nodes;
     }
 
-    private void useAllNodesInLevel(String identifier, List<DimensionNode> nodes) {
+    private void useAllNodesInLevel(String identifier, List<IDimensionNode> nodes) {
         String nodeId = identifier.substring(dimensionIdentifierIndex(identifier) + 1, identifier.length() - 1);
-        DimensionNode node = findNodeUsingSelectedSearchType(nodeId);
+        IDimensionNode node = findNodeUsingSelectedSearchType(nodeId);
         if (null != node && node.canAccess()) {
             nodes.addAll(node.getLevel().getNodes().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
         }
@@ -73,9 +73,9 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         return identifier.endsWith(Constants.LEVEL_IDENTIFIER);
     }
 
-    private void convertIdentifiersToNodes(String identifier, List<DimensionNode> nodes) {
+    private void convertIdentifiersToNodes(String identifier, List<IDimensionNode> nodes) {
         for (String id : asId(identifier)) {
-            DimensionNode node = findNodeUsingSelectedSearchType(id);
+            IDimensionNode node = findNodeUsingSelectedSearchType(id);
             if (node == null) {
                 LOG.warn(String.format("Attempt to load %s with id %s FAILED", identifier, id));
             } else if (!node.canAccess()) {
@@ -86,8 +86,8 @@ public final class FindNodes implements Function<String, List<DimensionNode>> {
         }
     }
 
-    private DimensionNode findNodeUsingSelectedSearchType(String id) {
-        DimensionNode node;
+    private IDimensionNode findNodeUsingSelectedSearchType(String id) {
+        IDimensionNode node;
 
         if (SearchType.SURROGATE.equals(this.searchType)) {
             node = source.resolve(id);

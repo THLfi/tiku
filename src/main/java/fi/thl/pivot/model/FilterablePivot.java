@@ -1,10 +1,7 @@
 package fi.thl.pivot.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -22,8 +19,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     private static final Logger LOG = Logger.getLogger(FilterablePivot.class);
 
-    private static interface HeaderCallback {
-        DimensionNode getHeaderAt(int level, int index);
+    private  interface HeaderCallback {
+        IDimensionNode getHeaderAt(int level, int index);
     }
 
     private List<PivotLevel> filteredRows = null;
@@ -54,8 +51,6 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
     @Override
     public int getColumnNumber(int column) {
-        // System.out.println("column " + column + " => " + columnIndices.indexOf(column));
-        // return delegate.getColumnNumber(columnIndices.indexOf(column));
         return delegate.getColumnNumber(column);
     }
 
@@ -65,12 +60,12 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     @Override
-    public DimensionNode getRowAt(int level, int row) {
+    public IDimensionNode getRowAt(int level, int row) {
         return super.getRowAt(level, rowIndices.get(row));
     }
 
     @Override
-    public DimensionNode getColumnAt(int level, int column) {
+    public IDimensionNode getColumnAt(int level, int column) {
         return super.getColumnAt(level, columnIndices.get(column));
     }
 
@@ -96,12 +91,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
         columnIndices = new IntArrayList();
 
         // Prepare headers for filteration
-        
         include(new ColumnStrategy(), 0, 0);
-      
-        RowStrategy rowStrategy = new RowStrategy();
-        include(rowStrategy, 0, 0);
-    
+        include(new RowStrategy(), 0, 0);
+
         filter(filters);
     }
 
@@ -151,8 +143,8 @@ public class FilterablePivot extends AbstractPivotForwarder {
     }
 
     private int includeLevel(IncludeStrategy strategy, int level, int index) {
-        for (@SuppressWarnings("unused")
-        DimensionNode node : strategy.get(level)) {
+        outer: for (@SuppressWarnings("unused")
+                IDimensionNode node : strategy.get(level)) {
             if (!shouldFilter(strategy, level, index)) {
                 index = include(strategy, level + 1, index);
             } else {
@@ -162,36 +154,87 @@ public class FilterablePivot extends AbstractPivotForwarder {
         return index;
     }
 
+    private Collection<String> labels(Collection<IDimensionNode> nodes) {
+        return nodes.stream().map(x->x.getLabel().getValue("fi")).collect(Collectors.toList());
+    }
+
     private int includeLeafLevel(IncludeStrategy strategy, int level, int index) {
-        if(strategy.size() == 0) {
+        if (strategy.size() == 0) {
             strategy.add(0);
             return 0;
         }
-        
-        int levelIndex = 0;
+
         int levelSize = strategy.get(level).size();
-        if (strategy.get(level).isTotalIncluded()) {
-            levelSize -= 1;
-        }
+
+        outer:
         for (int i = 0; i < levelSize; ++i) {
-            if (++levelIndex <= levelSize && !shouldFilter(strategy, level, index)) {
-                strategy.add(index);
+            IDimensionNode node = strategy.getNode(level, index);
+            if (!shouldFilter(strategy, level, index)) {
+                if(!shouldFilterTotalRow(strategy, level, index, node)) {
+                    strategy.add(index);
+                }
             }
+
             ++index;
         }
+
+
         return index;
+    }
+
+    private boolean shouldFilterTotalRow(IncludeStrategy strategy, int level, int index, IDimensionNode node) {
+
+        boolean shouldInclude = false;
+        List<IDimensionNode> parents = getParentNodes(strategy, index, level, node);
+        parents.add(node);
+
+        for(int i = 0; i < parents.size() - 1; ++i) {
+            IDimensionNode parent = parents.get(i);
+            if(parent instanceof InputtedDimensionNode) {
+                for (int j = i + 1; j < parents.size(); ++j) {
+                    IDimensionNode child = parents.get(j);
+                    if(parent.getDimension().equals(child.getDimension())) {
+                        if(!(child instanceof InputtedDimensionNode)) {
+                            // Case: If parent node is a total node then
+                            // child must also be a total node
+                            return true;
+                        }
+                        if(child.getSurrogateId() != parent.getSurrogateId()) {
+                            // Case: If parent is total node then
+                            // child must represent the same node as parent
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        if(node instanceof InputtedDimensionNode && ((InputtedDimensionNode) node).getLevelNumber() != 0) {
+            // Case: We are only interested in the total and nothing but the total
+            return true;
+        }
+        return shouldInclude;
+    }
+
+    private List<IDimensionNode> getParentNodes(IncludeStrategy strategy, int index, int level, IDimensionNode node) {
+        List<IDimensionNode> parentNodes = new ArrayList<>();
+        for(int j = 0; j < level; ++j) {
+            IDimensionNode parent = strategy.getNode(j, index);
+            parentNodes.add(parent);
+
+        }
+        return parentNodes;
     }
 
     private boolean shouldFilter(IncludeStrategy strategy, int level,
             int i) {
         
         for (int a = 0; a < level; ++a) {
-            DimensionNode aNode = strategy.getNode(a, i);
-            DimensionNode aLastNode = strategy.getLastNode(a);
+            IDimensionNode aNode = strategy.getNode(a, i);
+            IDimensionNode aLastNode = strategy.getLastNode(a);
 
             for (int b = a + 1; b < level + 1; ++b) {
 
-                DimensionNode bLastNode = strategy.getLastNode(b);
+                IDimensionNode bLastNode = strategy.getLastNode(b);
                 // We rely on implementation detail here. 
                 // This phase took 3.6 % of execution time
                 // when changed from safe equals check to 
@@ -202,7 +245,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
                     continue;
                 }
 
-                DimensionNode bNode = strategy.getNode(b, i);
+                IDimensionNode bNode = strategy.getNode(b, i);
 
                 if (aLastNode == bLastNode
                         && aLastNode.getSurrogateId() == aNode.getSurrogateId()
@@ -213,6 +256,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
                 if (!aNode.ancestorOf(bNode) && !bNode.ancestorOf(aNode)) {
                     return true;
                 }
+
             }
         }
         return false;
@@ -223,7 +267,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         if (null == filteredColumns) {
             filteredColumns = Collections.unmodifiableList(filter(columns, getColumnCount(), new HeaderCallback() {
                 @Override
-                public DimensionNode getHeaderAt(int level, int index) {
+                public IDimensionNode getHeaderAt(int level, int index) {
                     return getColumnAt(level, index);
                 }
             }));
@@ -236,7 +280,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         if (null == filteredRows) {
             filteredRows = Collections.unmodifiableList(filter(rows, getRowCount(), new HeaderCallback() {
                 @Override
-                public DimensionNode getHeaderAt(int level, int index) {
+                public IDimensionNode getHeaderAt(int level, int index) {
                     return getRowAt(level, index);
                 }
             }));
@@ -248,9 +292,9 @@ public class FilterablePivot extends AbstractPivotForwarder {
         List<PivotLevel> filtered = Lists.newArrayList();
         for (int i = 0; i < filterable.size(); ++i) {
             filtered.add(new PivotLevel(filterable.get(i)));
-            List<DimensionNode> retainable = Lists.newArrayList();
+            List<IDimensionNode> retainable = Lists.newArrayList();
             for (int j = 0; j < max; ++j) {
-                DimensionNode n = cb.getHeaderAt(i, j);
+                IDimensionNode n = cb.getHeaderAt(i, j);
                 retainable.add(n);
             }
             filtered.get(i).retainAll(retainable);
@@ -262,19 +306,19 @@ public class FilterablePivot extends AbstractPivotForwarder {
 
         protected long hitCount = 0;
         
-        private Map<Integer, DimensionNode> lastNodes = new HashMap<>();
+        private Map<Integer, IDimensionNode> lastNodes = new HashMap<>();
 
         abstract List<PivotLevel> getLevels();
 
         abstract void add(int index);
 
-        abstract DimensionNode getNode(int level, int index);
+        abstract IDimensionNode getNode(int level, int index);
 
         public PivotLevel get(int level) {
             return getLevels().get(level);
         }
 
-        public DimensionNode getLastNode(int level) {
+        public IDimensionNode getLastNode(int level) {
             if(!lastNodes.containsKey(level)) {
                 lastNodes.put(level, get(level).getLastNode());
             }
@@ -305,7 +349,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
 
         @Override
-        public DimensionNode getNode(int level, int index) {
+        public IDimensionNode getNode(int level, int index) {
             hitCount++;
             return delegate.getRowAt(level, index);
         }
@@ -325,7 +369,7 @@ public class FilterablePivot extends AbstractPivotForwarder {
         }
 
         @Override
-        public DimensionNode getNode(int level, int index) {
+        public IDimensionNode getNode(int level, int index) {
             hitCount++;
             return delegate.getColumnAt(level, index);
         }

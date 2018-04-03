@@ -2,12 +2,12 @@ package fi.thl.summary.model.hydra;
 
 import java.util.List;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.SummaryItem;
 
 public interface Extension extends SummaryItem {
 
-    List<DimensionNode> getNodes();
+    List<IDimensionNode> getNodes();
     String getDimension();
-    List<DimensionNode> getNodes(String stage);
+    List<IDimensionNode> getNodes(String stage);
 }

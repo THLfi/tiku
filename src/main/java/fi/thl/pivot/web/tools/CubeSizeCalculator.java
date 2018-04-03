@@ -2,17 +2,17 @@ package fi.thl.pivot.web.tools;
 
 import java.util.List;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 
 public class CubeSizeCalculator {
 
     private CubeSizeCalculator() {
     }
 
-    public static int[] calculateNumberOfNodesInEachLevel(List<DimensionNode> headers) {
+    public static int[] calculateNumberOfNodesInEachLevel(List<IDimensionNode> headers) {
         int index = 0;
         int[] nodesInLevel = new int[headers.size()];
-        for (DimensionNode level : headers) {
+        for (IDimensionNode level : headers) {
             nodesInLevel[index++] = level.getChildren().size() + 1;
         }
         return nodesInLevel;

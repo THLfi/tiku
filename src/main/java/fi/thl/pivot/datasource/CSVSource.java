@@ -10,19 +10,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Closeables;
-
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Query;
-import fi.thl.pivot.model.Tuple;
 
 public class CSVSource extends HydraSource {
 
@@ -70,8 +64,8 @@ public class CSVSource extends HydraSource {
 
         private Map<String, String> row;
 
-        protected CsvTreeCallbackHandler(Map<String, Dimension> dimensions, Map<String, DimensionNode> nodes, Map<String, DimensionNode> nodesByRef,
-                Map<String, DimensionLevel> dimensionLevels) {
+        protected CsvTreeCallbackHandler(Map<String, Dimension> dimensions, Map<String, IDimensionNode> nodes, Map<String, IDimensionNode> nodesByRef,
+                                         Map<String, DimensionLevel> dimensionLevels) {
             super(dimensions, nodes, nodesByRef, dimensionLevels);
         }
 
@@ -142,7 +136,7 @@ public class CSVSource extends HydraSource {
             LOG.debug("Loading data from colums: " + Arrays.asList(header));
             Map<String, String> row = null;
             while ((row = reader.read(header)) != null) {
-                DimensionNode[] keys = new DimensionNode[getColumns().size()];
+                IDimensionNode[] keys = new IDimensionNode[getColumns().size()];
                 int index = 0;
                 for (String column : getColumns()) {
                     keys[index++] = getNode(row.get(column));
@@ -190,8 +184,8 @@ public class CSVSource extends HydraSource {
     }
 
     @Override
-    protected void loadNodes(Map<String, Dimension> newDimensions, Map<String, DimensionLevel> dimensionLevels, Map<String, DimensionNode> newNodes,
-            Map<String, DimensionNode> nodesByRef) {
+    protected void loadNodes(Map<String, Dimension> newDimensions, Map<String, DimensionLevel> dimensionLevels, Map<String, IDimensionNode> newNodes,
+            Map<String, IDimensionNode> nodesByRef) {
 
         CsvMapReader reader = null;
         try {
@@ -256,12 +250,12 @@ public class CSVSource extends HydraSource {
     }
 
     @Override
-    public Dataset loadSubset(Query query, List<DimensionNode> filter) {
+    public Dataset loadSubset(Query query, List<IDimensionNode> filter) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Dataset loadSubset(Query query, List<DimensionNode> filter, boolean showValueTypes) {
+    public Dataset loadSubset(Query query, List<IDimensionNode> filter, boolean showValueTypes) {
         throw new UnsupportedOperationException();
     }
 

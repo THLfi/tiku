@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fi.thl.pivot.model.*;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
@@ -24,15 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
-import fi.thl.pivot.model.Limits;
-import fi.thl.pivot.model.NamedView;
-import fi.thl.pivot.model.Query;
-import fi.thl.pivot.model.Tuple;
 import fi.thl.pivot.util.Constants;
 
 /**
@@ -85,13 +77,13 @@ public abstract class HydraSource {
         private static final Logger LOG = Logger.getLogger(TreeRowCallbackHandler.class);
 
         private final Map<String, Dimension> dimensions;
-        private final Map<String, DimensionNode> nodes;
+        private final Map<String, IDimensionNode> nodes;
         private final Map<String, DimensionLevel> dimensionLevels;
-        private final Map<String, DimensionNode> nodesByRef;
+        private final Map<String, IDimensionNode> nodesByRef;
         private final Map<String, DimensionLevel> currentLevel;
 
-        protected TreeRowCallbackHandler(Map<String, Dimension> dimensions, Map<String, DimensionNode> nodes,
-                Map<String, DimensionNode> nodesByRef,
+        protected TreeRowCallbackHandler(Map<String, Dimension> dimensions, Map<String, IDimensionNode> nodes,
+                Map<String, IDimensionNode> nodesByRef,
                 Map<String, DimensionLevel> dimensionLevels) {
             this.dimensions = dimensions;
             this.nodes = nodes;
@@ -124,15 +116,15 @@ public abstract class HydraSource {
         }
 
         private void createNode(final Map<String, DimensionLevel> dimensionLevels,
-                final Map<String, DimensionNode> nodes, String dimension,
-                String dimensionLevel) throws Exception {
+                                final Map<String, IDimensionNode> nodes, String dimension,
+                                String dimensionLevel) throws Exception {
 
             DimensionLevel nodeLevel = dimensionLevels.get(dimension + "-" + dimensionLevel);
             if (nodeLevel == null) {
                 LOG.warn("No level found for node " + dimension + "-" + dimensionLevel);
                 return;
             }
-            DimensionNode node;
+            IDimensionNode node;
             if (isRootNode()) {
                 LOG.debug("Found root node " + getMetaReference() + " for " + dimension);
                 Preconditions.checkArgument(nodeLevel.getNodes().size() == 1);
@@ -209,12 +201,12 @@ public abstract class HydraSource {
     private Set<NamedView> namedViews = new TreeSet<>();
     private Map<String, Dimension> dimensions;
     private Dataset dataSet;
-    private Map<String, DimensionNode> nodes;
+    private Map<String, IDimensionNode> nodes;
     private List<String> columns;
     private Label name;
     private List<String> passwords = new ArrayList<>();
     private Set<String> languages = new TreeSet<>();
-    private Map<Integer, DimensionNode> nodeIndex;
+    private Map<Integer, IDimensionNode> nodeIndex;
     private boolean isOpenData = true;
     private Date runDate;
     private String runid;
@@ -278,10 +270,10 @@ public abstract class HydraSource {
      * @param nodeId
      * @return
      */
-    public DimensionNode resolve(String nodeId) {
+    public IDimensionNode resolve(String nodeId) {
         Preconditions.checkNotNull(nodeId, "Node id must not be null");
         Preconditions.checkArgument(nodeId.matches("^\\d+$"), "Node id must be numeric");
-        DimensionNode node = nodeIndex.get(Integer.parseInt(nodeId));
+        IDimensionNode node = nodeIndex.get(Integer.parseInt(nodeId));
         return null == node ? getNode(nodeId) : node;
     }
 
@@ -304,8 +296,8 @@ public abstract class HydraSource {
 
         final Map<String, Dimension> newDimensions = Maps.newLinkedHashMap();
         final Map<String, DimensionLevel> dimensionLevels = Maps.newHashMap();
-        final Map<String, DimensionNode> newNodes = Maps.newHashMap();
-        final Map<String, DimensionNode> nodesByRef = Maps.newHashMap();
+        final Map<String, IDimensionNode> newNodes = Maps.newHashMap();
+        final Map<String, IDimensionNode> nodesByRef = Maps.newHashMap();
         final Map<String, List<Property>> propertiesByRef = Maps.newHashMap();
         final List<String> newDimensionColumns = Lists.newArrayList();
 
@@ -357,8 +349,8 @@ public abstract class HydraSource {
 
         watch.stop();
 
-        Map<Integer, DimensionNode> newNodeIndex = Maps.newHashMap();
-        for (DimensionNode node : newNodes.values()) {
+        Map<Integer, IDimensionNode> newNodeIndex = Maps.newHashMap();
+        for (IDimensionNode node : newNodes.values()) {
             newNodeIndex.put(node.getSurrogateId(), node);
         }
 
@@ -463,9 +455,9 @@ public abstract class HydraSource {
         }
     }
 
-    private void sort(DimensionNode node) {
+    private void sort(IDimensionNode node) {
         node.sortChildren();
-        for (DimensionNode child : node.getChildren()) {
+        for (IDimensionNode child : node.getChildren()) {
             sort(child);
         }
     }
@@ -478,7 +470,7 @@ public abstract class HydraSource {
         return getFactSource().equals(cube);
     }
 
-    public final DimensionNode getNode(String id) {
+    public final IDimensionNode getNode(String id) {
         assert null != Preconditions.checkNotNull(id, "Node id must not be null");
         return nodes.get(id);
     }
@@ -530,9 +522,9 @@ public abstract class HydraSource {
      *            Filterin rules for the subset
      * @return A complete dataset where filter and projection are applied
      */
-    public abstract Dataset loadSubset(Query query, List<DimensionNode> filter);
+    public abstract Dataset loadSubset(Query query, List<IDimensionNode> filter);
 
-    public abstract Dataset loadSubset(Query queryNodes, List<DimensionNode> filter, boolean showValueTypes);
+    public abstract Dataset loadSubset(Query queryNodes, List<IDimensionNode> filter, boolean showValueTypes);
 
     /**
      * Should apply metadata to the given set of dimensions
@@ -555,8 +547,8 @@ public abstract class HydraSource {
      *            Index of nodes by metadata reference as an output parameter
      */
     protected abstract void loadNodes(final Map<String, Dimension> newDimensions,
-            final Map<String, DimensionLevel> dimensionLevels,
-            final Map<String, DimensionNode> newNodes, final Map<String, DimensionNode> nodesByRef);
+                                      final Map<String, DimensionLevel> dimensionLevels,
+                                      final Map<String, IDimensionNode> newNodes, final Map<String, IDimensionNode> nodesByRef);
 
     /**
      * Should load metadata from the meta file or table
@@ -584,7 +576,7 @@ public abstract class HydraSource {
         return null;
     }
 
-    private void assignMetadata(final Map<String, Dimension> newDimensions, final Map<String, DimensionNode> nodesByRef,
+    private void assignMetadata(final Map<String, Dimension> newDimensions, final Map<String, IDimensionNode> nodesByRef,
             final Map<String, List<Property>> propertiesByRef) {
         for (Map.Entry<String, List<Property>> nodeMetadata : propertiesByRef.entrySet()) {
             if (nodesByRef.containsKey(nodeMetadata.getKey())) {
@@ -752,9 +744,9 @@ public abstract class HydraSource {
         }
     }
 
-    private void assignMetadataToNode(final Map<String, DimensionNode> nodesByRef,
+    private void assignMetadataToNode(final Map<String, IDimensionNode> nodesByRef,
             Map.Entry<String, List<Property>> nodeMetadata) {
-        DimensionNode node = nodesByRef.get(nodeMetadata.getKey());
+        IDimensionNode node = nodesByRef.get(nodeMetadata.getKey());
         if (node == null) {
             LOG.warn("No node found with key" + nodeMetadata.getKey());
             return;
@@ -817,9 +809,9 @@ public abstract class HydraSource {
         return this.denyCubeAccess;
     }
 
-    public DimensionNode findNodeByRef(String item) {
+    public IDimensionNode findNodeByRef(String item) {
         for (Dimension d : dimensions.values()) {
-            DimensionNode node = findNodeByRefInLevel(d.getRootLevel(), item);
+            IDimensionNode node = findNodeByRefInLevel(d.getRootLevel(), item);
             if (node != null) {
                 return node;
             }
@@ -827,9 +819,9 @@ public abstract class HydraSource {
         return null;
     }
 
-    public DimensionNode findNodeByName(String item, String language) {
+    public IDimensionNode findNodeByName(String item, String language) {
         for (Dimension d : dimensions.values()) {
-            DimensionNode node = findNodeByNameInLevel(d.getRootLevel(), item, language);
+            IDimensionNode node = findNodeByNameInLevel(d.getRootLevel(), item, language);
             if (node != null) {
                 return node;
             }
@@ -837,11 +829,11 @@ public abstract class HydraSource {
         return null;
     }
 
-    private DimensionNode findNodeByRefInLevel(DimensionLevel level, String item) {
+    private IDimensionNode findNodeByRefInLevel(DimensionLevel level, String item) {
         if (null == level) {
             return null;
         }
-        for (DimensionNode n : level.getNodes()) {
+        for (IDimensionNode n : level.getNodes()) {
             if (item.equals(n.getReference())) {
                 return n;
             }
@@ -849,11 +841,11 @@ public abstract class HydraSource {
         return findNodeByRefInLevel(level.getChildLevel(), item);
     }
 
-    private DimensionNode findNodeByNameInLevel(DimensionLevel level, String item, String language) {
+    private IDimensionNode findNodeByNameInLevel(DimensionLevel level, String item, String language) {
         if (null == level) {
             return null;
         }
-        for (DimensionNode n : level.getNodes()) {
+        for (IDimensionNode n : level.getNodes()) {
             if (item.equals(n.getLabel().getValue(language))) {
                 return n;
             }

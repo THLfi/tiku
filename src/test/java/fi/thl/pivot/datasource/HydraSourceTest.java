@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import fi.thl.pivot.model.IDimensionNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionNode;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { HsqlTestConfiguration.class })
@@ -80,7 +80,7 @@ public class HydraSourceTest {
         assertEquals("Kaikki vuodet", time.getRootNode().getLabel().getValue("fi"));
         assertEquals(1, time.getRootNode().getChildren().size());
         assertEquals("https://sampo.thl.fi/meta/aika/vuosi/2016",
-                ((DimensionNode) time.getRootNode().getChildren().toArray()[0]).getReference());
+                ((IDimensionNode) time.getRootNode().getChildren().toArray()[0]).getReference());
 
         assertEquals(1, time.getLevel("root").getNodes().size());
         assertEquals(1, time.getLevel("leaf").getNodes().size());
@@ -88,7 +88,7 @@ public class HydraSourceTest {
 
     @Test
     public void shouldFindNodesByName() {
-        DimensionNode node = source.findNodeByName("2016", "fi");
+        IDimensionNode node = source.findNodeByName("2016", "fi");
         assertNotNull(node);
         assertEquals("2016", node.getLabel().getValue("fi"));
         assertEquals("time", node.getDimension().getId());
@@ -96,7 +96,7 @@ public class HydraSourceTest {
 
     @Test
     public void shouldFindNodesByRef() {
-        DimensionNode node = source.findNodeByRef("https://sampo.thl.fi/meta/aika/vuosi/2016");
+        IDimensionNode node = source.findNodeByRef("https://sampo.thl.fi/meta/aika/vuosi/2016");
         assertNotNull(node);
         assertEquals("2016", node.getLabel().getValue("fi"));
         assertEquals("time", node.getDimension().getId());
@@ -104,7 +104,7 @@ public class HydraSourceTest {
 
     @Test
     public void shouldSortNodesBySortPredicate() {
-        List<DimensionNode> nodes = source.getDimension("region").getLevel("leaf").getNodes();
+        List<IDimensionNode> nodes = source.getDimension("region").getLevel("leaf").getNodes();
 
         assertEquals(3, nodes.size());
         assertEquals("Espoo", nodes.get(0).getLabel().getValue("fi"));
@@ -115,10 +115,10 @@ public class HydraSourceTest {
     
     @Test
     public void shouldProtectNodes() {
-        DimensionNode node = source.getDimension("measure").getRootNode();
+        IDimensionNode node = source.getDimension("measure").getRootNode();
         assertEquals(2, node.getDecimals());
         
-        DimensionNode second = source.findNodeByRef("https://sampo.thl.fi/meta/test/mittari/2");
+        IDimensionNode second = source.findNodeByRef("https://sampo.thl.fi/meta/test/mittari/2");
         assertEquals("decimals set even though illegal metadata value", -1, second.getDecimals());
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
@@ -150,7 +150,7 @@ public class HydraTablePresentation extends TablePresentation {
     }
 
   
-    private List<DimensionNode> nodesOf(SummaryItem d) {
+    private List<IDimensionNode> nodesOf(SummaryItem d) {
         return ((Extension) d).getNodes();
     }
 

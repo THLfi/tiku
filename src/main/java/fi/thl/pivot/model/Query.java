@@ -11,21 +11,21 @@ import com.google.common.collect.Sets;
 
 public class Query {
 
-    private Multimap<String, DimensionNode> dimension = ArrayListMultimap.create();
-    private Set<DimensionNode> levelNodes = Sets.newHashSet();
-    private List<List<DimensionNode>> rows = Lists.newArrayList();
-    private List<List<DimensionNode>> columns = Lists.newArrayList();
+    private Multimap<String, IDimensionNode> dimension = ArrayListMultimap.create();
+    private Set<IDimensionNode> levelNodes = Sets.newHashSet();
+    private List<List<IDimensionNode>> rows = Lists.newArrayList();
+    private List<List<IDimensionNode>> columns = Lists.newArrayList();
     private Set<Integer> subsetRows = Sets.newHashSet();
     private Set<Integer> subsetColumns = Sets.newHashSet();
 
-    public void addRowNode(List<List<DimensionNode>> levels, List<Boolean> subset) {
+    public void addRowNode(List<List<IDimensionNode>> levels, List<Boolean> subset) {
         int i = 0;
-        for (List<DimensionNode> level : levels) {
+        for (List<IDimensionNode> level : levels) {
             rows.add(level);
             if (subset.get(i)) {
                 useRowAsSubset(i);
             }
-            for (DimensionNode node : level) {
+            for (IDimensionNode node : level) {
                 dimension.put(node.getDimension().getId(), node);
                 if (!subset.get(i)) {
                     dimension.putAll(node.getDimension().getId(), node.getChildren());
@@ -35,14 +35,14 @@ public class Query {
         }
     }
 
-    public void addColumnNode(List<List<DimensionNode>> levels, List<Boolean> subset) {
+    public void addColumnNode(List<List<IDimensionNode>> levels, List<Boolean> subset) {
         int i = 0;
-        for (List<DimensionNode> level : levels) {
+        for (List<IDimensionNode> level : levels) {
             columns.add(level);
             if (subset.get(i)) {
                 useColumnAsSubset(i);
             }
-            for (DimensionNode node : level) {
+            for (IDimensionNode node : level) {
                 dimension.put(node.getDimension().getId(), node);
                 if (!subset.get(i)) {
                     dimension.putAll(node.getDimension().getId(), node.getChildren());
@@ -53,7 +53,7 @@ public class Query {
 
     }
 
-    public Multimap<String, DimensionNode> getNodesPerDimension() {
+    public Multimap<String, IDimensionNode> getNodesPerDimension() {
         return dimension;
     }
 
@@ -65,10 +65,10 @@ public class Query {
         return getLevels(columns, subsetColumns);
     }
 
-    private List<PivotLevel> getLevels(List<List<DimensionNode>> nodeLevels, Set<Integer> subsets) {
+    private List<PivotLevel> getLevels(List<List<IDimensionNode>> nodeLevels, Set<Integer> subsets) {
         List<PivotLevel> levels = Lists.newArrayList();
         int i = 0;
-        for (List<DimensionNode> nodes : nodeLevels) {
+        for (List<IDimensionNode> nodes : nodeLevels) {
             PivotLevel level = new PivotLevel();
             levels.add(level);
             if (nodes.size() > 1) {
@@ -77,32 +77,32 @@ public class Query {
                 level.add(nodes);
                 level.setAsSubsetLevel();
             } else {
-                handleSingleNodeInLevel(level, nodes);
+                handleSingleNodeInLevel(level, nodes, i);
             }
             ++i;
         }
         return levels;
     }
 
-    private void handleSingleNodeInLevel(PivotLevel level, List<DimensionNode> nodes) {
-        for (DimensionNode dn : nodes) {
+    private void handleSingleNodeInLevel(PivotLevel level, List<IDimensionNode> nodes, int index) {
+        for (IDimensionNode dn : nodes) {
             if (dn.canAccess()) {
                 if (levelNodes.contains(dn)) {
                     addAllNodesInLevel(dn, level);
                 } else {
-                    addDirectDescendants(dn, level);
+                    addDirectDescendants(dn, level, index);
                 }
             }
         }
     }
 
-    private void addDirectDescendants(DimensionNode dn, PivotLevel level) {
+    private void addDirectDescendants(IDimensionNode dn, PivotLevel level, int index) {
         level.add(dn.getChildren().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
-        level.add(dn);
+        level.add(new InputtedDimensionNode(dn, index, true));
     }
 
-    private void addAllNodesInLevel(DimensionNode dn, PivotLevel level) {
-        for (DimensionNode d : dn.getLevel().getNodes()) {
+    private void addAllNodesInLevel(IDimensionNode dn, PivotLevel level) {
+        for (IDimensionNode d : dn.getLevel().getNodes()) {
             level.add(d.getChildren().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));
         }
         level.add(dn.getLevel().getNodes().stream().filter(x -> !x.isHidden() || !x.isMeasure()).collect(Collectors.toList()));

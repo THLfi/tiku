@@ -46,7 +46,7 @@ public class Dataset {
      * @param keys
      */
     @SuppressWarnings("unchecked")
-    public void put(String value, List<DimensionNode> keys) {
+    public void put(String value, List<IDimensionNode> keys) {
         if (null == keys || keys.isEmpty()) {
             LOG.trace("Cannot add value to dataset: No keys set for value");
             return;
@@ -75,7 +75,7 @@ public class Dataset {
      * @param keys
      * @return
      */
-    public String get(Collection<DimensionNode> keys) {
+    public String get(Collection<IDimensionNode> keys) {
         return getWithIds(ids(keys));
     }
 
@@ -99,7 +99,7 @@ public class Dataset {
         return (String) v.get(ids.get(lastIdIndex));
     }
 
-    private String stringIds(Collection<DimensionNode> keys) {
+    private String stringIds(Collection<IDimensionNode> keys) {
         return JOINER.join(ids(keys));
     }
 
@@ -111,9 +111,9 @@ public class Dataset {
      *            key<sub>1</sub>, key<sub>2</sub>, ..., key<sub>n</sub>
      * @return sorted list of dimension node identifiers in ascending order
      */
-    private List<Integer> ids(Collection<DimensionNode> keySet) {
+    private List<Integer> ids(Collection<IDimensionNode> keySet) {
         List<Integer> keyList = Lists.newArrayList();
-        for (DimensionNode s : keySet) {
+        for (IDimensionNode s : keySet) {
             keyList.add(s.getSurrogateId());
         }
         Collections.sort(keyList);

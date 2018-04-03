@@ -7,17 +7,17 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.Selection;
 
 public class IncludeDescendants {
 
-    public static List<DimensionNode> apply(Selection s) {
-        Set<DimensionNode> set = Sets.newLinkedHashSet();
-        List<DimensionNode> selected = ((HydraFilter) s).getSelected();
+    public static List<IDimensionNode> apply(Selection s) {
+        Set<IDimensionNode> set = Sets.newLinkedHashSet();
+        List<IDimensionNode> selected = ((HydraFilter) s).getSelected();
         switch (s.getSelectionMode()) {
         case directDescendants:
-            for (DimensionNode node : selected) {
+            for (IDimensionNode node : selected) {
                 set.add(node);
                 set.addAll(node.getChildren());
             }
@@ -31,8 +31,8 @@ public class IncludeDescendants {
 
     }
 
-    private static void addRecursive(Collection<DimensionNode> selected, Collection<DimensionNode> nodes) {
-        for (DimensionNode node : selected) {
+    private static void addRecursive(Collection<IDimensionNode> selected, Collection<IDimensionNode> nodes) {
+        for (IDimensionNode node : selected) {
             nodes.add(node);
             addRecursive(node.getChildren(), nodes);
         }

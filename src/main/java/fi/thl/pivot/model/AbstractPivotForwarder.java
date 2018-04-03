@@ -42,12 +42,12 @@ public class AbstractPivotForwarder implements Pivot {
     }
 
     @Override
-    public DimensionNode getColumnAt(int level, int column) {
+    public IDimensionNode getColumnAt(int level, int column) {
         return delegate.getColumnAt(level, column);
     }
 
     @Override
-    public DimensionNode getRowAt(int level, int row) {
+    public IDimensionNode getRowAt(int level, int row) {
         return delegate.getRowAt(level, row);
     }
 

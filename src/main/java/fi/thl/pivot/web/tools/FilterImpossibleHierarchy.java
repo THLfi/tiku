@@ -8,14 +8,11 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Pivot;
-import fi.thl.pivot.model.PivotCell;
-import fi.thl.pivot.model.PivotLevel;
+import fi.thl.pivot.model.*;
 
 public final class FilterImpossibleHierarchy implements Predicate<PivotCell> {
 
-    private Multimap<String, DimensionNode> nodesByDim;
+    private Multimap<String, IDimensionNode> nodesByDim;
     private List<PivotLevel> columns;
     private List<PivotLevel> rows;
     private Pivot pivot;
@@ -41,7 +38,7 @@ public final class FilterImpossibleHierarchy implements Predicate<PivotCell> {
     private boolean checkColumnNodes(PivotCell input) {
         nodesByDim.clear();
         for (int i = 0; i < columns.size(); ++i) {
-            DimensionNode dn = pivot.getColumnAt(i, input.getColumnNumber());
+            IDimensionNode dn = pivot.getColumnAt(i, input.getColumnNumber());
             nodesByDim.put(dn.getDimension().getId(), dn);
         }
         return checkNodesByDimension(nodesByDim);
@@ -50,14 +47,14 @@ public final class FilterImpossibleHierarchy implements Predicate<PivotCell> {
     private boolean checkRowNodes(PivotCell input) {
         nodesByDim.clear();
         for (int i = 0; i < rows.size(); ++i) {
-            DimensionNode dn = pivot.getRowAt(i, input.getRowNumber());
+            IDimensionNode dn = pivot.getRowAt(i, input.getRowNumber());
             nodesByDim.put(dn.getDimension().getId(), dn);
         }
         return checkNodesByDimension(nodesByDim);
     }
 
-    private boolean checkNodesByDimension(Multimap<String, DimensionNode> nodesByDim) {
-        for (Map.Entry<String, Collection<DimensionNode>> e : nodesByDim.asMap().entrySet()) {
+    private boolean checkNodesByDimension(Multimap<String, IDimensionNode> nodesByDim) {
+        for (Map.Entry<String, Collection<IDimensionNode>> e : nodesByDim.asMap().entrySet()) {
             if (e.getValue().size() > 1 && checkAncestryPairWise(e.getValue())) {
                 return true;
             }
@@ -65,9 +62,9 @@ public final class FilterImpossibleHierarchy implements Predicate<PivotCell> {
         return false;
     }
 
-    private boolean checkAncestryPairWise(Collection<DimensionNode> e) {
-        for (DimensionNode a : e) {
-            for (DimensionNode b : e) {
+    private boolean checkAncestryPairWise(Collection<IDimensionNode> e) {
+        for (IDimensionNode a : e) {
+            for (IDimensionNode b : e) {
                 if (!(a.ancestorOf(b) || b.ancestorOf(a))) {
                     return true;
                 }

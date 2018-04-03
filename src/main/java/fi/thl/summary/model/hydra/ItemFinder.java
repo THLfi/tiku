@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Dimension;
 import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.Summary;
 
 public class ItemFinder {
@@ -20,8 +20,8 @@ public class ItemFinder {
         this.summary = summary;
     }
     
-    public List<DimensionNode> findItems(List<String> items, HydraSource source) {
-        List<DimensionNode> result = new ArrayList<>();
+    public List<IDimensionNode> findItems(List<String> items, HydraSource source) {
+        List<IDimensionNode> result = new ArrayList<>();
         if (Summary.Scheme.Reference.equals(summary.getScheme())) {
             for (String item : items) {
                 result.add(source.findNodeByRef(item));
@@ -34,8 +34,8 @@ public class ItemFinder {
         return result;
     }
 
-    public List<DimensionNode> findItems(List<String> items, Dimension dim) {
-        List<DimensionNode> result = new ArrayList<>();
+    public List<IDimensionNode> findItems(List<String> items, Dimension dim) {
+        List<IDimensionNode> result = new ArrayList<>();
         if (Summary.Scheme.Reference.equals(summary.getScheme())) {
             for (String item : items) {
                 result.add(dim.getNode(item));
@@ -46,11 +46,11 @@ public class ItemFinder {
         return result;
     }
 
-    private void findItemsByName(List<String> items, Dimension dim, List<DimensionNode> result) {
+    private void findItemsByName(List<String> items, Dimension dim, List<IDimensionNode> result) {
         DimensionLevel level = dim.getRootLevel();
         List<String> notFound = Lists.newArrayList(items);
         while (level != null && !notFound.isEmpty()) {
-            for (DimensionNode node : level.getNodes()) {
+            for (IDimensionNode node : level.getNodes()) {
                 for (Iterator<String> it = notFound.iterator(); it.hasNext();) {
                     String s = it.next();
                     if (s.equals(node.getLabel().getValue(summary.getItemLanguage()))) {

@@ -22,7 +22,7 @@ public class Dimension {
     private final String id;
     private final Label label;
     private final DimensionLevel rootLevel;
-    private final Map<Integer, DimensionNode> nodes;
+    private final Map<Integer, IDimensionNode> nodes;
     private boolean isMeasure;
     private int hashCode;
 
@@ -43,14 +43,14 @@ public class Dimension {
         return isMeasure;
     }
 
-    void putNode(DimensionNode node) {
+    void putNode(IDimensionNode node) {
         nodes.put(node.getSurrogateId(), node);
     }
 
-    public DimensionNode getNode(String id) {
+    public IDimensionNode getNode(String id) {
         DimensionLevel level = rootLevel;
         while (level != null) {
-            for (DimensionNode n : level.getNodes()) {
+            for (IDimensionNode n : level.getNodes()) {
                 if (n.getReference().equals(id)) {
                     return n;
                 }
@@ -72,7 +72,7 @@ public class Dimension {
         return rootLevel;
     }
 
-    public DimensionNode getRootNode() {
+    public IDimensionNode getRootNode() {
         return getRootLevel().getNodes().get(0);
     }
 

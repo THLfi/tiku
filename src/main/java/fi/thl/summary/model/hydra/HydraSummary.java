@@ -12,13 +12,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import fi.thl.pivot.datasource.HydraSource;
-import fi.thl.pivot.model.Dataset;
-import fi.thl.pivot.model.Dimension;
-import fi.thl.pivot.model.DimensionLevel;
-import fi.thl.pivot.model.DimensionNode;
-import fi.thl.pivot.model.Label;
-import fi.thl.pivot.model.PivotCellImpl;
-import fi.thl.pivot.model.Query;
+import fi.thl.pivot.model.*;
 import fi.thl.pivot.web.tools.FindNodes;
 import fi.thl.pivot.web.tools.FindNodes.SearchType;
 import fi.thl.summary.model.DataPresentation;
@@ -46,7 +40,7 @@ public class HydraSummary extends Summary {
     final HydraSource source;
     private final Summary summary;
     private List<Selection> selections;
-    private Map<String, List<DimensionNode>> drilledDimensions = Maps.newHashMap();
+    private Map<String, List<IDimensionNode>> drilledDimensions = Maps.newHashMap();
     private Map<String, DimensionLevel> dimensionMaxLevel = Maps.newHashMap();
     private Map<String, String> valueCache = Maps.newHashMap();
     private String geometry;
@@ -212,8 +206,8 @@ public class HydraSummary extends Summary {
      * 
      * @return
      */
-    public Collection<DimensionNode> getNodes() {
-        Set<DimensionNode> nodes = Sets.newHashSet();
+    public Collection<IDimensionNode> getNodes() {
+        Set<IDimensionNode> nodes = Sets.newHashSet();
         for (Presentation p : getPresentations()) {
             if (p instanceof HydraDataPresentation) {
                 HydraDataPresentation hp = (HydraDataPresentation) p;
@@ -241,7 +235,7 @@ public class HydraSummary extends Summary {
         return nodes;
     }
 
-    private void addNodes(Set<DimensionNode> nodes, final List<SummaryItem> level) {
+    private void addNodes(Set<IDimensionNode> nodes, final List<SummaryItem> level) {
         for (SummaryItem s : level) {
             nodes.addAll(((Extension) s).getNodes());
         }
@@ -272,16 +266,16 @@ public class HydraSummary extends Summary {
         return isDrillEnabled() && drilledDimensions != null && drilledDimensions.containsKey(dimension);
     }
 
-    public DimensionNode drillTo(String dimension, String identifier) {
+    public IDimensionNode drillTo(String dimension, String identifier) {
         if (null == this.drilledDimensions) {
             this.drilledDimensions = Maps.newHashMap();
         }
-        List<DimensionNode> drillNode = new FindNodes(source, SearchType.SURROGATE).apply(identifier);
+        List<IDimensionNode> drillNode = new FindNodes(source, SearchType.SURROGATE).apply(identifier);
         this.drilledDimensions.put(dimension, drillNode);
         return drillNode.isEmpty() ? null : drillNode.get(0);
     }
 
-    public List<DimensionNode> getDrilledNodes(String dimension) {
+    public List<IDimensionNode> getDrilledNodes(String dimension) {
         return drilledDimensions.get(dimension);
     }
 
@@ -298,7 +292,7 @@ public class HydraSummary extends Summary {
         return null;
     }
 
-    public List<DimensionNode> getSelectedByDimension(String dimension) {
+    public List<IDimensionNode> getSelectedByDimension(String dimension) {
         HydraFilter s = getSelectionByDimension(dimension);
         if (s != null) {
             return s.getSelected();
@@ -323,39 +317,39 @@ public class HydraSummary extends Summary {
 
     private String selectValue(String id) {
         Value v = summary.getValue(id);
-        List<DimensionNode> keys = Lists.newArrayList();
+        List<IDimensionNode> keys = Lists.newArrayList();
         Query query = buildValueQuery(v, keys);
         PivotCellImpl pc = buildValueCell(query, keys);
         return pc.getI18nValue();
     }
 
-    private PivotCellImpl buildValueCell(Query query, List<DimensionNode> keys) {
+    private PivotCellImpl buildValueCell(Query query, List<IDimensionNode> keys) {
         Dataset dataset = source.loadSubset(query, Collections.emptyList());
         PivotCellImpl pc = new PivotCellImpl(dataset.get(keys));
-        Collection<DimensionNode> nodes = query.getNodesPerDimension().get("measure");
+        Collection<IDimensionNode> nodes = query.getNodesPerDimension().get("measure");
         if (null != nodes) {
-            for (DimensionNode measure : nodes) {
+            for (IDimensionNode measure : nodes) {
                 pc.setMeasure(measure);
             }
         }
         return pc;
     }
 
-    private Query buildValueQuery(Value v, List<DimensionNode> keys) {
+    private Query buildValueQuery(Value v, List<IDimensionNode> keys) {
         Query query = new Query();
         boolean columnAdded = false;
         List<Selection> filters = selectValueFilters(v);
 
         for (Dimension dim : source.getDimensions()) {
             Selection filter = findFilter(filters, dim);
-            DimensionNode node = findNode(dim, filter);
+            IDimensionNode node = findNode(dim, filter);
 
             keys.add(node);
             addToQuery(query, columnAdded, node);
             columnAdded = true;
         }
         for (Dimension dim : source.getMeasures()) {
-            DimensionNode node = findNode(dim, findFilter(filters, dim));
+            IDimensionNode node = findNode(dim, findFilter(filters, dim));
             keys.add(node);
             addToQuery(query, columnAdded, node);
             columnAdded = true;
@@ -379,7 +373,7 @@ public class HydraSummary extends Summary {
         return filters;
     }
 
-    private void addToQuery(Query query, boolean columnAdded, DimensionNode node) {
+    private void addToQuery(Query query, boolean columnAdded, IDimensionNode node) {
         if (!columnAdded) {
             query.addColumnNode(Collections.singletonList(Collections.singletonList(node)),
                     TRUE_LIST);
@@ -389,9 +383,9 @@ public class HydraSummary extends Summary {
         }
     }
 
-    private DimensionNode findNode(Dimension dim, Selection filter) {
+    private IDimensionNode findNode(Dimension dim, Selection filter) {
         if (null != filter) {
-            List<DimensionNode> nodes = ((HydraFilter) filter).getSelected();
+            List<IDimensionNode> nodes = ((HydraFilter) filter).getSelected();
             if (nodes.size() == 1) {
                 return nodes.get(0);
             }

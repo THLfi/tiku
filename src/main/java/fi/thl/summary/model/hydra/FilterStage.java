@@ -10,21 +10,22 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.Summary.Scheme;
 
 public class FilterStage {
 
     private Label label;
-    private List<DimensionNode> options;
-    private List<DimensionNode> selected = new ArrayList<>();
+    private List<IDimensionNode> options;
+    private List<IDimensionNode> selected = new ArrayList<>();
     private FilterStage parent;
     private Collection<String> defaultItem;
     private String itemLanguage;
     private Scheme scheme;
     private String id;
 
-    public FilterStage(Label label, List<DimensionNode> options) {
+    public FilterStage(Label label, List<IDimensionNode> options) {
         this.label = label;
         this.options = options;
     }
@@ -37,16 +38,16 @@ public class FilterStage {
      * Returns all options in the stage. If a parent stage exists all options
      * that are not descdents of the selected parent option are filtered out
      */
-    public Collection<DimensionNode> getOptions() {
+    public Collection<IDimensionNode> getOptions() {
         if (null == parent) {
             return this.options;
         }
-        final List<DimensionNode> parentOption = parent.getSelected();
-        return Collections2.filter(this.options, new Predicate<DimensionNode>() {
+        final List<IDimensionNode> parentOption = parent.getSelected();
+        return Collections2.filter(this.options, new Predicate<IDimensionNode>() {
 
             @Override
-            public boolean apply(DimensionNode option) {
-                for (DimensionNode p : parentOption) {
+            public boolean apply(IDimensionNode option) {
+                for (IDimensionNode p : parentOption) {
                     if (option.descendentOf(p)) {
                         return true;
                     }
@@ -60,15 +61,15 @@ public class FilterStage {
         return this.label;
     }
 
-    public List<DimensionNode> getSelected() {
+    public List<IDimensionNode> getSelected() {
         if (null == selected) {
             select(null);
         }
         if (null != parent) {
-            for (Iterator<DimensionNode> it = selected.iterator(); it.hasNext();) {
+            for (Iterator<IDimensionNode> it = selected.iterator(); it.hasNext();) {
                 boolean isDescendent = false;
-                DimensionNode s = it.next();
-                for (DimensionNode p : parent.getSelected()) {
+                IDimensionNode s = it.next();
+                for (IDimensionNode p : parent.getSelected()) {
 
                     if (p.ancestorOf(s)) {
                         isDescendent = true;
@@ -88,7 +89,7 @@ public class FilterStage {
 
     public void select(String candidateId) {
         if (null != candidateId) {
-            for (DimensionNode option : getOptions()) {
+            for (IDimensionNode option : getOptions()) {
                 if (String.valueOf(option.getSurrogateId()).equals(candidateId)) {
                     selected.add(option);
                     return;
@@ -99,18 +100,18 @@ public class FilterStage {
         if (null != defaultItem && !defaultItem.isEmpty()) {
             
             if (defaultItem.contains(":last:")) {
-                List<DimensionNode> opt = Lists.newArrayList(getOptions());
+                List<IDimensionNode> opt = Lists.newArrayList(getOptions());
                 selected.add(opt.get(opt.size() - 1));
                 return;
             }
 
             if (defaultItem.contains(":first:")) {
-                List<DimensionNode> opt = Lists.newArrayList(getOptions());
+                List<IDimensionNode> opt = Lists.newArrayList(getOptions());
                 selected.add(opt.get(0));
                 return;
             }
 
-            for (DimensionNode option : options) {
+            for (IDimensionNode option : options) {
                 if (option == null) {
 
                 } else if (Scheme.Reference.equals(scheme)) {
@@ -132,7 +133,7 @@ public class FilterStage {
         }
 
         if(parent == null) {
-            List<DimensionNode> opt = new ArrayList<>(getOptions());
+            List<IDimensionNode> opt = new ArrayList<>(getOptions());
             selected.add(opt.get(0));
         }
 

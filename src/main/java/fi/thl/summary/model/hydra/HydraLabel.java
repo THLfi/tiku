@@ -2,7 +2,7 @@ package fi.thl.summary.model.hydra;
 
 import java.util.List;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.model.Label;
 import fi.thl.summary.model.Rule;
 import fi.thl.summary.model.Selection;
@@ -113,7 +113,7 @@ public class HydraLabel extends Label {
         StringBuilder label = new StringBuilder();
         boolean first = true;
         String regex = m.getTag().replace("$", "\\$");
-        for(DimensionNode node : selectNodes(m, select)) {
+        for(IDimensionNode node : selectNodes(m, select)) {
             if(!first) {
                 label.append(", ");
             }
@@ -136,8 +136,8 @@ public class HydraLabel extends Label {
         return content;
     }
 
-    private List<DimensionNode> selectNodes(HydraLabelTagMatcher m, Selection select) {
-        List<DimensionNode> selected = null;
+    private List<IDimensionNode> selectNodes(HydraLabelTagMatcher m, Selection select) {
+        List<IDimensionNode> selected = null;
         if(null == m.getStage()) {
             selected = ((HydraFilter) select).getSelected();
         } else {

@@ -1,6 +1,6 @@
 package fi.thl.pivot.web.tools;
 
-import fi.thl.pivot.model.DimensionNode;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.model.Pivot;
 
 public class TableHelper {
@@ -19,7 +19,7 @@ public class TableHelper {
      * @return
      */
     public int getColumnSpanAt(int level, int column) {
-        DimensionNode[] levels = new DimensionNode[level + 1];
+        IDimensionNode[] levels = new IDimensionNode[level + 1];
         for (int l = 0; l < levels.length; ++l) {
             levels[l] = pivot.getColumnAt(l, column);
         }
@@ -36,7 +36,7 @@ public class TableHelper {
     }
 
     public int getRowSpanAt(int level, int row) {
-        DimensionNode[] levels = new DimensionNode[level + 1];
+        IDimensionNode[] levels = new IDimensionNode[level + 1];
         for (int l = 0; l < levels.length; ++l) {
             levels[l] = pivot.getRowAt(l, row);
         }
