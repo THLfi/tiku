@@ -117,11 +117,65 @@ function selectChartType (e) {
     img.src = url;
     
   };
+
+  function addLegendToMap(svg, legendData) {
+    var clonedSvg = svg.clone(true);
+    var clonedSvgAsD3Obj = d3.select(clonedSvg.get(0));
+    var legendXPosition = Math.max(30, 400 - legendData.title.length * 10);
+    var legendContainer = clonedSvgAsD3Obj
+      .append('g')
+      .attr('transform', 'translate(' + legendXPosition + ', 40)');
+
+    legendContainer
+      .append('text')
+      .text(legendData.title)
+      .attr({ x: 10, y: 28 })
+      .style({
+        fill: '#030303', 'font-size': '18px', stroke: 'none'
+      });
+
+    var labels = legendContainer
+      .selectAll('g')
+      .data(legendData.labels)
+      .enter()
+      .append('g')
+      .attr('transform', function(d, i) { return 'translate(5,' + (36 + i * 24) + ')'; });
+
+    var labelMarkers = labels
+      .append('rect')
+      .attr({
+        x: 15,
+        y: 10,
+        width: 15,
+        height: 15,
+        stroke: 'none',
+        fill: function(d) { return d.color; }
+      });
+
+    labels
+      .append('text')
+      .text(function(d) { return d.label; })
+      .attr({
+        x: 40,
+        y: 20,
+        fill: '#030303',
+        'font-size': '12px',
+        stroke: 'none'
+      });
+
+    clonedSvg = $(clonedSvgAsD3Obj[0]).appendTo('<div>');
+    return clonedSvg;
+  };
+
   thl.pivot.exportImg = function(opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
       var link = $(this);
       if (link.attr('href') === '#') {
-        thl.pivot.svgToImg($(this).closest('.presentation').find('svg'), 800, 400, function (canvas) {
+        var svg = $(this).closest('.presentation').find('svg');
+        if (opt.legendData) {
+          svg = addLegendToMap(svg, opt.legendData);
+        }
+        thl.pivot.svgToImg(svg, 800, 400, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
@@ -292,6 +346,10 @@ function selectChartType (e) {
         var legend = L.control({position : 'bottomleft'});
         var tooltip = $('<span></span>').addClass('maptip').hide();
 
+        opt.legendData = {
+          title: opt.label,
+          labels: []
+        };
         legend.update = function() {
           var ul = $('<ul>');
           var lastBound = Number.MAX_VALUE;
@@ -312,6 +370,7 @@ function selectChartType (e) {
             li.prepend(l);
             ul.append(li);
             lastBound = limits[i + 1];
+            opt.legendData.labels.push({label: li.text(), color: colors[mapLimitIndex(limits, i)]});
           }
           $(this._div)
             .append($('<strong></strong>').text(opt.label))
