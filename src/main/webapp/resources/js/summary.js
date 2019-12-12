@@ -2530,7 +2530,7 @@ function selectChartType (e) {
             });
           }
         } else {
-          var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
+          var searchValue = new RegExp('' + this.value.toLowerCase().trim());
           options.each(function () {
             var self = $(this);
             if (searchValue.test(self.text().trim().toLowerCase())) {
