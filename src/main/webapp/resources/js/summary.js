@@ -2516,21 +2516,21 @@ function selectChartType (e) {
               search.closest('.dropdown').toggleClass('open', false);
               break;
           default:
-            var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
+        	  var searchValue = new RegExp('' + this.value.toLowerCase().trim());           
             menu.find('li').each(function (i) {
               if(i == 0) {
                 return;
               }
               var self = $(this);
               if (searchValue.test(self.text().toLowerCase())) {
-                self.show();
+                self.show();               
               } else {
                 self.hide();
               }
             });
           }
         } else {
-          var searchValue = new RegExp('^' + this.value.toLowerCase().trim());
+          var searchValue = new RegExp('' + this.value.toLowerCase().trim());
           options.each(function () {
             var self = $(this);
             if (searchValue.test(self.text().trim().toLowerCase())) {
