@@ -57,7 +57,7 @@ public class SummaryReader {
 
     private static final String SUPPRESSION_ATTRIBUTE = "suppression";
 
-    private static final List<String> textPresentations = ImmutableList.of("subtitle", "info");
+    private static final List<String> textPresentations = ImmutableList.of("subtitle", "subtitle1", "subtitle2", "subtitle3", "info");
     private static final List<String> dataPresentations = ImmutableList.of("line", "list", "bar", "gauge", "pie", "radar", "map");
     private static final List<String> tablePresentations = ImmutableList.of("table");
 

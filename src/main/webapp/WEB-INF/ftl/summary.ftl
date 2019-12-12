@@ -18,6 +18,16 @@
     [#return "- ${code} - " /]
 [/#function]
 
+[#function subtitleHeadingLevel presentation]
+	[#assign headingLevel = presentation.type?keep_after("subtitle") /]
+    [#if headingLevel == "" || !["1", "2", "3"]?seq_contains(headingLevel)]
+        [#assign headingLevel = "3" /]
+    [#else]
+        [#assign headingLevel = headingLevel?number + 2 /]          
+    [/#if]
+	[#return headingLevel]
+[/#function]
+
 [#macro show_filter_values presentation]
 
 [/#macro]
@@ -188,13 +198,14 @@
             <p>
                 hidden
             </p>
-      [#elseif "subtitle" = presentation.type]
-          <h3>
+      [#elseif (presentation.type!"")?starts_with("subtitle")]
+          [#assign headingLevel = subtitleHeadingLevel(presentation) /]
+          <h${headingLevel}>
               ${presentation.getContent(lang)}
-          </h3>
+          </h${headingLevel}>
       [#elseif "info" = presentation.type]
           <p>
-                   ${presentation.getContent(lang)}
+              ${presentation.getContent(lang)}
           </p>
       [#elseif "bar" = presentation.type  || "barstacked" = presentation.type || "barstacked100" = presentation.type]
           [@show_filter_values presentation /]
@@ -353,7 +364,7 @@
       [#assign containsMap = true]
       [#else]
       <h3>${presentation.type}</h3>
-      <p>${presentation.content}</p>
+      <p>${presentation.content!""}</p>
       [/#if]
 
 
