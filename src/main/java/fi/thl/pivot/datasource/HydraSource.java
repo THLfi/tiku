@@ -595,14 +595,14 @@ public abstract class HydraSource {
         }
         Limits limit = limits.get(ref);
         for(Property p : properties) {
-            if (p.predicate.startsWith("meta:limit")) {
+            if ("meta:limitbind".equals(p.predicate)) {
+                limit.setLimitBound(p.value);
+            } else if (p.predicate.startsWith("meta:limit")) {
                 setLimit(ref, limit, p);
             } else if (p.predicate.startsWith("meta:label")) {
                 setLimitLabel(limit, p);
             } else if ("meta:order".equals(p.predicate)) {
                 limit.setLimitOrder(p.value);
-            } else if ("meta:limitbound".equals(p.predicate)) {
-                limit.setLimitBound(p.value);
             } else {
                 LOG.warn("Unrecognized limit predicate " + p.predicate + " in " + runid);
             }

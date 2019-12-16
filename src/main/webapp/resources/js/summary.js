@@ -353,10 +353,10 @@ function selectChartType (e) {
             if(v !== undefined && /^\d+(\.\d+)?$/.test(v.value)) {
               color = undefined;
               for(var i = 1; i < limits.length - 1; ++i) {
-                if(opt.include = 'lte' && +v.value <= limits[i]) {
+                if(opt.include === 'lte' && +v.value <= limits[i]) {
                   color = colors[mapLimitIndex(limits, i - 1)];
                   break;
-                } else if (opt.include = 'gte' && +v.value < limits[i]) {
+                } else if (opt.include === 'gte' && +v.value < limits[i]) {
                   color = colors[mapLimitIndex(limits, i - 1)];
                   break;
                 }
