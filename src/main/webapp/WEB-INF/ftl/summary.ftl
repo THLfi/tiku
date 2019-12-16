@@ -349,9 +349,11 @@
         [/#if]
         [#if presentation.measure?? && presentation.measure.limits??]
           [#assign limits = presentation.measure.limits /]
+          [#assign measure = presentation.measure /]
           data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
           data-limits="${limits}"
           data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+          data-decimals="${measure.decimals}"
           [#list limits.labels as limitLabel]
             data-limit-${limitLabel_index}="${limitLabel.getValue(lang)?html}"
           [/#list]
@@ -543,7 +545,7 @@
                     <h2>${message("site.thl.services")}</h2>
 
                     <ul>
-                        <li><a href="https://www.sotkanet.fi">${message("site.sotkanet")}</a></li>
+                        <li><a href="https://sotkanet.fi">${message("site.sotkanet")}</a></li>
                         <li><a href="http://www.hyvinvointikompassi.fi">${message("site.hyvinvointikompassi")}</a></li>
                         <li><a href="http://www.terveytemme.fi">${message("site.terveytemme")}</a></li>
                         <li>${message("site.tietokantaraportit")}</li>
@@ -616,11 +618,11 @@
       <script src="${rc.contextPath}/resources/js/leaflet.js"></script>
       <script src="${rc.contextPath}/resources/js/proj4.min.js"></script>
       <script src="${rc.contextPath}/resources/js/proj4leaflet.js"></script>
-      <script src="https://www.sotkanet.fi/sotkanet/${mapLang}/api/geojson/MAA"></script>
+      <script src="https://sotkanet.fi/sotkanet/${mapLang}/api/geojson/MAA"></script>
 
       [#list summary.presentations as presentation]
       [#if presentation.type == "map"]
-      <script src="https://www.sotkanet.fi/sotkanet/${mapLang}/api/geojson/${presentation.area}"></script>
+      <script src="https://sotkanet.fi/sotkanet/${mapLang}/api/geojson/${presentation.area}"></script>
       [/#if]
       [/#list]
     [/#if]
