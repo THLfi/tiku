@@ -349,9 +349,11 @@
         [/#if]
         [#if presentation.measure?? && presentation.measure.limits??]
           [#assign limits = presentation.measure.limits /]
+          [#assign measure = presentation.measure /]
           data-limit-order="[#if limits.ascendingOrder]asc[#else]desc[/#if]"
           data-limits="${limits}"
           data-limit-include="[#if limits.lessThanOrEqualTo]lte[#else]gte[/#if]"
+          data-decimals="${measure.decimals}"
           [#list limits.labels as limitLabel]
             data-limit-${limitLabel_index}="${limitLabel.getValue(lang)?html}"
           [/#list]

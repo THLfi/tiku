@@ -289,6 +289,16 @@ function selectChartType (e) {
           bounds : [-548576, 6291456, 1548576, 8388608]
         });
 
+        function openBoundValue(limit) {
+          var step = 10 ** (-opt.decimals);
+          if (opt.include === 'gte') {
+            return (Number(limit) - step).toString();
+          }
+          else if (opt.include === 'lte') {
+            return (Number(limit) + step).toString();
+          }
+        }
+
         var legend = L.control({position : 'bottomleft'});
         var tooltip = $('<span></span>').addClass('maptip').hide();
 
@@ -305,7 +315,14 @@ function selectChartType (e) {
                 li.text(lbl[i]);
             } else {
                 var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
-                li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(limits[i + 1]));
+                if (opt.include === 'gte') {
+                  var upperLimit = openBoundValue(limits[i + 1]);
+                  li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(upperLimit));
+                }
+                else if (opt.include === 'lte') {
+                  var lowerLimit = openBoundValue(limits[i]);
+                  li.text(numberFormat(lowerLimit) + '\u2013' + numberFormat(limits[i + 1]));
+                }
             }
             var l = $('<span></span>')
               .css('background', colors[mapLimitIndex(limits, i)]);
@@ -2338,6 +2355,7 @@ function selectChartType (e) {
               limits: target.attr('data-limits'),
               order: target.attr('data-limit-order'),
               include: target.attr('data-limit-include'),
+              decimals: target.attr('data-decimals'),
               label: target.attr('data-label'),
               limitLabels: function() {
                   if(target.attr('data-limits') === undefined) {
