@@ -66,7 +66,7 @@
                     <h2>${message("site.thl.services")}</h2>
 
                     <ul>
-                    	<li><a href="http://www.sotkanet.fi">${message("site.sotkanet")}</a></li>
+                    	<li><a href="http://sotkanet.fi">${message("site.sotkanet")}</a></li>
                         <li><a href="http://www.hyvinvointikompassi.fi">${message("site.hyvinvointikompassi")}</a></li>
                         <li><a href="http://www.thl.fi/tietokantaraportit">${message("site.tietokantaraportit")}</a></li>
                         <li><a href="http://www.terveytemme.fi">${message("site.terveytemme")}</a></li>

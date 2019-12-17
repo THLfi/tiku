@@ -14,7 +14,7 @@ public class Limits {
     private Map<Integer, Label> labels = new TreeMap<>();
 
     private boolean isAscendingLimitOrder = true;
-    private boolean isLimitLowerOrEqualTo = true;
+    private boolean isLimitLowerOrEqualTo = false;
 
     /**
      * Provides a reference to a measure that
