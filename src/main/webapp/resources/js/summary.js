@@ -76,21 +76,24 @@ function selectChartType (e) {
 
   thl.pivot = thl.pivot || {};
   thl.pivot.svgToImg = function (doc, width, height, callback) {
-    var svgHeight;
+    var svgHeight;    
     if(doc.attr('height') !== undefined) {
       svgHeight = +doc.attr('height');
     } else {
       svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
     }
-    if(doc.attr('width') !== undefined) {
-      width = +doc.attr('width');
+    var svgWidth;
+    if (doc.attr('width') !== undefined) {
+      svgWidth = +doc.attr('width');
+    } else {
+      svgWidth = +doc[0].getAttribute('viewBox').split(' ')[2];
     }
-
+    
     var data;
     if(doc.attr('height')) {
       data = doc.parent().html();
     } else {
-      data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + svgHeight + '" ');
+      data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + height + '" ');
     }
     data = data.replace(/&nbsp;/g,' ');
     if(data.indexOf('xmlns') < 0) {
@@ -103,11 +106,16 @@ function selectChartType (e) {
     var url = DOMURL.createObjectURL(blob);
     img.onload = function() {
       try {
-        var canvas = $('<canvas>').attr('width', width + 20).attr('height', svgHeight + 20).get(0);
+        var canvas = $('<canvas>').attr('width', width + 20).attr('height', height + 20).get(0);
+        canvas.setAttribute('viewBox', [10, 10, +width + 0, +height + 0]);
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, 820, svgHeight + 20);
-        ctx.drawImage(img, 10, 10);
+        ctx.fillStyle = '#ffffff';        
+        ctx.fillRect(0, 0, +width + 20, +svgHeight + 20);
+        if (navigator.userAgent.toLowerCase().indexOf('chr') != -1) {
+          ctx.drawImage(img, -10, -10, +width + 20, +height + 20, 0, 0, width, height); 
+        } else {
+          ctx.drawImage(img, 10, 10, +width + 20, +height + 20, -10, -10, width, height);
+        }
         callback(canvas);
         DOMURL.revokeObjectURL(url);
       } catch (e) {
@@ -118,10 +126,10 @@ function selectChartType (e) {
     
   };
 
-  function addLegendToMap(svg, legendData) {
+  function addLegendToMap(svg, legendData, dx) {
     var clonedSvg = svg.clone(true);
     var clonedSvgAsD3Obj = d3.select(clonedSvg.get(0));
-    var legendXPosition = Math.max(30, 400 - legendData.title.length * 10);
+    var legendXPosition = Math.max(30+dx, 400 - legendData.title.length * 10);
     var legendContainer = clonedSvgAsD3Obj
       .append('g')
       .attr('transform', 'translate(' + legendXPosition + ', 40)');
@@ -129,7 +137,7 @@ function selectChartType (e) {
     legendContainer
       .append('text')
       .text(legendData.title)
-      .attr({ x: 10, y: 28 })
+      .attr({ x: 10+dx, y: 28 })
       .style({
         fill: '#030303', 'font-size': '18px', stroke: 'none'
       });
@@ -144,7 +152,7 @@ function selectChartType (e) {
     var labelMarkers = labels
       .append('rect')
       .attr({
-        x: 15,
+        x: 15+dx,
         y: 10,
         width: 15,
         height: 15,
@@ -156,7 +164,7 @@ function selectChartType (e) {
       .append('text')
       .text(function(d) { return d.label; })
       .attr({
-        x: 40,
+        x: 40+dx,
         y: 20,
         fill: '#030303',
         'font-size': '12px',
@@ -169,13 +177,23 @@ function selectChartType (e) {
 
   thl.pivot.exportImg = function(opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
+      var width = 800;
+      var height = 400;
+      var dx = 0;
       var link = $(this);
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');
-        if (opt.legendData) {
-          svg = addLegendToMap(svg, opt.legendData);
+        if (navigator.userAgent.toLowerCase().indexOf('chrom') != -1) {
+          dx = 210;
+          svg[0].setAttribute('height', height);
+          svg[0].setAttribute('width', width);
+          svg[0].setAttribute('viewBox', [dx-10, 0, +width + 0, +height + 40]);
+          
         }
-        thl.pivot.svgToImg(svg, 800, 400, function (canvas) {
+        if (opt.legendData) {
+          svg = addLegendToMap(svg, opt.legendData, dx);
+        }
+        thl.pivot.svgToImg(svg, (+(width)-200), height, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
