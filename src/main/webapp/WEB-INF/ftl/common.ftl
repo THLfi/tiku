@@ -46,7 +46,7 @@
 
       <header class="summary-header container-fluid">
           <div class="logo">
-              <img src="${rc.contextPath}/resources/img/thl_fi.jpg">
+              <img src="${rc.contextPath}/resources/img/THL_tunnus_pitka_fi_RGB.svg">
           </div>
           <div class="col-xs-10 col-md-9">
               <h1>

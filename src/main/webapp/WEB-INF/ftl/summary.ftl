@@ -425,7 +425,7 @@
 
     <header class="summary-header container-fluid">
         <div class="logo">
-            <img src="${rc.contextPath}/resources/img/thl_${uiLanguage!"fi"}.jpg">
+            <img src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
         <div class="col-xs-12 col-md-9">
             <h1>
@@ -569,10 +569,10 @@
                 <a title="${message("site.company")}"
                     href="http://www.thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
                          <img
-                            src="${rc.contextPath}/resources/img/thl_${uiLanguage!"fi"}.jpg"
+                            src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg"
                             title="${message("site.company")}"
                             alt="${message("site.company")}"
-                            height="42" />
+                            height="60" />
                 </a>
                 </div>
                 <div class="col-sm-8">

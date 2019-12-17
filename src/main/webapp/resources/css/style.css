@@ -100,10 +100,18 @@ h1 {
 	position: absolute;
 	top: 20px;
 	right: 20px;
-	padding: 0 10px;
-	border-radius: 5px 5px 5px 5px;
-	right: 20px;
+	height: 68px;
+	width: 220px;
+	max-width: 65%;
+    max-height: 70px;
+    padding: 0 10px;
+
 }
+.logo .img{ 
+    max-width: 100%;
+    height: auto !important;
+    object-fit: contain;
+    }
 
 .toolbar-control {
 	position: absolute;
