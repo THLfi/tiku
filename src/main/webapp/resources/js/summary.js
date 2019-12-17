@@ -82,13 +82,7 @@ function selectChartType (e) {
     } else {
       svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
     }
-    var svgWidth;
-    if (doc.attr('width') !== undefined) {
-      svgWidth = +doc.attr('width');
-    } else {
-      svgWidth = +doc[0].getAttribute('viewBox').split(' ')[2];
-    }
-    
+       
     var data;
     if(doc.attr('height')) {
       data = doc.parent().html();
