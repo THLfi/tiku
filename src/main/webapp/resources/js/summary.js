@@ -360,7 +360,7 @@ function selectChartType (e) {
           if (numDecimals == -1 || (!numDecimals && numDecimals !== 0)) {
             numDecimals = limit.split('.')[1].length || 0;
           }
-          var step = 10 ** (-numDecimals);
+          var step = Math.pow(10, -numDecimals);
 
           if (opt.include === 'gte') {
             return (Number(limit) - step).toString();
