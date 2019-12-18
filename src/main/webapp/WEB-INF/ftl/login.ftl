@@ -32,7 +32,7 @@
     <div class="pivot-header">
         <h1>${cubeLabel.getValue(lang)}</h1>
         <div class="logo">
-            <img src="${rc.contextPath}/resources/img/thl_${uiLanguage!"fi"}.jpg">
+            <img src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
         <div class="toolbar-control">
         </div>
