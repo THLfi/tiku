@@ -2491,7 +2491,7 @@ function selectChartType (e) {
               percent: $(p).attr('data-percent') === 'true',
               range: [$(p).attr('data-min'), $(p).attr('data-max')],
               palette: $(p).attr('data-palette'),
-              showCi: $(p).attr('data-ci') === 'true',
+              showCi: true, //show always n.
               em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
               limits: target.attr('data-limits'),
               limitLabels: function() {
@@ -2500,7 +2500,7 @@ function selectChartType (e) {
                 }
                 var l = target.attr('data-limits').split(',').length;
                 var lbl = [];
-                for(var i = 0; i < l - 1; ++i) {
+                for(var i = 0; i < l - 1 ; ++i) {
                     var value = target.attr('data-limit-' + i);
                     if(value !== undefined)
                         lbl.push(value);
