@@ -389,13 +389,12 @@ function selectChartType (e) {
             if(lbl.length > i) {
                 li.text(lbl[i]);
             } else {
-                var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
                 if (opt.include === 'gte') {
-                  var upperLimit = openBoundValue(limits[i + 1]);
+                  var upperLimit = (i === limits.length-2) ? limits[i + 1] : openBoundValue(limits[i + 1]);
                   li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(upperLimit));
                 }
                 else if (opt.include === 'lte') {
-                  var lowerLimit = openBoundValue(limits[i]);
+                  var lowerLimit = (i === 0) ? limits[0] : openBoundValue(limits[i]);
                   li.text(numberFormat(lowerLimit) + '\u2013' + numberFormat(limits[i + 1]));
                 }
             }
