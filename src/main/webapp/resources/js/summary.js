@@ -1532,7 +1532,9 @@ function selectChartType (e) {
                   });
                 });
 
-                var scaleFactor = 1 - maxAxisLabelHeight/opt.height;
+              var legendHeight = chart.select('.legend').node().getBoundingClientRect().height;
+              var scaleFactor = 1 - maxAxisLabelHeight / opt.height - legendHeight / opt.height;
+
               g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight)+ ')');
 
              for (var series = 0; series < opt.series.length; ++series) {
