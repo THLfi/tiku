@@ -389,7 +389,6 @@ function selectChartType (e) {
             if(lbl.length > i) {
                 li.text(lbl[i]);
             } else {
-                var j = Math.floor((i * 1.0/(limits.length - 2)) * 4);
                 if (opt.include === 'gte') {
                   var upperLimit = (i === limits.length-2) ? limits[i + 1] : openBoundValue(limits[i + 1]);
                   li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(upperLimit));
