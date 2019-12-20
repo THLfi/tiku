@@ -80,9 +80,39 @@ function selectChartType (e) {
     if(doc.attr('height') !== undefined) {
       svgHeight = +doc.attr('height');
     } else {
-      svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
+      var vb = doc.attr('viewBox');
+      if(vb){
+        svgHeight = vb.split(' ')[3];
+      }      
+    }    
+
+    var svgWidth = (+svgHeight/height)*width;
+    if(doc.attr('width') !== undefined) {
+      svgWidth = +doc.attr('width');
+    } else {
+      var vb = doc.attr('viewBox');
+      if(vb){
+        svgWidth = vb.split(' ')[2];
+      }   
+    }  
+    var imgMiddle = svgWidth / 2;
+    var heightRatio = (height / svgHeight)
+    var croppedImgWidth = width * heightRatio;
+
+    var left = imgMiddle - croppedImgWidth / 2;
+    var leftStart = 0;
+    if (left < 0) {
+      leftStart = -left;
+      left = 0;
     }
-       
+    if (imgMiddle < width / 2) {
+      leftStart = width / 2 - imgMiddle;
+      left = 0;
+    }
+    if (croppedImgWidth > svgWidth) {
+      croppedImgWidth = svgWidth;
+    }
+
     var data;
     if(doc.attr('height')) {
       data = doc.parent().html();
@@ -97,19 +127,19 @@ function selectChartType (e) {
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
     var DOMURL = window.URL || window.webkitURL || window;
-    var url = DOMURL.createObjectURL(blob);
-    img.onload = function() {
+    var url = DOMURL.createObjectURL(blob);    
+    img.onload = function(opt) {
       try {
-        var canvas = $('<canvas>').attr('width', width + 20).attr('height', height + 20).get(0);
-        canvas.setAttribute('viewBox', [10, 10, +width + 0, +height + 0]);
+        var canvas = $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';        
-        ctx.fillRect(0, 0, +width + 20, +svgHeight + 20);
-        if (navigator.userAgent.toLowerCase().indexOf('chr') != -1) {
-          ctx.drawImage(img, -10, -10, +width + 20, +height + 20, 0, 0, width, height); 
-        } else {
-          ctx.drawImage(img, 10, 10, +width + 20, +height + 20, -10, -10, width, height);
-        }
+        ctx.fillRect(0, 0, +width , +height+40 );        
+          ctx.drawImage(img, 
+            left, 0, //map image where to start inserting
+            croppedImgWidth, svgHeight,   //what size is the map    
+            leftStart+40, 0,  //where in canvas put it
+            croppedImgWidth, svgHeight);     //what size to scretch map      
+      
         callback(canvas);
         DOMURL.revokeObjectURL(url);
       } catch (e) {
@@ -126,12 +156,12 @@ function selectChartType (e) {
     var legendXPosition = Math.max(30+dx, 400 - legendData.title.length * 10);
     var legendContainer = clonedSvgAsD3Obj
       .append('g')
-      .attr('transform', 'translate(' + legendXPosition + ', 40)');
+      .attr('transform', 'translate(' + legendXPosition + ', 15)');
 
     legendContainer
       .append('text')
       .text(legendData.title)
-      .attr({ x: 10+dx, y: 28 })
+      .attr({ x: 5+dx, y: 28 })
       .style({
         fill: '#030303', 'font-size': '18px', stroke: 'none'
       });
@@ -169,25 +199,28 @@ function selectChartType (e) {
     return clonedSvg;
   };
 
-  thl.pivot.exportImg = function(opt) {
+  thl.pivot.exportImg = function (opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
-      var width = 800;
+      var width = 600;
       var height = 400;
       var dx = 0;
       var link = $(this);
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');
-        if (navigator.userAgent.toLowerCase().indexOf('chrom') != -1) {
-          dx = 210;
-          svg[0].setAttribute('height', height);
-          svg[0].setAttribute('width', width);
-          svg[0].setAttribute('viewBox', [dx-10, 0, +width + 0, +height + 40]);
-          
+        var svgWidth;
+        if (svg[0].width !== undefined) {
+          svgWidth = +svg[0].getAttribute('width');
+        } else {
+          svgWidth = +svg[0].getAttribute('viewBox').split(' ')[2];
+        }
+        dx = ((svgWidth / 4 - 120));
+        if(svgWidth<width){
+          dx=-15;//place it left side beacause not much space available
         }
         if (opt.legendData) {
           svg = addLegendToMap(svg, opt.legendData, dx);
         }
-        thl.pivot.svgToImg(svg, (+(width)-200), height, function (canvas) {
+        thl.pivot.svgToImg(svg, +width, +height, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
