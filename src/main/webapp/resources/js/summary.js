@@ -75,14 +75,24 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, callback) {
+  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {
     var svgHeight;    
     if(doc.attr('height') !== undefined) {
       svgHeight = +doc.attr('height');
     } else {
-      svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
+      svgHeight = +doc.getAttribute('viewBox').split(' ')[3];
     }
-       
+
+    var svgWidth = (+svgHeight/height)*width;
+    if(doc.attr('width') !== undefined) {
+      svgWidth = +doc.attr('width');
+    } else {
+      svgWidth = +doc.getAttribute('viewBox').split(' ')[2];
+    }
+    if(svgHeight>svgWidth){
+      svgHeight = svgHeight/2;
+    }
+
     var data;
     if(doc.attr('height')) {
       data = doc.parent().html();
@@ -98,18 +108,35 @@ function selectChartType (e) {
     var img = new Image();
     var DOMURL = window.URL || window.webkitURL || window;
     var url = DOMURL.createObjectURL(blob);
-    img.onload = function() {
+    img.onload = function(opt) {
       try {
-        var canvas = $('<canvas>').attr('width', width + 20).attr('height', height + 20).get(0);
-        canvas.setAttribute('viewBox', [10, 10, +width + 0, +height + 0]);
+        var canvas = $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';        
-        ctx.fillRect(0, 0, +width + 20, +svgHeight + 20);
-        if (navigator.userAgent.toLowerCase().indexOf('chr') != -1) {
-          ctx.drawImage(img, -10, -10, +width + 20, +height + 20, 0, 0, width, height); 
-        } else {
-          ctx.drawImage(img, 10, 10, +width + 20, +height + 20, -10, -10, width, height);
+        ctx.fillRect(0, 0, +width , +height+40 );
+        
+        
+        var imgMiddle = svgWidth/2-(svgWidth>900?100:0);
+
+        var svgImgWidth = Math.max(width,svgWidth);
+        var wCalc = Math.min(width,svgImgWidth);       
+        var heightRatio = (height/svgHeight)*1.1;
+        var offset = 0;
+        var vx = imgMiddle-(width/2)/heightRatio;        
+        if(vx<0){
+          offset=-vx;
+          offset+=50;
+          vx=0;          
+        }       
+        
+        if (opt.legendData) {
+          ctx = addLegendToMap(ctx, opt.legendData,10);
         }
+        
+          ctx.drawImage(img, 
+            vx, 0, wCalc, svgHeight+50,             
+            offset, 0,  width, +Math.max(svgHeight,height));           
+      
         callback(canvas);
         DOMURL.revokeObjectURL(url);
       } catch (e) {
@@ -171,23 +198,26 @@ function selectChartType (e) {
 
   thl.pivot.exportImg = function(opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
-      var width = 800;
+      var width = 600;
       var height = 400;
       var dx = 0;
       var link = $(this);
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');
-        if (navigator.userAgent.toLowerCase().indexOf('chrom') != -1) {
-          dx = 210;
-          svg[0].setAttribute('height', height);
-          svg[0].setAttribute('width', width);
-          svg[0].setAttribute('viewBox', [dx-10, 0, +width + 0, +height + 40]);
-          
-        }
-        if (opt.legendData) {
-          svg = addLegendToMap(svg, opt.legendData, dx);
-        }
-        thl.pivot.svgToImg(svg, (+(width)-200), height, function (canvas) {
+        
+        
+          var svgWidth;
+          if (svg[0].height !== undefined) {
+            svgWidth = +svg[0].getAttribute('width');
+          } else {
+            svgWidth = +svg[0].getAttribute('viewBox').split(' ')[2];
+          }
+          dx = Math.max((svgWidth/2-600),-100);         
+        
+         if (opt.legendData) {
+           svg = addLegendToMap(svg, opt.legendData, dx);
+         }
+        thl.pivot.svgToImg(svg, +width, +height, opt, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
