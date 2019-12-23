@@ -97,7 +97,7 @@ function selectChartType (e) {
     }  
     var imgMiddle = svgWidth / 2;
     var heightRatio = (height / svgHeight)
-    var croppedImgWidth = width * heightRatio;
+    var croppedImgWidth = width / heightRatio;
 
     var left = imgMiddle - croppedImgWidth / 2;
     var leftStart = 0;
@@ -107,7 +107,6 @@ function selectChartType (e) {
     }
     if (imgMiddle < width / 2) {
       leftStart = width / 2 - imgMiddle;
-      left = 0;
     }
     if (croppedImgWidth > svgWidth) {
       croppedImgWidth = svgWidth;
@@ -132,12 +131,12 @@ function selectChartType (e) {
       try {
         var canvas = $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';        
-        ctx.fillRect(0, 0, +width , +height+40 );        
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, +width , +height+40 );
           ctx.drawImage(img, 
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
-            leftStart+40, 0,  //where in canvas put it
+            leftStart, 0,  //where in canvas put it
             croppedImgWidth, svgHeight);     //what size to scretch map      
       
         callback(canvas);
@@ -158,7 +157,7 @@ function selectChartType (e) {
       .append('g')
       .attr('transform', 'translate(' + legendXPosition + ', 15)');
 
-    legendContainer
+    legendContainer 
       .append('text')
       .text(legendData.title)
       .attr({ x: 5+dx, y: 28 })
@@ -213,7 +212,7 @@ function selectChartType (e) {
         } else {
           svgWidth = +svg[0].getAttribute('viewBox').split(' ')[2];
         }
-        dx = ((svgWidth / 4 - 120));
+        dx = ((svgWidth / 4 - 160));
         if(svgWidth<width){
           dx=-15;//place it left side beacause not much space available
         }
