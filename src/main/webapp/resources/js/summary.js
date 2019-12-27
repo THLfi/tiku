@@ -1293,7 +1293,12 @@ function selectChartType (e) {
                     return scaleValue(opt.callback(series, i, 2));
                   },
                   function (d, i) {
-                    return ordinalScale(d) + chartBarHeight + BAR_MARGIN / 2;
+                    if (!opt.stacked) {
+                        return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN / 2);
+                      } else {
+                        return ordinalScale(d) + chartBarHeight + BAR_MARGIN / 2;
+                      }
+                    
                   }, 'bar');
               }
             }
