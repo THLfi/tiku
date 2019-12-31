@@ -91,11 +91,7 @@ function selectChartType (e) {
     if(doc.attr('width') !== undefined) {
       svgWidth = +doc.attr('width');
     } else {
-
-      svgWidth = +doc.getAttribute('viewBox').split(' ')[2];
-      var vb = doc.attr('viewBox');
       var vb = +doc[0].getAttribute('viewBox');
-
       if(vb){
         svgWidth = vb.split(' ')[2];
       }   
@@ -131,33 +127,11 @@ function selectChartType (e) {
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
     var DOMURL = window.URL || window.webkitURL || window;
-    var url = DOMURL.createObjectURL(blob);
+    var url = DOMURL.createObjectURL(blob);    
     img.onload = function(opt) {
       try {
         var canvas = $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';        
-        ctx.fillRect(0, 0, +width , +height+40 );
-        
-        
-        var imgMiddle = svgWidth/2-(svgWidth>900?100:0);
-
-        var svgImgWidth = Math.max(width,svgWidth);
-        var wCalc = Math.min(width,svgImgWidth);       
-        var heightRatio = (height/svgHeight)*1.1;
-        var offset = 0;
-        var vx = imgMiddle-(width/2)/heightRatio;        
-        if(vx<0){
-          offset=-vx;
-          offset+=50;
-          vx=0;          
-        }       
-        
-        if (opt.legendData) {
-          ctx = addLegendToMap(ctx, opt.legendData,10);
-        }
-        
-
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
         if (isMap) {
@@ -165,8 +139,9 @@ function selectChartType (e) {
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
             leftStart, 0,  //where in canvas put it
-            croppedImgWidth, svgHeight);     //what size to scretch map          
-        } else {
+            croppedImgWidth, svgHeight);     //what size to scretch map      
+      
+        }else{
           ctx.drawImage(img,0,0);
         }
         callback(canvas);
@@ -185,12 +160,12 @@ function selectChartType (e) {
     var legendXPosition = Math.max(30+dx, 400 - legendData.title.length * 10);
     var legendContainer = clonedSvgAsD3Obj
       .append('g')
-      .attr('transform', 'translate(' + legendXPosition + ', 40)');
+      .attr('transform', 'translate(' + legendXPosition + ', 15)');
 
     legendContainer 
       .append('text')
       .text(legendData.title)
-      .attr({ x: 10+dx, y: 28 })
+      .attr({ x: 5+dx, y: 28 })
       .style({
         fill: '#030303', 'font-size': '18px', stroke: 'none'
       });
@@ -228,7 +203,7 @@ function selectChartType (e) {
     return clonedSvg;
   };
 
-  thl.pivot.exportImg = function(opt) {
+  thl.pivot.exportImg = function (opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
       var width = 800;
       var height = 400;
