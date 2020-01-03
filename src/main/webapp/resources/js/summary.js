@@ -134,12 +134,13 @@ function selectChartType (e) {
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
+
         if (isMap) {
-          ctx.drawImage(img,  
+          ctx.drawImage(img,
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
             leftStart, 0,  //where in canvas put it
-            croppedImgWidth, svgHeight);     //what size to scretch map      
+            croppedImgWidth, svgHeight);     //what size to scretch map    
       
         }else{
           ctx.drawImage(img,0,0);
