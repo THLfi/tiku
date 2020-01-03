@@ -75,12 +75,13 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, callback) {
+  thl.pivot.svgToImg = function (doc, width, height, isMap, callback) {
     var svgHeight;    
     if(doc.attr('height') !== undefined) {
-      svgHeight = +doc.attr('height');
+      svgHeight = +doc.attr('height');      
+      
     } else {
-      var vb = doc.attr('viewBox');
+      var vb = +doc[0].getAttribute('viewBox');
       if(vb){
         svgHeight = vb.split(' ')[3];
       }      
@@ -90,7 +91,7 @@ function selectChartType (e) {
     if(doc.attr('width') !== undefined) {
       svgWidth = +doc.attr('width');
     } else {
-      var vb = doc.attr('viewBox');
+      var vb = +doc[0].getAttribute('viewBox');
       if(vb){
         svgWidth = vb.split(' ')[2];
       }   
@@ -133,12 +134,17 @@ function selectChartType (e) {
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
-          ctx.drawImage(img, 
+
+        if (isMap) {
+          ctx.drawImage(img,
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
             leftStart, 0,  //where in canvas put it
-            croppedImgWidth, svgHeight);     //what size to scretch map      
+            croppedImgWidth, svgHeight);     //what size to scretch map    
       
+        }else{
+          ctx.drawImage(img,0,0);
+        }
         callback(canvas);
         DOMURL.revokeObjectURL(url);
       } catch (e) {
@@ -200,26 +206,28 @@ function selectChartType (e) {
 
   thl.pivot.exportImg = function (opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
-      var width = 600;
+      var width = 800;
       var height = 400;
       var dx = 0;
       var link = $(this);
+      var isMap = false;
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');
         var svgWidth;
         if (svg[0].width !== undefined) {
-          svgWidth = +svg[0].getAttribute('width');
+        	svgWidth = +svg[0].getAttribute('width');
         } else {
           svgWidth = +svg[0].getAttribute('viewBox').split(' ')[2];
         }
         dx = ((svgWidth / 4 - 160));
         if(svgWidth<width){
-          dx=-15;//place it left side beacause not much space available
+          dx=-120;//place it left side beacause not much space available
         }
         if (opt.legendData) {
           svg = addLegendToMap(svg, opt.legendData, dx);
+          isMap = true;
         }
-        thl.pivot.svgToImg(svg, +width, +height, function (canvas) {
+        thl.pivot.svgToImg(svg, +width, +height, isMap, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
@@ -1293,12 +1301,11 @@ function selectChartType (e) {
                     return scaleValue(opt.callback(series, i, 2));
                   },
                   function (d, i) {
-                    if (!opt.stacked) {
-                        return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN / 2);
-                      } else {
-                        return ordinalScale(d) + chartBarHeight + BAR_MARGIN / 2;
-                      }
-                    
+                	  if (!opt.stacked) {
+                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN / 2);
+                        } else {
+                          return ordinalScale(d) + chartBarHeight + BAR_MARGIN / 2;
+                        }
                   }, 'bar');
               }
             }
