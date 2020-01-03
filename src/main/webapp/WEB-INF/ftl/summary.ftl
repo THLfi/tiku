@@ -476,6 +476,12 @@
       </div>
       [/#if]
       <div class="btn-group pull-right help" role="group">
+        [#if summary.link.getValue(lang)?? && !summary.link.getValue(lang)?ends_with('n/a')]
+        <a href="${summary.link.getValue(lang)}" target="_blank" type="submit" class="btn btn-default">
+          <span class="glyphicon glyphicon-info-sign"></span>
+          <span class="hide-xs">${message("summary.more")}</span>
+        </a>
+        [/#if]
         <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
           <span class="glyphicon glyphicon-question-sign"></span>
           <span class="hide-xs">${message("site.help")}</span>
@@ -512,7 +518,6 @@
                   [#else]
                   <p>${summary.note.getValue(lang)!}</p>
                   [/#if]
-                  <p><a href="${summary.link.getValue(lang)!}">${message("summary.more")}</a></p>
 
                   [@summary_presentations /]
                 </div>
