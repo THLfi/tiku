@@ -321,7 +321,8 @@
               data-row-count="${presentation.rows?size}"
               data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
               data-ref="${factTable}.json?${presentation.dataUrl}"
-              data-suppress="${presentation.suppress}">
+              data-suppress="${presentation.suppress}"
+              data-highlight="${presentation.highlight}">
               [@export presentation "table" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>

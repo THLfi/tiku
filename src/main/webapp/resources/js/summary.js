@@ -767,7 +767,7 @@ function selectChartType (e) {
             var val = opt.dataset.Data(key);
             if (val == null || val.value === null) {
               row.append(
-                $('<td>')
+                $('<td >')
                 .append('<span>..</span>')
                 .css('text-align', opt.align[0])
               );
@@ -777,11 +777,25 @@ function selectChartType (e) {
             } else {
               hasValue = hasValue || (+val.value != 0 || (opt.suppress != 'all' && opt.supress != 'zero'));
               var content = numberFormat('' + val.value);
+              var zeros = false;
+              var negatives = false;
+              var tdAndClass = '<td>';
+              if(opt.highlight==='zeros_and_negatives'){
+                zeros = true;
+                negatives = true;
+              } else if(opt.highlight==='zeros'){
+                zeros = true;
+              } else if(opt.highlight==='negatives'){
+                negatives = true;
+              }
+              if ((+val.value<0 && negatives) || (+val.value===0 && zeros)){
+                tdAndClass = '<td class="text-danger">';
+              }
               var span = $('<span></span>')
                 .text(content)
                 .addClass(cls + i);
               row.append(
-                $('<td>')
+                $(tdAndClass)
                 .append(span)
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
@@ -2502,7 +2516,8 @@ function selectChartType (e) {
                 rowCount: parseInt(target.attr('data-row-count')),
                 columnCount: parseInt(target.attr('data-column-count')),
                 align: target.attr('data-align').split(' '),
-                suppress: target.attr('data-suppress')
+                suppress: target.attr('data-suppress'),
+                highlight: target.attr('data-highlight')
               });
           } else if ('list' === type) {
             summary

@@ -26,6 +26,7 @@ public class DataPresentation implements Presentation {
     private int groupSize = 1;
     private boolean isFirst, isLast;
     private SuppressMode suppress;
+    private HighlightMode highlight;
     private boolean showConfidenceInterval;
     private boolean showSampleSize;
     private List<String> emphasize = new ArrayList<>();
@@ -122,6 +123,13 @@ public class DataPresentation implements Presentation {
 
     public SuppressMode getSuppress() {
         return this.suppress;
+    }
+    public void setHighlight(HighlightMode highlight) {
+        this.highlight = highlight;
+    }
+
+    public HighlightMode getHighlight() {
+        return this.highlight;
     }
 
     public Integer getMin() {

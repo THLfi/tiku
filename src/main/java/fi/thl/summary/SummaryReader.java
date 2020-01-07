@@ -56,6 +56,7 @@ public class SummaryReader {
     private static final String BOOLEAN_YES = "yes";
 
     private static final String SUPPRESSION_ATTRIBUTE = "suppression";
+    private static final String HIGHLIGHT_ATTRIBUTE = "highlight";
 
     private static final List<String> textPresentations = ImmutableList.of("subtitle", "subtitle1", "subtitle2", "subtitle3", "info");
     private static final List<String> dataPresentations = ImmutableList.of("line", "list", "bar", "gauge", "pie", "radar", "map");
@@ -382,6 +383,7 @@ public class SummaryReader {
             TablePresentation p = new TablePresentation();
 
             p.setSuppress(Presentation.SuppressMode.fromString(attribute(node, SUPPRESSION_ATTRIBUTE)));
+            p.setHighlight(Presentation.HighlightMode.fromString(attribute(node, HIGHLIGHT_ATTRIBUTE)));
 
             // We have to parse filters before dimensions as dimension
             // may have an unspecified stage in which case if filter
