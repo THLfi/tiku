@@ -35,6 +35,25 @@ public interface Presentation {
             return none;
         }
     }
+    public static enum HighlightMode {
+        none, zeros, negatives, zeros_and_negatives;
+
+        public static HighlightMode fromString(String attribute) {
+            if(null == attribute) {
+                return none;
+            }
+            if("zeros".equalsIgnoreCase(attribute)) {
+                return zeros;
+            }
+            if("negatives".equalsIgnoreCase(attribute)) {
+                return negatives;
+            }
+            if("zeros_and_negatives".equalsIgnoreCase(attribute)) {
+                return zeros_and_negatives;
+            }           
+            return none;
+        }
+    }
 
     /**
      * 
