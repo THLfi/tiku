@@ -1232,7 +1232,7 @@ function selectChartType (e) {
                     return val - scaledZero >= 0 ? scaledZero : scaledZero + (val - scaledZero);
                   },
                   function (d, i) {
-                    return ordinalScale(d) + BAR_GROUP_MARGIN / 1.5 + series * (chartColumnWidth + BAR_MARGIN) + chartColumnWidth / 2 - 1;
+                    return ordinalScale(d) + BAR_GROUP_MARGIN / 1.5 + series * (chartColumnWidth + BAR_MARGIN) + chartColumnWidth / 2 ;
                   }, 'column');
               }
             }
@@ -1316,9 +1316,9 @@ function selectChartType (e) {
                   },
                   function (d, i) {
                 	  if (!opt.stacked) {
-                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN / 2);
+                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN )-(BAR_MARGIN/2+1);
                         } else {
-                          return ordinalScale(d) + chartBarHeight + BAR_MARGIN / 2;
+                          return ordinalScale(d) + chartBarHeight  ;
                         }
                   }, 'bar');
               }
