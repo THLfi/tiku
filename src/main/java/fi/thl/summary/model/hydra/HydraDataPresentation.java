@@ -264,6 +264,11 @@ public class HydraDataPresentation extends DataPresentation {
         return delegate.getGeometry();
     }
 
+    @Override
+    public Legendless getLegendless() {
+        return delegate.getLegendless();
+    }
+
     public boolean isVisible() {
         return new HydraRule(delegate.getRule(), ((HydraSummary) summary)).eval();
     }

@@ -55,6 +55,23 @@ public interface Presentation {
         }
     }
 
+    public static enum Legendless {
+        no, yes, nonEmphasized;
+
+        public static Legendless fromString(String attribute) {
+            if(null == attribute) {
+                return no;
+            }
+            if("yes".equalsIgnoreCase(attribute)) {
+                return yes;
+            }
+            if("non-emphasized".equalsIgnoreCase(attribute)) {
+                return nonEmphasized;
+            }
+            return no;
+        }
+    }
+
     /**
      * 
      * @return the type of the presentation as defined in the summary

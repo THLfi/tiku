@@ -462,6 +462,7 @@ public class SummaryReader {
     private static class DataPresentationParser implements PresentationParser {
 
         private static final String ATTRIBUTE_SORT = "sort";
+        private static final String LEGENDLESS_ATTRIBUTE = "legendless";
         protected final Node node;
         private final Summary summary;
 
@@ -489,7 +490,6 @@ public class SummaryReader {
         protected Presentation parse(DataPresentation p) {
 
             p.setSuppress(Presentation.SuppressMode.fromString(attribute(node, SUPPRESSION_ATTRIBUTE)));
-
             Node typeNode = firstChildNode(node, "type");
             // As it happens, old version was case insensitive so we have to
             // make this case insensitive as well.
@@ -498,6 +498,9 @@ public class SummaryReader {
             p.setType(type);
             if (null != attribute(typeNode, ATTRIBUTE_SORT)) {
                 p.setSortMode(Presentation.SortMode.valueOf(attribute(typeNode, ATTRIBUTE_SORT).toLowerCase()));
+            }
+            if (null != attribute(typeNode, LEGENDLESS_ATTRIBUTE)) {
+                p.setLegendless(Presentation.Legendless.fromString(attribute(typeNode, LEGENDLESS_ATTRIBUTE)));
             }
             p.setShowConfidenceInterval(BOOLEAN_YES.equals(attribute(typeNode, "ci")));
             p.setShowSampleSize(BOOLEAN_YES.equals(attribute(typeNode, "n")));
