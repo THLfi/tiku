@@ -132,23 +132,29 @@ function selectChartType (e) {
       data = data.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
     }
     var lData;
-    if(legend.attr('height')) {
-      lData = legend.parent().html();
-    } else {
-      lData = legend.parent().html().replace('<svg ', '<svg width="600" height="400" ');
+    var DOMURL = window.URL || window.webkitURL || window;
+    var lImg = new Image();
+    if(isMap){
+      if(legend.attr('height')) {
+        lData = legend.parent().html();
+      } else {
+        lData = legend.parent().html().replace('<svg ', '<svg width="600" height="400" ');
+      }
+      lData = lData.replace(/&nbsp;/g,' ');
+      if(lData.indexOf('xmlns') < 0) {
+        // xmlns is required to draw svg to canvas
+        lData = lData.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
+      }
+      var lBlob = new Blob([lData], {type: 'image/svg+xml;charset=UTF-8'});
+      var lUrl = DOMURL.createObjectURL(lBlob);    
+      lImg.src = lUrl;
     }
-    lData = lData.replace(/&nbsp;/g,' ');
-    if(lData.indexOf('xmlns') < 0) {
-      // xmlns is required to draw svg to canvas
-      lData = lData.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
-    }
-    var lBlob = new Blob([lData], {type: 'image/svg+xml;charset=UTF-8'});
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
-    var lImg = new Image();
-    var DOMURL = window.URL || window.webkitURL || window;
+    
+    
     var url = DOMURL.createObjectURL(blob);    
-    var lUrl = DOMURL.createObjectURL(lBlob);    
+    
     img.onload = function() {
       try {
         var canvas = isMap? $('<canvas>').attr('width', 600 ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
@@ -169,19 +175,25 @@ function selectChartType (e) {
         
         callback(canvas);
         DOMURL.revokeObjectURL(url);
-        DOMURL.revokeObjectURL(lUrl);
+        if(isMap){
+          DOMURL.revokeObjectURL(lUrl);
+        }
        
       } catch (e) {
         $(img).remove();
       }
     };
     img.src = url;
-    lImg.src = lUrl;
+    
+    
     
   };
 
   function getLegendSvg(legendData) {    
     var clonedSvg =   $('<svg></svg>').attr('xmlns','http://www.w3.org/2000/svg').attr('width', 500 ).attr('height', 400 );
+    if(!legendData){
+      return clonedSvg;
+    }
     var clonedSvgAsD3Obj = d3.select(clonedSvg.get(0));
     var legendXPosition = 40;
     var legendContainer = clonedSvgAsD3Obj
