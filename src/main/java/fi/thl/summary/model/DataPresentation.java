@@ -27,6 +27,7 @@ public class DataPresentation implements Presentation {
     private boolean isFirst, isLast;
     private SuppressMode suppress;
     private HighlightMode highlight;
+    private Legendless legendless;
     private boolean showConfidenceInterval;
     private boolean showSampleSize;
     private List<String> emphasize = new ArrayList<>();
@@ -130,6 +131,14 @@ public class DataPresentation implements Presentation {
 
     public HighlightMode getHighlight() {
         return this.highlight;
+    }
+
+    public void setLegendless(Legendless legendless) {
+        this.legendless = legendless;
+    }
+
+    public Legendless getLegendless() {
+        return this.legendless;
     }
 
     public Integer getMin() {

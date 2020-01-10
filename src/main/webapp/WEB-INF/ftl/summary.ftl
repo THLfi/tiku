@@ -237,7 +237,8 @@
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
               [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n??][#if emindex>0],[/#if][#assign emindex=1/]${n.surrogateId}[/#if][/#list]"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
-              data-sort="${presentation.sortMode}">
+              data-sort="${presentation.sortMode}"
+              [#if presentation.legendless??]data-legendless="${presentation.legendless}"[/#if]>
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>
@@ -499,7 +500,7 @@
     </div>
 
     <div class="summary-body container-fluid">
-        <div class="summary-content">
+        <div class="summary-content row">
 
             <div class="col-sm-3">
                 [@summary_filter_form /]

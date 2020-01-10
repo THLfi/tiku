@@ -1926,19 +1926,6 @@ function selectChartType (e) {
                 .text(numberFormat(text));
             }
 
-            function appendLegendElements (chart, baseX, baseY, rectStyleAttributes, textStyleAttributes, text) {
-              chart.append('rect')
-                .attr('x', baseX)
-                .attr('y', baseY)
-                .attr(rectStyleAttributes);
-
-              chart.append('text')
-                .attr('x', baseX + 20)
-                .attr('y', baseY + 12)
-                .attr(textStyleAttributes)
-                .attr('title', text)
-                .text(text);
-            }
           }
         };
 
@@ -1992,7 +1979,15 @@ function selectChartType (e) {
             .scale(ordinalScale)
             .orient('bottom')
             .tickFormat(function (d) {
-              return pxWidth(labels[d].length) <= MAX_LABEL_LENGTH ? labels[d] : labels[d].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
+              if (opt.legendless === 'yes' && opt.type === 'columnchart') {
+                return '';
+              }
+              else if (opt.legendless === 'nonEmphasized' && opt.type === 'columnchart') {
+                return opt.em.indexOf(d) >= 0 ? labels[d] : '';
+              }
+              else {
+                return pxWidth(labels[d].length) <= MAX_LABEL_LENGTH ? labels[d] : labels[d].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
+              }
             });
           if (showInnerTick) {
             xAxis.innerTickSize(-xAxisPos);
@@ -2597,7 +2592,8 @@ function selectChartType (e) {
                 return area;
               },
               order: target.attr('data-limit-order'),
-              include: target.attr('data-limit-include')
+              include: target.attr('data-limit-include'),
+              legendless: target.attr('data-legendless')
             });
           }
           $(p).children('img').remove();
