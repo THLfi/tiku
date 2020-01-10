@@ -145,23 +145,18 @@ function selectChartType (e) {
         // xmlns is required to draw svg to canvas
         lData = lData.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
       }
-      var lBlob = new Blob([lData], {type: 'image/svg+xml;charset=UTF-8'});
+      var lBlob = new Blob([lData], {type: 'image/svg+xml'});
       var lUrl = DOMURL.createObjectURL(lBlob);    
       lImg.src = lUrl;
     }
-    var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
+    var blob = new Blob([data], {type: 'image/svg+xml'});
     var img = new Image();
-    
-    
-    var url = DOMURL.createObjectURL(blob);    
-    
-    img.onload = function() {
+    var drawCanvasAndSetUrlFunction = function() {
       try {
         var canvas = isMap? $('<canvas>').attr('width', 600 ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
-
         if (isMap) {
           ctx.drawImage(img,
             left, 0, //map image where to start inserting
@@ -172,21 +167,18 @@ function selectChartType (e) {
         } else {
           ctx.drawImage(img,0,0);
         }
-        
         callback(canvas);
         DOMURL.revokeObjectURL(url);
         if(isMap){
           DOMURL.revokeObjectURL(lUrl);
         }
-       
       } catch (e) {
         $(img).remove();
       }
     };
-    img.src = url;
-    
-    
-    
+    img.onload =  drawCanvasAndSetUrlFunction;
+    var url = DOMURL.createObjectURL(blob);     
+   img.src = url;
   };
 
   function getLegendSvg(legendData) {    
