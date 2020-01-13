@@ -75,7 +75,7 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, isMap, callback) {
+  thl.pivot.svgToImg = function (doc, width, height, isMap, legendData, callback) {    
     var svgHeight;    
     if(doc.attr('height') !== undefined) {
       svgHeight = +doc.attr('height');      
@@ -99,8 +99,14 @@ function selectChartType (e) {
     var imgMiddle = svgWidth / 2;
     var heightRatio = (height / svgHeight)
     var croppedImgWidth = width / heightRatio;
-
-    var left = imgMiddle - croppedImgWidth / 2;
+    
+    var left = svgWidth - width;
+    if(svgHeight>600){
+      left = 0;
+    }
+    if(svgWidth>width*1.3){
+      left = ((svgWidth - width) / 2)*1.25;
+    }
     var leftStart = 0;
     if (left < 0) {
       leftStart = -left;
@@ -112,6 +118,7 @@ function selectChartType (e) {
     if (croppedImgWidth > svgWidth) {
       croppedImgWidth = svgWidth;
     }
+    var legend = getLegendSvg(legendData);
 
     var data;
     if(doc.attr('height')) {
@@ -124,13 +131,33 @@ function selectChartType (e) {
       // xmlns is required to draw svg to canvas
       data = data.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
     }
+    var lData;
+    var DOMURL = window.URL || window.webkitURL || window;
+    var lImg = new Image();
+    if(isMap){
+      if(legend.attr('height')) {
+        lData = legend.parent().html();
+      } else {
+        lData = legend.parent().html().replace('<svg ', '<svg width="600" height="400" ');
+      }
+      lData = lData.replace(/&nbsp;/g,' ');
+      if(lData.indexOf('xmlns') < 0) {
+        // xmlns is required to draw svg to canvas
+        lData = lData.replace('<svg',  '<svg xmlns="http://www.w3.org/2000/svg" ');
+      }
+      var lBlob = new Blob([lData], {type: 'image/svg+xml;charset=UTF-8'});
+      var lUrl = DOMURL.createObjectURL(lBlob);    
+      lImg.src = lUrl;
+    }
     var blob = new Blob([data], {type: 'image/svg+xml;charset=UTF-8'});
     var img = new Image();
-    var DOMURL = window.URL || window.webkitURL || window;
+    
+    
     var url = DOMURL.createObjectURL(blob);    
-    img.onload = function(opt) {
+    
+    img.onload = function() {
       try {
-        var canvas = $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
+        var canvas = isMap? $('<canvas>').attr('width', 600 ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
@@ -141,24 +168,34 @@ function selectChartType (e) {
             croppedImgWidth, svgHeight,   //what size is the map    
             leftStart, 0,  //where in canvas put it
             croppedImgWidth, svgHeight);     //what size to scretch map    
-      
-        }else{
+            ctx.drawImage(lImg,0,0);
+        } else {
           ctx.drawImage(img,0,0);
         }
+        
         callback(canvas);
         DOMURL.revokeObjectURL(url);
+        if(isMap){
+          DOMURL.revokeObjectURL(lUrl);
+        }
+       
       } catch (e) {
         $(img).remove();
       }
     };
     img.src = url;
     
+    
+    
   };
 
-  function addLegendToMap(svg, legendData, dx) {
-    var clonedSvg = svg.clone(true);
+  function getLegendSvg(legendData) {    
+    var clonedSvg =   $('<svg></svg>').attr('xmlns','http://www.w3.org/2000/svg').attr('width', 500 ).attr('height', 400 );
+    if(!legendData){
+      return clonedSvg;
+    }
     var clonedSvgAsD3Obj = d3.select(clonedSvg.get(0));
-    var legendXPosition = Math.max(30+dx, 400 - legendData.title.length * 10);
+    var legendXPosition = 40;
     var legendContainer = clonedSvgAsD3Obj
       .append('g')
       .attr('transform', 'translate(' + legendXPosition + ', 15)');
@@ -166,14 +203,14 @@ function selectChartType (e) {
     legendContainer 
       .append('text')
       .text(legendData.title)
-      .attr({ x: 5+dx, y: 28 })
+      .attr({ x: 0, y: 28 })
       .style({
         fill: '#030303', 'font-size': '18px', stroke: 'none'
       });
 
     var labels = legendContainer
       .selectAll('g')
-      .data(legendData.labels)
+      .data(legendData.labels )
       .enter()
       .append('g')
       .attr('transform', function(d, i) { return 'translate(5,' + (36 + i * 24) + ')'; });
@@ -181,7 +218,7 @@ function selectChartType (e) {
     var labelMarkers = labels
       .append('rect')
       .attr({
-        x: 15+dx,
+        x: 0,
         y: 10,
         width: 15,
         height: 15,
@@ -193,7 +230,7 @@ function selectChartType (e) {
       .append('text')
       .text(function(d) { return d.label; })
       .attr({
-        x: 40+dx,
+        x: 20,
         y: 20,
         fill: '#030303',
         'font-size': '12px',
@@ -212,22 +249,11 @@ function selectChartType (e) {
       var link = $(this);
       var isMap = false;
       if (link.attr('href') === '#') {
-        var svg = $(this).closest('.presentation').find('svg');
-        var svgWidth;
-        if (svg[0].width !== undefined) {
-        	svgWidth = +svg[0].getAttribute('width');
-        } else {
-          svgWidth = +svg[0].getAttribute('viewBox').split(' ')[2];
-        }
-        dx = ((svgWidth / 4 - 160));
-        if(svgWidth<width){
-          dx=-120;//place it left side beacause not much space available
-        }
-        if (opt.legendData) {
-          svg = addLegendToMap(svg, opt.legendData, dx);
+        var svg = $(this).closest('.presentation').find('svg');        
+        if (opt.legendData) {         
           isMap = true;
-        }
-        thl.pivot.svgToImg(svg, +width, +height, isMap, function (canvas) {
+        }      
+        thl.pivot.svgToImg(svg, +width, +height, isMap, opt.legendData, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
