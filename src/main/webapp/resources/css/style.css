@@ -107,10 +107,20 @@ h1 {
     padding: 0 10px;
 
 }
-.logo .img{ 
-    max-width: 100%;
-    height: auto !important;
-    object-fit: contain;
+.logo>img{ 	
+	height: 60px;
+	margin-left: 1px;
+	margin-right: auto; 	
+	width: auto !important;
+    }
+    
+.logoimg{ 		
+	max-width: 65%;	
+	margin-left: 1px;
+	margin-right: auto; 	
+	width: auto !important;
+	object-fit: contain;	
+	float:left !important;	
     }
 
 .toolbar-control {

@@ -91,8 +91,8 @@
                 <div class="col-sm-4">
                 <a title="${message("site.company")}"
                     href="http://www.thl.fi/[#if lang! != "fi"]${lang}/web/thlfi-${lang}[/#if]">
-                         <img
-                            src="http://www.thl.fi/thl-liferay-theme/images/thl_common/thl-logo-${uiLanguage!"fi"}.png"
+                         <img class="logoimg" 
+                            src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${lang}_RGB.svg"
                             title="${message("site.company")}"
                             alt="${message("site.company")}"
                             height="42" />
