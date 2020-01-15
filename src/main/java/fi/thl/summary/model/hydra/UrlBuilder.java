@@ -68,4 +68,8 @@ public class UrlBuilder {
     public void showSampleSize() {
         sb.append("&n");
     }
+
+    public String getParameterName() {
+        return parameterName;
+    }
 }
