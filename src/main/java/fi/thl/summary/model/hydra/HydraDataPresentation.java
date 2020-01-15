@@ -1,7 +1,9 @@
 package fi.thl.summary.model.hydra;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
@@ -112,11 +114,13 @@ public class HydraDataPresentation extends DataPresentation {
      */
     public String getDataUrl() {
         Set<String> closed = new HashSet<>();
+        Map<String, String> dimParam = new HashMap<>();
+
         UrlBuilder url = new UrlBuilder();
         url.addRows();
-        appendDimensionNodes(url, closed);
+        appendDimensionNodes(url, closed, dimParam);
         appendMeasureItems(url, closed);
-        appendFilters(url, closed);
+        appendFilters(url, closed, dimParam);
 
         url.suppress(delegate.getSuppress());
 
@@ -138,8 +142,8 @@ public class HydraDataPresentation extends DataPresentation {
 
     }
 
-    private void appendFilters(UrlBuilder url, Set<String> closed) {
-        boolean containsColumns = !(closed.size() <= 2);
+    private void appendFilters(UrlBuilder url, Set<String> closed, Map<String, String> dimParam) {
+        boolean containsColumns = !(closed.size() <= 1);
         for (Selection s : getFilters()) {
             if(closed.contains(s.getDimension())) {
                 url.addFilters();
@@ -157,11 +161,31 @@ public class HydraDataPresentation extends DataPresentation {
             }
             List<IDimensionNode> nodes = IncludeDescendants.apply(s);
             if(!nodes.isEmpty()) {
-                closed.add(s.getDimension());
-                url.addParameter(s.getDimension(), nodes);
+                if(closed.contains(s.getDimension())) {
+                    url.addFilters();
+                    url.addParameter(s.getDimension(), nodes);
+                    containsColumns = !(closed.size() <= 1);
+                } else {
+                    closed.add(s.getDimension());
+                    checkSameDimWithSameParam(url, dimParam, s.getDimension(), dimParam.get(s.getDimension()));
+                    url.addParameter(s.getDimension(), nodes);
+                }
             }
 
         }
+    }
+
+    private void checkSameDimWithSameParam(UrlBuilder url, Map<String, String> dimParam, String dimension, String anObject) {
+        if (dimParam.containsKey(dimension)) {
+            if("filter".equals(anObject)) {
+                // NO-OP
+            } else if ("row".equals(anObject)) {
+                url.addRows();
+            } else {
+                url.addColumns();
+            }
+        }
+        dimParam.put(dimension, url.getParameterName());
     }
 
     private void appendMeasureItems(UrlBuilder url, Set<String> closed) {
@@ -176,7 +200,7 @@ public class HydraDataPresentation extends DataPresentation {
         return new MeasureExtension(((HydraSummary) summary), source, delegate.getMeasures()).getNodes();
     }
 
-    private void appendDimensionNodes(UrlBuilder url, Set<String> closed) {
+    private void appendDimensionNodes(UrlBuilder url, Set<String> closed, Map<String, String> dimParam) {
         for (SummaryItem d : getDimensions()) {
             Extension extension = (Extension) d;
             if(closed.contains(extension.getDimension())){
@@ -184,11 +208,13 @@ public class HydraDataPresentation extends DataPresentation {
             }
 
             if("map".equals(delegate.getType()) && "area".equals(extension.getDimension()) && ((HydraSummary)summary).getGeometry() != null) {
+                checkSameDimWithSameParam(url, dimParam, extension.getDimension(), dimParam.get(extension.getDimension()));
                 url.addParameter(extension.getDimension(), extension.getNodes(((HydraSummary)summary).getGeometry()));
                 closed.add(extension.getDimension());
             } else {
                 List<IDimensionNode> nodes = extension.getNodes();
                 if(!nodes.isEmpty()) {
+                    checkSameDimWithSameParam(url, dimParam, extension.getDimension(), dimParam.get(extension.getDimension()));
                     url.addParameter(extension.getDimension(), nodes);
                     closed.add(extension.getDimension());
                 }
@@ -264,13 +290,13 @@ public class HydraDataPresentation extends DataPresentation {
         return delegate.getGeometry();
     }
 
+    public boolean isVisible() {
+        return new HydraRule(delegate.getRule(), ((HydraSummary) summary)).eval();
+    }
+
     @Override
     public Legendless getLegendless() {
         return delegate.getLegendless();
-    }
-
-    public boolean isVisible() {
-        return new HydraRule(delegate.getRule(), ((HydraSummary) summary)).eval();
     }
 
 }
