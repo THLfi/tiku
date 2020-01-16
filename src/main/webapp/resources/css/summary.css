@@ -399,9 +399,7 @@
    #languages {
      top: 0;
    }
-   .stripe .pull-right {
-     float: none !important;
-   }
+   
    .summary-content .col-sm-3 {
      background: #efefef;
      border-bottom: 1px solid #808080;
@@ -456,8 +454,8 @@
 @media screen and (min-width: 768px) {
 
    .stripe > div {
-     margin-left: 16.7%;
-     padding-left: 30px;
+     margin-left: 1%;
+     padding-left: 10px;
    }
  }
 

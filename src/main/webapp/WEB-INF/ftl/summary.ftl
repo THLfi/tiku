@@ -497,6 +497,11 @@
       </div>
       [/#if]
       [#--<a href="#">pdf</a>--]
+      [#if reports?size>0]
+       <div class="btn-group pull-left help" >
+          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
+        [/#if]  
+      </div>
     </div>
     </div>
 
