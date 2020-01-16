@@ -1292,7 +1292,7 @@ function selectChartType (e) {
                 .attr('class', 'series series' + series)
                 .attr('fill', function (d, i) {
                   if (opt.em) {
-                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
+                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#519b2f';
                   } else {
                     return colors[series];
                   }
@@ -1409,10 +1409,10 @@ function selectChartType (e) {
                 .attr('fill', '#fff')
                 .attr('stroke', colors[series])
                 .attr('r', function(d, i) {
-                  return opt.callback(series, i) == null ? 0 : 4;
+                  return opt.callback(series, i) == null ? 0 : 5;
                 })
                 .attr('stroke-width', function(d, i) {
-                  return opt.callback(series, i) == null ? 0 : 2;
+                  return opt.callback(series, i) == null ? 0 : 3;
                 })
                 .attr('cx', function (d, i) {
                   return ordinalScale(d) + spacing / 2.0 - 3;
@@ -1506,16 +1506,6 @@ function selectChartType (e) {
               .text(function (d, i) {
                 return numberFormat(opt.callback(0, dataIndex[i]));
               });
-            g.append('polyline')
-              .attr('points', function (d) {
-                if (d.value !== 0) {
-                  var pos = outerArc.centroid(d);
-                  pos[0] = innerArcRadius * 0.95 * (midAngle(d) < Math.PI ? 1.2 : -1.2);
-                  return [arc.centroid(d), outerArc.centroid(d), pos];
-                }
-              })
-              .attr('fill', 'none')
-              .attr('stroke', '#808080');
           },
           'radarchart': function (chart) {
     
@@ -2117,14 +2107,15 @@ function selectChartType (e) {
                 $(svg.node()).closest('.presentation').removeClass('highlight');
                 svg.selectAll('.series' + d3.select(this).attr('data-ref')).classed('highlight', false);
               });
-              sg.append('circle')
+              sg.append('rect')
                 .attr('fill', colors[i])
-                .attr('r', 6)
-                .attr('cx', 0)
-                .attr('cy', -5);
+                .attr('width', 10)
+                .attr('height', 10)
+                .attr('x', 0)
+                .attr('y', -9);
               sg.append('text')
                 .text(label)
-                .attr('x', 10);
+                .attr('x', 13);
               sg.attr('width');
             }
           }
@@ -2279,7 +2270,10 @@ function selectChartType (e) {
           scaleValue.range([xAxisPos, opt.margin]);
           ordinalScale.rangeRoundBands([yAxisPos, xAxisWidth]);
           drawVerticalValueAxis(yAxisPos, svg);
-          drawHorizontalOrdinalAxis(svg, opt.type === 'linechart');
+          svg.selectAll('.tick line')            
+            .style('stroke-width', '2px');
+          drawHorizontalOrdinalAxis(svg, opt.type !== 'linechart');
+          
         } else if (['barchart'].indexOf(opt.type) >= 0) {
           if (opt.stacked) {
             opt.height = opt.data.length * (barHeight + BAR_GROUP_MARGIN) + opt.margin * 2;
@@ -2292,16 +2286,17 @@ function selectChartType (e) {
             opt.height *= 5 / (opt.series.length * opt.data.length);
           }
 
-          xAxisPos = opt.height - 2 * opt.margin - 6;
-          ordinalScale.rangeRoundBands([0, xAxisPos - 5]);
-          scaleValue.range([yAxisPos, yAxisPos + xAxisWidth - 4 * opt.margin]);
+           xAxisPos = opt.height - 2 * opt.margin - 6;
+           ordinalScale.rangeRoundBands([0, xAxisPos - 5]);
+           scaleValue.range([yAxisPos, yAxisPos + xAxisWidth - 4 * opt.margin]);
 
           drawHorizontalValueAxis(svg);
           drawVerticalOrdinalAxis(yAxisPos, svg, false);
+          svg.selectAll('.tick line')          
+          .style('stroke-width', '0px');
         }
         svg.selectAll('.tick line')
-          .style('stroke', '#efefef')
-          .style('stroke-width', '1px');
+            .style('stroke', '#dcdfe2');
         svg.selectAll('.axis path')
           .style('stroke', 'none')
           .style('fill', 'none');
@@ -2324,8 +2319,9 @@ function selectChartType (e) {
           .attr('style', 'padding-bottom: ' + 100 * (opt.height / opt.width) + '%');
 
         svg.selectAll('text')
-          .style('font-family', 'arial')
-          .style('color', '#808080');
+          .style('font-family', 'Source Sans Pro')
+          .style('font-size', '10pt')
+          .style('color', '#606060');
 
         // Genereate data urls for each chart so that user can download
         // them as png files
