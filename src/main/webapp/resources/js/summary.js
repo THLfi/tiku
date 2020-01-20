@@ -78,8 +78,8 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {   
-    var isMap = false; 
+  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {
+    var isMap = false;
     if (opt.legendData) {         
       isMap = true;
     }      
@@ -243,7 +243,7 @@ function selectChartType (e) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
       var width = 600;
       var height = 400;      
-      var link = $(this);      
+      var link = $(this);
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');             
         thl.pivot.svgToImg(svg, +width, +height, opt, function (canvas) {
