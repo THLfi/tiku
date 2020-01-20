@@ -198,7 +198,7 @@ function selectChartType (e) {
       .text(legendData.title)
       .attr({ x: 0, y: 28 })
       .style({
-        fill: '#030303', 'font-size': '18px', stroke: 'none'
+        fill: '#030303', 'font-size': '18px', 'font-family': 'Source Sans Pro', stroke: 'none'
       });
 
     var labels = legendContainer
@@ -227,6 +227,7 @@ function selectChartType (e) {
         y: 20,
         fill: '#030303',
         'font-size': '12px',
+        'font-family': 'Source Sans Pro',
         stroke: 'none'
       });
 
