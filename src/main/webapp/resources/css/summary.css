@@ -8,6 +8,10 @@
         color: #444;
     }
 
+    h5 {
+      font-size: 16px;
+    }
+
     body {
         font-size: 1.4em;
         color: #303030;

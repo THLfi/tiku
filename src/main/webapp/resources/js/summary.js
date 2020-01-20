@@ -1538,7 +1538,7 @@ function selectChartType (e) {
              }
 
             var g = chart
-              .append('g')
+              .append('g');
              
       
             for(var j=0; j < axisTicks; j++){
@@ -1611,8 +1611,8 @@ function selectChartType (e) {
                   });
                 });
 
-              var legendHeight = chart.select('.legend').node().getBoundingClientRect().height;
-              var scaleFactor = 1 - maxAxisLabelHeight / opt.height - legendHeight / opt.height;
+              var legendHeight = chart.select('.legend').node().getBBox().height;
+              var scaleFactor = (opt.height - legendHeight - opt.margin * 3) / opt.height;
 
               g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight)+ ')');
 
