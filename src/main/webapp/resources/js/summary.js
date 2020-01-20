@@ -78,8 +78,8 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {
-    var isMap = false;
+  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {   
+    var isMap = false; 
     if (opt.legendData) {         
       isMap = true;
     }      
@@ -202,7 +202,7 @@ function selectChartType (e) {
       .text(legendData.title)
       .attr({ x: 0, y: 28 })
       .style({
-        fill: '#030303', 'font-size': '18px', stroke: 'none'
+        fill: '#030303', 'font-size': '18px', 'font-family': 'Source Sans Pro', stroke: 'none'
       });
 
     var labels = legendContainer
@@ -231,6 +231,7 @@ function selectChartType (e) {
         y: 20,
         fill: '#030303',
         'font-size': '12px',
+        'font-family': 'Source Sans Pro',
         stroke: 'none'
       });
 
@@ -242,8 +243,7 @@ function selectChartType (e) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
       var width = 600;
       var height = 400;      
-      var link = $(this);
-      var isMap = false;
+      var link = $(this);      
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');             
         thl.pivot.svgToImg(svg, +width, +height, opt, function (canvas) {
@@ -1611,6 +1611,17 @@ function selectChartType (e) {
               .text(function (d, i) {
                 return numberFormat(opt.callback(0, dataIndex[i]));
               });
+              g.append('polyline')
+              .attr('points', function (d) {
+                if (d.value !== 0) {
+                  var pos = outerArc.centroid(d);
+                  pos[0] = innerArcRadius * 0.95 * (midAngle(d) < Math.PI ? 1.2 : -1.2);
+                  
+                  return [arc.centroid(d), outerArc.centroid(d), pos];
+                }
+              })
+              .attr('fill', 'none')
+              .attr('stroke', '#808080');
           },
           'radarchart': function (chart) {
     
