@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.summary.model.DataPresentation;
+import fi.thl.summary.model.MeasureItem;
 import fi.thl.summary.model.Presentation;
 import fi.thl.summary.model.Selection;
 import fi.thl.summary.model.Summary;
@@ -297,6 +298,16 @@ public class HydraDataPresentation extends DataPresentation {
     @Override
     public Legendless getLegendless() {
         return delegate.getLegendless();
+    }
+
+    @Override
+    public MeasureItem getWidthMeasure() {
+    	MeasureItem wm = delegate.getWidthMeasure();
+    	if (wm != null) {
+        	IDimensionNode n = source.findNodeByName(wm.getCode(), summary.getItemLanguage());
+        	wm.setSurrogateId(n.getSurrogateId());    		
+    	}
+    	return wm;
     }
 
 }

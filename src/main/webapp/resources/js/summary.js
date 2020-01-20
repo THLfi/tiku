@@ -17,6 +17,9 @@ function selectChartType (e) {
   if (e.is('.column')) {
     return 'columnchart';
   }
+  if (e.is('.column-mekko')) {
+    return 'columnmekkochart';
+  }
   if (e.is('.line')) {
     return 'linechart';
   }
@@ -75,7 +78,8 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {    
+  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {
+    var isMap = false;
     if (opt.legendData) {         
       isMap = true;
     }      
@@ -914,6 +918,10 @@ function selectChartType (e) {
           barAndColumnMargin = 2,
           barGroupHeight,
           scaleValue,
+          columnMekkoChartWidthScale,
+          columnMekkoChartData = {},
+          columnMekkoChartDomainLimit,
+          widthMeasureIndex = -1,
           yAxisPos,
           xAxisPos,
           xAxisWidth,
@@ -927,6 +935,29 @@ function selectChartType (e) {
           BAR_GROUP_MARGIN = 5,
           BAR_MARGIN = 5;
 
+        function computeColumnMekkoChartVariables() {
+          for (var i = 0; i < opt.series.length; i++) {
+            if (opt.series[i] === opt.widthmeasure) {
+              widthMeasureIndex = i;
+              opt.series.splice(i, 1);
+            }
+          }
+          var data = sortData(opt.target.attr('data-sort'));
+          var currentWidth, overallWidth = 0;
+          for (var i = 0; i < data.length; ++i) {
+            var itemIndex = opt.dataset.Dimension(0).id.indexOf(data[i]);
+            currentWidth = opt.callback(widthMeasureIndex, itemIndex);
+            columnMekkoChartData[i] = {
+              itemId: opt.dataset.Dimension(0).id[itemIndex],
+              itemIndex: itemIndex,
+              itemWidth: currentWidth,
+              itemXPosition: currentWidth / 2 + overallWidth,
+              sortOrder: i
+            }
+            overallWidth += currentWidth;
+          }
+          columnMekkoChartDomainLimit = overallWidth;
+        }
 
 
         var drawWhiskers = function (g, series, scaledZero, ciLower, ciUpper, xPos, type) {
@@ -1005,6 +1036,11 @@ function selectChartType (e) {
           for (var i = 0; i < opt.data.length; ++i) {
             var sum = 0;
             for (var j = 0; j < opt.series.length; ++j) {
+              if (typeof opt.widthmeasure !== 'undefined') {
+                if (opt.series[j] === opt.widthmeasure) {
+                  continue;
+                }
+              }
               var v = opt.callback(j, i);
               min = Math.min(min, v);
               max = Math.max(max, v);
@@ -1067,17 +1103,12 @@ function selectChartType (e) {
         function size (series) {
           return function (d, i) {
             var val = scaleValue(0) - value(series, i);
+            if (columnMekkoChartData[i]) {
+              val = scaleValue(0) - value(series, columnMekkoChartData[i].itemIndex);
+            }
             // if chart is stacked we have to use the actual value instead of
             // absolute value.
             return opt.stacked ? val : Math.abs(val);
-          };
-        }
-
-        function sizeConfidence (series) {
-          return function (d, i) {
-            var upper = scaleValue(0) - scaleValue(opt.callback(series, i, 2));
-            var lower = scaleValue(0) - scaleValue(opt.callback(series, i, 1));
-            return Math.abs(upper - lower);
           };
         }
 
@@ -1255,6 +1286,79 @@ function selectChartType (e) {
                     return ordinalScale(d) + BAR_GROUP_MARGIN / 1.5 + series * (chartColumnWidth + BAR_MARGIN) + chartColumnWidth / 2 ;
                   }, 'column');
               }
+            }
+          },
+          /**
+           * Plots a column chart where columnn width and height are defined in data.
+           */
+          'columnmekkochart': function (svg) {
+            if (opt.series.length > 1) {
+              console.warn('Multiple series is not supported for this chart type');
+            }
+
+            var scaledZero = scaleValue(0);
+            svg
+              .append('line')
+              .style('stroke', '#808080')
+              .attr('y1', scaledZero)
+              .attr('y2', scaledZero)
+              .attr('x1', yAxisPos)
+              .attr('x2', xAxisWidth);
+
+            var xPosition = yAxisPos;
+            for (var series = 0; series < opt.series.length; ++series) {
+              var g = svg
+                .append('g')
+                .selectAll('g')
+                .data(Object.keys(columnMekkoChartData));
+
+              // draw columns
+              g.enter()
+                .append('rect')
+                .attr('class', 'series series' + series)
+                .attr('fill', function (d, i) {
+                  if (opt.em) {
+                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
+                  } else {
+                    return colors[series];
+                  }
+                })
+                .attr('title', function (d, i) {
+                  return opt.callback(series, i);
+                })
+                .attr('width', function(d, i) {
+                  var width = columnMekkoChartData[i].itemWidth;
+                  return columnMekkoChartWidthScale(width);
+                })
+                .attr('height', size(series))
+                .attr('x', function (d, i) {
+                  var prevXPosition = xPosition;
+                  xPosition += Number(d3.select(this).attr('width'));
+                  return prevXPosition;
+                })
+                .attr('y', function (d, i) {
+                  var val = value(series, i);
+                  if (columnMekkoChartData[i]) {
+                    val = value(series, columnMekkoChartData[i].itemIndex);
+                  }
+                  return val - scaledZero >= 0 ? scaledZero : scaledZero + (val - scaledZero);
+                })
+                .style('cursor', function (d) {
+                  if (canDrill(d)) {
+                    return 'pointer';
+                  }
+                })
+                .on('click', function (d) {
+                  submitDrillDown(d, dimensionData[d].dim);
+                })
+                .on('mouseover', showToolTip)
+                .on('mouseout', hideToolTip)
+                .on('mousemove', moveToolTip)
+                .append('svg:title')
+                .text(function (d, i) {
+                  return label(d, i, series) + '(' + labels[d] + '): ' + numberFormat(opt.callback(series, i));
+                });
+
             }
           },
           /**
@@ -1984,21 +2088,31 @@ function selectChartType (e) {
          * Draws a horizontal axis for
          * ordinal values for which y(x) is called
          */
-        function drawHorizontalOrdinalAxis (svg, showInnerTick) {
+        function drawHorizontalOrdinalAxis (svg, showInnerTick, scaleFunction) {
           var xAxis = d3.svg.axis()
-            .scale(ordinalScale)
+            .scale(scaleFunction || ordinalScale)
             .orient('bottom')
-            .tickFormat(function (d) {
-              if (opt.legendless === 'yes' && opt.type === 'columnchart') {
+            .tickFormat(function (d, i) {
+              var labelId = (opt.type === 'columnmekkochart' ? columnMekkoChartData[i].itemId : d);
+              if (opt.legendless === 'yes' && ['columnchart', 'columnmekkochart'].indexOf(opt.type) >= -1) {
                 return '';
               }
-              else if (opt.legendless === 'nonEmphasized' && opt.type === 'columnchart') {
-                return opt.em.indexOf(d) >= 0 ? labels[d] : '';
+              else if (opt.legendless === 'nonEmphasized' && ['columnchart', 'columnmekkochart'].indexOf(opt.type) >= -1) {
+                return opt.em.indexOf(labelId) >= 0 ? labels[labelId] : '';
               }
               else {
-                return pxWidth(labels[d].length) <= MAX_LABEL_LENGTH ? labels[d] : labels[d].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
+                return pxWidth(labels[labelId].length) <= MAX_LABEL_LENGTH ? labels[labelId] : labels[labelId].substring(0, MAX_LABEL_LENGTH / CHARACTER_WIDTH - 3) + '...';
               }
             });
+          if (opt.type === 'columnmekkochart') {
+            xAxis
+              .ticks(opt.dataset.Dimension(0).length)
+              .tickValues(function() {
+                return Object.values(columnMekkoChartData)
+                  .sort(function(a, b) { return a.sortOrder - b.sortOrder; })
+                  .map(function(dataItem) { return dataItem.itemXPosition});
+              });
+          }
           if (showInnerTick) {
             xAxis.innerTickSize(-xAxisPos);
           }
@@ -2082,6 +2196,9 @@ function selectChartType (e) {
                 j = dataIndex.indexOf(i);
               }
               var label = labels[labelSeries[i]];
+              if (opt.type === 'columnmekkochart') {
+                label = 'x: ' + label + ', y: ' + labels[opt.widthmeasure];
+              }
 
               if (lastLegendGroup != null) {
                 xOffset += lastLegendGroup.node().getBBox().width + 30 - lastLegendGroup.node().getBBox().x;
@@ -2215,11 +2332,23 @@ function selectChartType (e) {
         );
         xAxisWidth = opt.width - yAxisPos;
 
-        isXAxisTicksTilted = (
+        isXAxisTicksTilted = function() {
           // x axis should be tilted if the longest tick label
           // may overlap another tick label.
-          ['barchart'].indexOf(opt.type) >= 0 ? maxValueLength > xAxisWidth / scaleValue.ticks().length : maxLabelLength > xAxisWidth / opt.data.length
-        );
+          if ('barchart' === opt.type) {
+            return maxValueLength > xAxisWidth / scaleValue.ticks().length;
+          }
+          else if ('columnmekkochart' === opt.type) {
+            var legendless = opt.legendless || 'N/A';
+            if (legendless === 'yes') {
+              return false;
+            }
+            return legendless !== 'nonEmphasized' || legendless === 'nonEmphasized' && (!opt.em || opt.em.length > 1);
+          } 
+          else {
+           return maxLabelLength > xAxisWidth / opt.data.length;
+          }
+        }();
 
         if (isXAxisTicksTilted) {
           // When x axis is tilted the first one or two tick labels
@@ -2262,14 +2391,24 @@ function selectChartType (e) {
             .style('padding', '6px 12px')
             .style('border-radius', '4px');
 
-        if (['columnchart', 'linechart'].indexOf(opt.type) >= 0) {
+        if (['columnchart', 'linechart', 'columnmekkochart'].indexOf(opt.type) >= 0) {
           scaleValue.range([xAxisPos, opt.margin]);
           ordinalScale.rangeRoundBands([yAxisPos, xAxisWidth]);
           drawVerticalValueAxis(yAxisPos, svg);
-          svg.selectAll('.tick line')            
-            .style('stroke-width', '2px');
-          drawHorizontalOrdinalAxis(svg, opt.type !== 'linechart');
-          
+          if (opt.type === 'columnmekkochart') {
+            computeColumnMekkoChartVariables();
+            columnMekkoChartWidthScale = d3.scale
+              .linear()
+              .domain([0, columnMekkoChartDomainLimit])
+              .range([yAxisPos, xAxisWidth]);
+
+            drawHorizontalOrdinalAxis(svg, opt.type === 'linechart', columnMekkoChartWidthScale);
+            // change range because axis area and column area have different offsets
+            columnMekkoChartWidthScale.range([0, xAxisWidth - yAxisPos]);
+          }
+          else {
+            drawHorizontalOrdinalAxis(svg, opt.type === 'linechart');
+          }
         } else if (['barchart'].indexOf(opt.type) >= 0) {
           if (opt.stacked) {
             opt.height = opt.data.length * (barHeight + BAR_GROUP_MARGIN) + opt.margin * 2;
@@ -2282,9 +2421,9 @@ function selectChartType (e) {
             opt.height *= 5 / (opt.series.length * opt.data.length);
           }
 
-           xAxisPos = opt.height - 2 * opt.margin - 6;
-           ordinalScale.rangeRoundBands([0, xAxisPos - 5]);
-           scaleValue.range([yAxisPos, yAxisPos + xAxisWidth - 4 * opt.margin]);
+          xAxisPos = opt.height - 2 * opt.margin - 6;
+          ordinalScale.rangeRoundBands([0, xAxisPos - 5]);
+          scaleValue.range([yAxisPos, yAxisPos + xAxisWidth - 4 * opt.margin]);
 
           drawHorizontalValueAxis(svg);
           drawVerticalOrdinalAxis(yAxisPos, svg, false);
@@ -2292,12 +2431,15 @@ function selectChartType (e) {
           .style('stroke-width', '0px');
         }
         svg.selectAll('.tick line')
-            .style('stroke', '#dcdfe2');
+          .style('stroke', '#dcdfe2');
         svg.selectAll('.axis path')
           .style('stroke', 'none')
           .style('fill', 'none');
 
         var dataSeries = ['piechart', 'gaugechart'].indexOf(opt.type) >= 0 ? opt.data : opt.series;
+        if (opt.type === 'columnmekkochart') {
+          dataSeries = dataSeries.filter(function(s) { return s !== opt.widthmeasure; });
+        }
         var maxLegendLabelLength = calculateMaxLabelSize(dataSeries) + 40;
         var labelColumns = Math.max(1, Math.floor(opt.width / (maxLegendLabelLength)));
         var legendOffset = opt.height;
@@ -2479,7 +2621,7 @@ function selectChartType (e) {
     if(typeof(labels) === 'undefined') { labels = []; }
     if(typeof(dimensionData) === 'undefined') { dimensionData = {}; }
     var summary = thl.pivot.summary(labels, dimensionData);
-    $('.presentation.map, .presentation.list, .presentation.bar, .presentation.line, .presentation.column, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
+    $('.presentation.map, .presentation.list, .presentation.bar, .presentation.line, .presentation.column, .presentation.column-mekko, .presentation.pie, .presentation.gauge, .presentation.table, .presentation.radar')
       .each(function () {
         var p = this;
         var callback = function (data) {
@@ -2609,7 +2751,8 @@ function selectChartType (e) {
               },
               order: target.attr('data-limit-order'),
               include: target.attr('data-limit-include'),
-              legendless: target.attr('data-legendless')
+              legendless: target.attr('data-legendless'),
+              widthmeasure: target.attr('data-width-measure')
             });
           }
           $(p).children('img').remove();

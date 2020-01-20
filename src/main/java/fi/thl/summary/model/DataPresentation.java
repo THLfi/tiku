@@ -19,6 +19,7 @@ public class DataPresentation implements Presentation {
     private String palette;
     private List<SummaryItem> dimensions = new ArrayList<>();
     private SummaryMeasure measures = new SummaryMeasure();
+    private MeasureItem widthMeasure;
     private List<Selection> filter = new ArrayList<>();
     private Presentation.SortMode sortMode = SortMode.none;
 
@@ -206,4 +207,13 @@ public class DataPresentation implements Presentation {
     public Rule getRule() {
         return rule;
     }
+
+    public MeasureItem getWidthMeasure() {
+    	return widthMeasure;
+    }
+
+    public void setWidthMeasure(MeasureItem widthMeasure) {
+		this.widthMeasure = widthMeasure;
+	}
+
 }
