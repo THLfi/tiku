@@ -1356,6 +1356,11 @@ function selectChartType (e) {
                 .on('mousemove', moveToolTip)
                 .append('svg:title')
                 .text(function (d, i) {
+                  if (opt.type === 'columnmekkochart') {
+                    var itemIndex = columnMekkoChartData[i].itemIndex;
+                    var widthMeasureValue = opt.callback(widthMeasureIndex, itemIndex);
+                    return label(d, itemIndex, series) + '(' + labels[opt.widthmeasure] + ' ' + widthMeasureValue + '): ' + numberFormat(opt.callback(series, itemIndex));
+                  }
                   return label(d, i, series) + '(' + labels[d] + '): ' + numberFormat(opt.callback(series, i));
                 });
 
@@ -2197,7 +2202,7 @@ function selectChartType (e) {
               }
               var label = labels[labelSeries[i]];
               if (opt.type === 'columnmekkochart') {
-                label = 'x: ' + label + ', y: ' + labels[opt.widthmeasure];
+                label = 'x: ' + labels[opt.widthmeasure] + ', y: ' + label;
               }
 
               if (lastLegendGroup != null) {
