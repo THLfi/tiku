@@ -422,7 +422,12 @@ function selectChartType (e) {
         function openBoundValue(limit) {
           var numDecimals = opt.decimals;
           if (numDecimals == -1 || (!numDecimals && numDecimals !== 0)) {
-            numDecimals = limit.split('.')[1].length || 0;
+            var decimalParts = limit.toString().split('.');
+            if (decimalParts.length < 2) {
+              numDecimals = 0;
+            } else {
+              numDecimals = decimalParts[1].length || 0;
+            }
           }
           var step = Math.pow(10, -numDecimals);
 
@@ -2504,7 +2509,7 @@ function selectChartType (e) {
               palette: target.attr('data-palette'),
               limits: target.attr('data-limits'),
               order: target.attr('data-limit-order'),
-              include: target.attr('data-limit-include'),
+              include: target.attr('data-limit-include') || 'gte',
               decimals: target.attr('data-decimals'),
               label: target.attr('data-label'),
               limitLabels: function() {
