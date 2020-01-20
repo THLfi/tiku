@@ -75,7 +75,11 @@ function selectChartType (e) {
   }
 
   thl.pivot = thl.pivot || {};
-  thl.pivot.svgToImg = function (doc, width, height, isMap, legendData, callback) {    
+  thl.pivot.svgToImg = function (doc, width, height, opt, callback) {    
+    if (opt.legendData) {         
+      isMap = true;
+    }      
+    var mapWidth = opt.target[0].offsetWidth;   
     var svgHeight;    
     if(doc.attr('height') !== undefined) {
       svgHeight = +doc.attr('height');      
@@ -96,29 +100,20 @@ function selectChartType (e) {
         svgWidth = vb.split(' ')[2];
       }   
     }  
-    var imgMiddle = svgWidth / 2;
+  
     var heightRatio = (height / svgHeight)
     var croppedImgWidth = width / heightRatio;
     
-    var left = svgWidth - width;
-    if(svgHeight>600){
-      left = 0;
-    }
-    if(svgWidth>width*1.3){
-      left = ((svgWidth - width) / 2)*1.25;
-    }
-    var leftStart = 0;
+    var left = (mapWidth/2)-(width/2);    
+    var leftStart = 0;    
     if (left < 0) {
       leftStart = -left;
       left = 0;
     }
-    if (imgMiddle < width / 2) {
-      leftStart = width / 2 - imgMiddle;
-    }
     if (croppedImgWidth > svgWidth) {
       croppedImgWidth = svgWidth;
     }
-    var legend = getLegendSvg(legendData);
+    var legend = getLegendSvg(opt.legendData);
 
     var data;
     if(doc.attr('height')) {
@@ -138,7 +133,7 @@ function selectChartType (e) {
       if(legend.attr('height')) {
         lData = legend.parent().html();
       } else {
-        lData = legend.parent().html().replace('<svg ', '<svg width="600" height="400" ');
+        lData = legend.parent().html().replace('<svg ', '<svg "' + width + '" height="' + height + '" ');
       }
       lData = lData.replace(/&nbsp;/g,' ');
       if(lData.indexOf('xmlns') < 0) {
@@ -155,7 +150,7 @@ function selectChartType (e) {
     var drawCanvasAndSetUrlFunction = function() {
 
       try {
-        var canvas = isMap? $('<canvas>').attr('width', 600 ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
+        var canvas = isMap? $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, +width , +height+40 );
@@ -163,9 +158,9 @@ function selectChartType (e) {
           ctx.drawImage(img,
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
-            leftStart, 0,  //where in canvas put it
+            leftStart, 0,  //where to put it in on the canvas
             croppedImgWidth, svgHeight);     //what size to scretch map    
-            ctx.drawImage(lImg,0,0);
+             ctx.drawImage(lImg,0,0);
         } else {
           ctx.drawImage(img,0,0);
         }
@@ -241,17 +236,13 @@ function selectChartType (e) {
 
   thl.pivot.exportImg = function (opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
-      var width = 800;
-      var height = 400;
-      var dx = 0;
+      var width = 600;
+      var height = 400;      
       var link = $(this);
       var isMap = false;
       if (link.attr('href') === '#') {
-        var svg = $(this).closest('.presentation').find('svg');        
-        if (opt.legendData) {         
-          isMap = true;
-        }      
-        thl.pivot.svgToImg(svg, +width, +height, isMap, opt.legendData, function (canvas) {
+        var svg = $(this).closest('.presentation').find('svg');             
+        thl.pivot.svgToImg(svg, +width, +height, opt, function (canvas) {
           try {
             link.attr('href', canvas.toDataURL());
             link.attr('download', opt.target.attr('id') + '.png');
