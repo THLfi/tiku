@@ -229,7 +229,7 @@
           [#assign emindex = 0 /]
           <div
               id="$[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
-              class="presentation column"
+              class="presentation column[#if presentation.widthMeasure??]-mekko[/#if]"
               [#if "columnstacked" = presentation.type]data-stacked="true"[/#if]
               [#if "columnstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
@@ -238,7 +238,8 @@
               [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n??][#if emindex>0],[/#if][#assign emindex=1/]${n.surrogateId}[/#if][/#list]"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}"
-              [#if presentation.legendless??]data-legendless="${presentation.legendless}"[/#if]>
+              [#if presentation.legendless??]data-legendless="${presentation.legendless}"[/#if]
+              [#if presentation.widthMeasure??]data-width-measure="${presentation.widthMeasure.surrogateId!'N/A'}"[/#if]>
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>

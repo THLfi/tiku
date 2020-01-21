@@ -63,7 +63,7 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
 
     }
 
-    private IDimensionNode findNode(String language, String item) {
+    public IDimensionNode findNode(String language, String item) {
         for (fi.thl.pivot.model.Dimension dim : source.getMeasures()) {
             DimensionLevel level = dim.getRootLevel();
             while (!leafLevelReached(level)) {

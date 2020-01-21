@@ -529,6 +529,10 @@ public class SummaryReader {
             p.setFirst("begin".equals(attribute(node, "group")));
             p.setLast("end".equals(attribute(node, "group")));
 
+            MeasureItem widthMeasure = extractWidthMeasure(node);
+            if (widthMeasure != null) {
+                p.setWidthMeasure(widthMeasure);
+            }
 
             Node ruleNode = firstChildNode(node, "rule");
             if(null != ruleNode) {
@@ -538,6 +542,19 @@ public class SummaryReader {
             }
 
             return p;
+        }
+
+        private MeasureItem extractWidthMeasure(Node node) {
+            NodeList children = node.getChildNodes();
+            for (int i = 0; i < children.getLength(); ++i) {
+                Node child = children.item(i);
+                if ("widthmeasure".equals(child.getNodeName())) {
+                    return new MeasureItem(MeasureItem.Type.LABEL, child.getTextContent());
+                } else if ("widthref".equals(child.getNodeName())) {
+                    return new MeasureItem(MeasureItem.Type.REFERENCE, child.getTextContent());
+                } 
+            }
+            return null;
         }
 
         private Integer parseIntAttribute(Node node, String a) {
@@ -729,13 +746,21 @@ public class SummaryReader {
     private static List<MeasureItem> listMeasures(Node parent) {
         List<MeasureItem> measures = Lists.newArrayList();
         NodeList children = parent.getChildNodes();
+        MeasureItem widthMeasure = null;
         for (int i = 0; i < children.getLength(); ++i) {
             Node child = children.item(i);
             if ("measureref".equals(child.getNodeName())) {
                 measures.add(new MeasureItem(MeasureItem.Type.REFERENCE, child.getTextContent()));
             } else if ("measure".equals(child.getNodeName())) {
                 measures.add(new MeasureItem(MeasureItem.Type.LABEL, child.getTextContent()));
+            } else if ("widthref".equals(child.getNodeName())) {
+                widthMeasure = new MeasureItem(MeasureItem.Type.REFERENCE, child.getTextContent());
+            } else if ("widthmeasure".equals(child.getNodeName())) {
+                widthMeasure = new MeasureItem(MeasureItem.Type.LABEL, child.getTextContent());
             }
+        }
+        if (widthMeasure != null) {
+            measures.add(widthMeasure);
         }
         return measures;
     }

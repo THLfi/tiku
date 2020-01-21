@@ -8,6 +8,7 @@ public class MeasureItem {
 
     private final Type type;
     private final String code;
+    private Integer surrogateId;
 
     public MeasureItem(Type type, String code) {
         this.type = type;
@@ -21,6 +22,14 @@ public class MeasureItem {
     public String getCode() {
         return code;
     }
+
+	public Integer getSurrogateId() {
+		return surrogateId;
+	}
+
+	public void setSurrogateId(Integer surrogateId) {
+		this.surrogateId = surrogateId;
+	}
 
     @Override
     public int hashCode() {
