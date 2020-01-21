@@ -579,7 +579,7 @@ function selectChartType (e) {
       drawList: function(opt) {
         var CHARACTER_WIDTH = (3*14)/5;
         var wrapper = $('<div>').addClass('table-responsive')
-        var table = $('<table>').addClass('table table-condensed');
+        var table = $('<table>').addClass('table table-bordered');
         var thead = $('<thead>');
         var thr = $('<tr>')
         thr.append('<th></th>');
@@ -651,11 +651,23 @@ function selectChartType (e) {
           return spanPerLevel;
         }
 
+        function isTotalHighlightColumn(dimensionNodeSurrogateId) {
+          return opt.totalHighlightColumns.indexOf(dimensionNodeSurrogateId.toString()) > -1;
+        }
+
+        function isTotalHighlightRow(dimensionNodeSurrogateId) {
+          return opt.totalHighlightRows.indexOf(dimensionNodeSurrogateId.toString()) > -1;
+        }
+
+        function setHighlightLevel(element, level) {
+          element.attr('hl-level', Math.min(level, 5));
+        }
+
         /**
          * Creates elements for the thead-element containing th elements for each
          * each column header.
          */
-        function createTableHead () {
+        function createTableHead (columnHlLevels) {
           var header = $('<thead>'),
             // A repeat factor is calculated to allow repeating of
             // header elements when there are multiple levels of
@@ -680,6 +692,20 @@ function selectChartType (e) {
                   .attr('colspan', spanPerLevel[level])
                   .css('text-align', opt.align[1])
                   .text(labels[v]);
+                var span = spanPerLevel[level];
+                var repeatWidth = level == 0 ? 1 : spanPerLevel[level-1];
+                var columnNumber = j * repeatWidth + i * span;
+
+                if (isTotalHighlightColumn(v)) {
+                  var hlLevel = columnHlLevels.getHighlightLevel(level);
+                  setHighlightLevel(node, hlLevel);
+                  for (var k = 0; k < span; k++) {
+                    columnHlLevels[columnNumber + k] = hlLevel;
+                  }
+                } else if (columnHlLevels[columnNumber]) {
+                  // inherit highlight from outer dimension
+                  setHighlightLevel(node, columnHlLevels[columnNumber]);
+                }
                 row.append(node);
               });
             }
@@ -732,14 +758,14 @@ function selectChartType (e) {
          * row -> current row element
          * rowVals -> array of header node identifiers
          */
-        function createRowHeaderCells (ri, row, rowVals, rowHeaders, rowIndex) {
+        function createRowHeaderCells (ri, row, rowVals, rowHeaders, rowIndex, rowHlLevels) {
           var hasChanged = false;
           for (var level = 0; level < opt.rowCount; ++level) {
-            hasChanged = createRowHeaderCell(rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged);
+            hasChanged = createRowHeaderCell(rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged, rowHlLevels);
           }
         }
 
-        function createRowHeaderCell (rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged) {
+        function createRowHeaderCell (rowVals, row, ri, level, rowHeaders, rowIndex, hasChanged, rowHlLevels) {
           var nodeId = rowVals[level];
           var content = labels[nodeId];
           var th;
@@ -755,6 +781,14 @@ function selectChartType (e) {
             th = $('<th>').attr('data-id', nodeId);
             row.append(th);
             hasChanged = true;
+          }
+
+          if (isTotalHighlightRow(nodeId)) {
+            var hlLevel = rowHlLevels.getHighlightLevel(level);
+            rowHlLevels[ri] = hlLevel;
+            setHighlightLevel(th, hlLevel);
+          } else if (rowHlLevels[ri]) {
+            setHighlightLevel(th, rowHlLevels[ri]);
           }
 
           if(rowHeaders[level].length == rowIndex) {
@@ -782,19 +816,19 @@ function selectChartType (e) {
          * row -> current row element
          * rowIndices -> array of value indices defined by the current row, used to query data from a jsonstat object
          */
-        function createRowValueCells (offset, row, rowIndices, columnWidths, cls) {
+        function createRowValueCells (offset, row, rowIndices, columnWidths, cls, rowHlLevel, columnHlLevels) {
           var i = 0;
           var hasValue = false;
 
           forEachDimension(opt.rowCount, opt.dataset.Dimension().length, [], [], function (colIndices, colVals) {
             var key = $.merge($.merge([], rowIndices), colIndices);
             var val = opt.dataset.Data(key);
+            var cell;
             if (val == null || val.value === null) {
-              row.append(
-                $('<td >')
+              cell = $('<td >')
                 .append('<span>..</span>')
                 .css('text-align', opt.align[0])
-              );
+              row.append(cell);
               if(hasValue || opt.suppress === 'none' || opt.suppress === 'zero') {
                 hasValue = true;
               }
@@ -818,8 +852,9 @@ function selectChartType (e) {
               var span = $('<span></span>')
                 .text(content)
                 .addClass(cls + i);
+              cell = $(tdAndClass);
               row.append(
-                $(tdAndClass)
+                cell
                 .append(span)
                 .css('text-align', opt.align[0])
               ); // Use comma as a decimal separator
@@ -828,16 +863,39 @@ function selectChartType (e) {
                 columnWidths[i] = w;
               }
             }
+            var colHlLevel = columnHlLevels[i] || 0;
+            var hlLevel = colHlLevel + rowHlLevel;
+            if (hlLevel) {
+              setHighlightLevel(cell, colHlLevel + rowHlLevel);
+            }
             i += 1;
           });
           return hasValue;
         }
 
+        function createHighlightLevelMapping(highLightRowDimensions) {
+          var mapping = {};
+          var cumSum = 0;
+          $.each(highLightRowDimensions, function(i, hl) {
+            cumSum += parseInt(hl);
+            mapping[i] = cumSum;
+          });
+          return function(dimensionLevel) {
+            return mapping[dimensionLevel];
+          };
+        }
+
         var tableContainer = $('<div></div>').addClass('table-responsive');
+        var columnHlLevels = {
+          getHighlightLevel: createHighlightLevelMapping(opt.colDimHighlights)
+        };
+        var rowHlLevels = {
+          getHighlightLevel: createHighlightLevelMapping(opt.rowDimHighlights)
+        };
         var table =
           $('<table>')
-            .addClass('table table-condensed')
-            .append(createTableHead());
+            .addClass('table table-bordered')
+            .append(createTableHead(columnHlLevels));
         var body = $('<tbody>');
 
         var dim = opt.dataset.Dimension();
@@ -857,9 +915,9 @@ function selectChartType (e) {
         var cls = 'table-' + new Date().getTime() + '-';
         forEachDimension(0, opt.rowCount, [], [], function (rowIndices, rowVals) {
           var row = $('<tr>');
-          createRowHeaderCells(ri, row, rowVals, rowHeaders, rowIndex);
-        
-          if (createRowValueCells(ri * cols, row, rowIndices, columnWidths, cls)) {
+          createRowHeaderCells(ri, row, rowVals, rowHeaders, rowIndex, rowHlLevels);
+
+          if (createRowValueCells(ri * cols, row, rowIndices, columnWidths, cls, rowHlLevels[ri] || 0, columnHlLevels)) {
             if (ari === 0) {
               thCount = $(row).find('th').size();
               ari += 1;
@@ -2684,9 +2742,13 @@ function selectChartType (e) {
                 dataset: dataset,
                 rowCount: parseInt(target.attr('data-row-count')),
                 columnCount: parseInt(target.attr('data-column-count')),
+                rowDimHighlights: target.attr('data-row-dim-highlights').trimRight().split(' '),
+                colDimHighlights: target.attr('data-column-dim-highlights').trimRight().split(' '),
                 align: target.attr('data-align').split(' '),
                 suppress: target.attr('data-suppress'),
-                highlight: target.attr('data-highlight')
+                highlight: target.attr('data-highlight'),
+                totalHighlightRows: target.attr('data-row-highlight-nodes').trimRight().split(' '),
+                totalHighlightColumns: target.attr('data-column-highlight-nodes').trimRight().split(' ')
               });
           } else if ('list' === type) {
             summary

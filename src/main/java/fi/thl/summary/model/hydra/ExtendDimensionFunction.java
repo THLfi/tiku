@@ -34,7 +34,7 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         if (d instanceof SummaryDimension) {
             final SummaryDimension dim = (SummaryDimension) d;
             if (summary.isDrilled(((SummaryDimension) d).getDimension())) {
-                return new DimensionExtension(source, dim, drilledNodesIn(dim));
+                return createDrilledDimensionExtension(dim);
             } else {
                 return extendStage(dim);
             }
@@ -52,22 +52,23 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
             } else if (":all:".equals(stage.getStage())) {
                 return new DimensionExtension(source, dim, allNodesIn(dim));
             } else {
-                List<IDimensionNode> nodes = findNodes(dim.getDimension(), stage.getStage());
+                List<IDimensionNode> stageNodes = findNodes(dim.getDimension(), stage.getStage());
+                List<IDimensionNode> totalNodes = Lists.newArrayList();
                 if(dim.includeTotal()) {
-                    extendParentLevel(nodes);
+                    extendParentLevel(stageNodes, totalNodes);
                 }
-                return new DimensionExtension(source, dim, nodes);
+                return new DimensionExtension(source, dim, stageNodes, totalNodes);
             }
         } else {
             return new DimensionExtension(source, dim, findNodes(dim.getDimension(), stage.getItems()));
         }
     }
 
-    private void extendParentLevel(List<IDimensionNode> nodes) {
+    private void extendParentLevel(List<IDimensionNode> nodes, List<IDimensionNode> totalNodes) {
         if(!nodes.isEmpty()) {
         IDimensionNode parent = nodes.get(0).getParent();
         if(parent != null) {
-            nodes.addAll(nodes.get(0).getParent().getLevel().getNodes());
+            totalNodes.addAll(nodes.get(0).getParent().getLevel().getNodes());
         }
         }
     }
@@ -82,6 +83,18 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
         }
 
         return nodes;
+    }
+
+    private SummaryItem createDrilledDimensionExtension(SummaryDimension dim) {
+        List<IDimensionNode> childNodes = Lists.newArrayList();
+        List<IDimensionNode> totalNodes = Lists.newArrayList();
+        for (IDimensionNode drilled : summary.getDrilledNodes(dim.getDimension())) {
+            childNodes.addAll(drilled.getChildren());
+            if (dim.includeTotal()) {
+                totalNodes.add(drilled);
+            }
+        }
+        return new DimensionExtension(source, dim, childNodes, totalNodes);
     }
 
     private List<IDimensionNode> allNodesIn(final SummaryDimension dim) {

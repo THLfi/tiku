@@ -11,16 +11,25 @@ public class SummaryDimension extends AbstractSummaryItem implements SummaryItem
 
     private final String dimension;
     private final SummaryStage stage;
-    private boolean includeTotal;
+    private TotalMode totalMode;
+    public enum TotalMode {
+        NO,
+        YES,
+        HIGHLIGHT;
 
-    protected SummaryDimension(String dimension, SummaryStage stage) {
-        this(dimension, stage, false);
+        public boolean includeTotal() {
+            return this != NO;
+        }
     }
 
-    protected SummaryDimension(String dimension, SummaryStage stage, boolean includeTotal) {
+    protected SummaryDimension(String dimension, SummaryStage stage) {
+        this(dimension, stage, TotalMode.NO);
+    }
+
+    protected SummaryDimension(String dimension, SummaryStage stage, TotalMode includeTotal) {
         this.dimension = dimension;
         this.stage = stage;
-        this.includeTotal = includeTotal;
+        this.totalMode = includeTotal;
     }
 
     public String getDimension() {
@@ -32,12 +41,16 @@ public class SummaryDimension extends AbstractSummaryItem implements SummaryItem
     }
 
     public boolean includeTotal() {
-        return includeTotal;
+        return totalMode.includeTotal();
+    }
+
+    public TotalMode getTotalMode() {
+		return totalMode;
     }
 
     @Override
     public String toString() {
-        return "SummaryDimension [dimension=" + dimension + ", stage=" + stage + ", includeTotal=" + includeTotal + "]";
+        return "SummaryDimension [dimension=" + dimension + ", stage=" + stage + ", includeTotal=" + totalMode + "]";
     }
 
 }

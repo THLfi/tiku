@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import fi.thl.summary.model.SummaryDimension.TotalMode;
+
 public class TablePresentation extends DataPresentation {
 
     private List<SummaryItem> columns = Lists.newArrayList();
@@ -17,8 +19,8 @@ public class TablePresentation extends DataPresentation {
         return rows;
     }
 
-    public SummaryItem addColumn(String dimension, SummaryStage stage, boolean includeTotal) {
-        SummaryDimension dim = new SummaryDimension(dimension, stage, includeTotal);
+    public SummaryItem addColumn(String dimension, SummaryStage stage, TotalMode totalMode) {
+        SummaryDimension dim = new SummaryDimension(dimension, stage, totalMode);
         columns.add(dim);
         return dim;
     }
@@ -29,8 +31,8 @@ public class TablePresentation extends DataPresentation {
         return item;
     }
 
-    public SummaryItem addRow(String dimension, SummaryStage stage, boolean includeTotal) {
-        SummaryDimension dim = new SummaryDimension(dimension, stage, includeTotal);
+    public SummaryItem addRow(String dimension, SummaryStage stage, TotalMode totalMode) {
+        SummaryDimension dim = new SummaryDimension(dimension, stage, totalMode);
         rows.add(dim);
         return dim;
     }

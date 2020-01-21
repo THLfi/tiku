@@ -324,7 +324,11 @@
               data-rows="[#list presentation.rows as row]${row.id!}[/#list]"
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-suppress="${presentation.suppress}"
-              data-highlight="${presentation.highlight}">
+              data-highlight="${presentation.highlight}"
+              data-row-dim-highlights="[#list presentation.rows as row][#if "HIGHLIGHT" == row.totalMode!]1 [#else]0 [/#if][/#list]"
+              data-column-dim-highlights="[#list presentation.columns as column][#if "HIGHLIGHT" == column.totalMode!]1 [#else]0 [/#if][/#list]"
+              data-row-highlight-nodes="[#list presentation.rows as row][#if row.totalHighlightNodes??][#list row.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]"
+              data-column-highlight-nodes="[#list presentation.columns as column][#if column.totalHighlightNodes??][#list column.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]">
               [@export presentation "table" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>

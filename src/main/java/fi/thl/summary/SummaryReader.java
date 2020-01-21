@@ -17,6 +17,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import fi.thl.summary.model.*;
+import fi.thl.summary.model.SummaryDimension.TotalMode;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -433,8 +435,16 @@ public class SummaryReader {
             align(row, item);
         }
 
-        private boolean showTotal(Node dim) {
-            return BOOLEAN_YES.equals(attribute(dim, "total"));
+        private TotalMode showTotal(Node dim) {
+            try {
+                return TotalMode.valueOf(attribute(dim, "total").toUpperCase());
+            }
+            catch (NullPointerException e) {
+                return TotalMode.NO;
+            }
+            catch (IllegalArgumentException e) {
+                return TotalMode.NO;
+            }
         }
 
         private void align(Node col, final SummaryItem item) {
