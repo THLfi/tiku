@@ -44,7 +44,7 @@ public class SummaryDimension extends AbstractSummaryItem implements SummaryItem
         return totalMode.includeTotal();
     }
 
-    public TotalMode totalMode() {
+    public TotalMode getTotalMode() {
 		return totalMode;
     }
 
