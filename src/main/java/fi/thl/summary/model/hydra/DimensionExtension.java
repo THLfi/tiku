@@ -86,11 +86,12 @@ public class DimensionExtension extends SummaryDimension implements Extension {
     private void addRootLevelNodesAsTotal(List<IDimensionNode> nodes) {
         this.totalNodes = Lists.newArrayList();
 
-        for (int i = 0; i < nodes.size(); i++) {
-            IDimensionNode node = nodes.get(i);
+        for (IDimensionNode node : Lists.newArrayList(nodes)) {
             if (node.isRootLevelNode()) {
+                // assign total status
                 totalNodes.add(node);
-                nodes.remove(i);
+                // move to the end of the list
+                nodes.remove(node);
                 nodes.add(node);
             }
         }
