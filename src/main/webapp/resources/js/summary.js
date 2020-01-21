@@ -576,7 +576,7 @@ function selectChartType (e) {
       drawList: function(opt) {
         var CHARACTER_WIDTH = (3*14)/5;
         var wrapper = $('<div>').addClass('table-responsive')
-        var table = $('<table>').addClass('table table-condensed');
+        var table = $('<table>').addClass('table table-bordered');
         var thead = $('<thead>');
         var thr = $('<tr>')
         thr.append('<th></th>');
@@ -891,7 +891,7 @@ function selectChartType (e) {
         };
         var table =
           $('<table>')
-            .addClass('table table-condensed')
+            .addClass('table table-bordered')
             .append(createTableHead(columnHlLevels));
         var body = $('<tbody>');
 
