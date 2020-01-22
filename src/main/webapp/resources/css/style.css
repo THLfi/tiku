@@ -474,11 +474,13 @@ ul.tree-browser {
 		max-width: 100%;
 	}
 	.toolbar-control>div {
-		margin-left: 16.7%;
-		padding-left: 30px;
+		 margin-left: 0;
+		padding-left: 0px; 
 	}
 }
-
+.separator{
+	margin-right: 10.7%;	
+}
 .browser-toggle {
 	display: none;
 }

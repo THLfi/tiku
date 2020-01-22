@@ -1,10 +1,15 @@
 [#ftl]
 <div>
-
+[#if backUrl??]
+       <div class="btn-group separator help" >
+          <a class="btn btn-default" href="${rc.contextPath}/${backUrl}"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
+       </div>
+      [/#if]
+     
     <div class="btn-group dropdown" role="group" aria-label="...">
-
+	  
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">${message("cube.options")} <span class="caret"></span></button>
-
+	  
       <ul class="dropdown-menu" role="menu">
 
       <li class="reset-action" role="presentation"><a role="menuitem"><span class="glyphicon glyphicon-refresh"></span> ${message("cube.reset")}</a></li>
@@ -72,7 +77,7 @@
     </div>
     [/#if]
 
-    <div class="btn-group" role="group" aria-label="...">
+    <div class="btn-group pull-right" role="group" aria-label="...">
         <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
           <span class="glyphicon glyphicon-question-sign"></span>
           <span class="hide-xs">${message("site.help")}</span>
