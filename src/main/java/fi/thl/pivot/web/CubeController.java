@@ -34,7 +34,7 @@ public class CubeController extends AbstractCubeController {
     public String displayCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
         LOG.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
-
+        String backUrl = String.format("%s/%s/%s/", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject());
         // Redirect to default view if no parameters set
         if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
             HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());
@@ -72,12 +72,15 @@ public class CubeController extends AbstractCubeController {
             
             model.addAttribute("metaLink", cs.getSource().getPredicates().get("meta:link"));
             model.addAttribute("views", cs.getSource().getNamedViews());
+            model.addAttribute("backUrl",backUrl);
+
             return "cube";
         } else {
             model.addAttribute("cube", cubeRequest.getCube());
             throw new CubeNotFoundException();
         }
     }
+   
 
     private String password(CubeRequest cubeRequest) {
         return (String) session.getAttribute(sessionAttributeName(cubeRequest.getEnv(), cubeRequest.getCube()));

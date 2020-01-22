@@ -504,9 +504,9 @@
       [#--<a href="#">pdf</a>--]
       [#if reports?size>0]
        <div class="btn-group pull-left help" >
-          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
-        [/#if]  
-      </div>
+          <a class="btn btn-default" href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
+       </div>
+      [/#if] 
     </div>
     </div>
 
