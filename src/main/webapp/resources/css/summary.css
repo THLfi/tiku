@@ -244,11 +244,9 @@
     }
 
     .table thead>tr>th,
-    .table tbody>tr>th {
-        border: 1px solid #c3c2c6;
-    }
-
-    .table tbody>tr>td {
+    .table tbody>tr>th,
+    .table tbody>tr>td,
+    .table-responsive .table {
         border: 1px solid #c3c2c6;
     }
 
