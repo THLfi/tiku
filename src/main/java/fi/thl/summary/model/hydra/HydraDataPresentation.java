@@ -163,6 +163,18 @@ public class HydraDataPresentation extends DataPresentation {
             List<IDimensionNode> nodes = IncludeDescendants.apply(s);
             if(!nodes.isEmpty()) {
                 if(closed.contains(s.getDimension())) {
+                    if ("measure".equals(s.getDimension()) && getWidthMeasure() != null) {
+                        // Add widthmeasure to filters, otherwise it won't show when fetching data for presentation
+                        IDimensionNode wmNode = nodes.get(0).getLevel().getNodes()
+                                .stream()
+                                .filter(n -> n.getSurrogateId() == getWidthMeasure().getSurrogateId())
+                                .findFirst()
+                                .get();
+                        if (!nodes.contains(wmNode)) {
+                            nodes.add(wmNode);
+                        }
+                    }
+
                     url.addFilters();
                     url.addParameter(s.getDimension(), nodes);
                     containsColumns = !(closed.size() <= 1);
@@ -302,12 +314,22 @@ public class HydraDataPresentation extends DataPresentation {
 
     @Override
     public MeasureItem getWidthMeasure() {
-    	MeasureItem wm = delegate.getWidthMeasure();
-    	if (wm != null) {
-        	IDimensionNode n = source.findNodeByName(wm.getCode(), summary.getItemLanguage());
-        	wm.setSurrogateId(n.getSurrogateId());    		
-    	}
-    	return wm;
+        MeasureItem wm = delegate.getWidthMeasure();
+        if (wm != null) {
+            // Find and set surrogate for widthmeasure
+            IDimensionNode wmNode = source.findNodeByName(wm.getCode(), summary.getItemLanguage());
+            if (wmNode == null) {
+                // Defined as a widthref, find surrogate id from selections
+                List<IDimensionNode> selected = ((HydraFilter)this.summary.getSelection(wm.getCode())).getSelected();
+                if (selected !=null && !selected.isEmpty()) {
+                    wmNode = selected.get(0);
+                }
+            }
+            if (wmNode != null) {
+                wm.setSurrogateId(wmNode.getSurrogateId());
+            }
+        }
+        return wm;
     }
 
 }

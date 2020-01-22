@@ -562,7 +562,7 @@ public class SummaryReader {
                     return new MeasureItem(MeasureItem.Type.LABEL, child.getTextContent());
                 } else if ("widthref".equals(child.getNodeName())) {
                     return new MeasureItem(MeasureItem.Type.REFERENCE, child.getTextContent());
-                } 
+                }
             }
             return null;
         }
