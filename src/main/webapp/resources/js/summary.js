@@ -1216,13 +1216,11 @@ function selectChartType (e) {
         }
 
         function label (d, i, series) {
-          var label = labels[opt.dataset.Dimension(1).id[series]];
-          if (opt.showCi) {
-            var sampleSize = opt.callback(series, i, 3);
-            if (sampleSize) {
-              label += ' (n = ' + sampleSize + ')';
-            }
-          }
+          var label = labels[opt.dataset.Dimension(1).id[series]];          
+          var sampleSize = opt.callback(series, i, 3);
+          if (sampleSize) {
+            label += ' (n = ' + sampleSize + ')';
+          }          
           return label;
         }
 
@@ -1242,8 +1240,11 @@ function selectChartType (e) {
           }                
           try{
             txt = self.select('text').text();
-          } catch (e) {}      
-          tooltip.text(title+': '+txt+' ');         
+          } catch (e) {}    
+          if( txt && txt.size>0 ){
+            title = title + ': ' + txt + ' '
+          }  
+          tooltip.text(title);         
           return false;
         }
 
@@ -2821,8 +2822,8 @@ function selectChartType (e) {
               stacked: $(p).attr('data-stacked') === 'true',
               percent: $(p).attr('data-percent') === 'true',
               range: [$(p).attr('data-min'), $(p).attr('data-max')],
-              palette: $(p).attr('data-palette'),
-              showCi: true, //show always n.
+              palette: $(p).attr('data-palette'),              
+              showCi: $(p).attr('data-ci') === 'true',
               em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
               limits: target.attr('data-limits'),
               limitLabels: function() {
