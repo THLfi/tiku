@@ -14,6 +14,14 @@ h1 {
 	line-height: 36pt;
 }
 
+a {
+    color: #005c9e;
+}
+
+.text-danger {
+    color: #b80000;
+}
+
 .pivot-banner {
 	background: #fff;
 	height: 10px;
