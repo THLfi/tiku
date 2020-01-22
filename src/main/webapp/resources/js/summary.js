@@ -427,10 +427,10 @@ function selectChartType (e) {
           var step = Math.pow(10, -numDecimals);
 
           if (opt.include === 'gte') {
-            return (Number(limit) - step).toString();
+            return (Number(limit) - step).toFixed(numDecimals);
           }
           else if (opt.include === 'lte') {
-            return (Number(limit) + step).toString();
+            return (Number(limit) + step).toFixed(numDecimals);
           }
         }
 
