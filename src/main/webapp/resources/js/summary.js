@@ -866,7 +866,7 @@ function selectChartType (e) {
             var colHlLevel = columnHlLevels[i] || 0;
             var hlLevel = colHlLevel + rowHlLevel;
             if (hlLevel) {
-              setHighlightLevel(cell, colHlLevel + rowHlLevel);
+              setHighlightLevel(cell, hlLevel);
             }
             i += 1;
           });
