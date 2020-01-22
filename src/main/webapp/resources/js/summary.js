@@ -1235,17 +1235,24 @@ function selectChartType (e) {
           tooltip.style('background-color', 'rgba(255,255,255,0.7)');
           tooltip.style('z-index', 1000);
           tooltip.style('border-color', self.attr('stroke') || self.attr('fill'));
-          tooltip.text(self.text());
-          self.select('title').text('');
+          var title = '';          
+          var txt = '';
+          if(self.select('title')){
+            title = self.select('title').text();
+          }                
+          try{
+            txt = self.select('text').text();
+          } catch (e) {}      
+          tooltip.text(title+': '+txt+' ');         
           return false;
         }
 
         function hideToolTip () {
           var self = d3.select(this);
+          tooltip.text('');
           tooltip.style('visibility', 'hidden');
           self.attr('r', 4);
-          self.attr('stroke-width', 2);
-          self.select('title').text(tooltip.text());
+          self.attr('stroke-width', 1);          
         }
 
         function moveToolTip () {
@@ -1614,6 +1621,14 @@ function selectChartType (e) {
             var outerArc = d3.svg.arc()
               .outerRadius(innerArcRadius + 2 * opt.margin)
               .innerRadius(innerArcRadius + 2 * opt.margin);
+          
+            var lineArc = d3.svg.arc()
+              .outerRadius(innerArcRadius + 2 * opt.margin+5)
+              .innerRadius(innerArcRadius - 2 * opt.margin);
+
+            var secondArc = d3.svg.arc()
+              .outerRadius(innerArcRadius + 1 * opt.margin)
+              .innerRadius(innerArcRadius + 1 * opt.margin);
 
             var pie = d3.layout.pie(nonZeroData)
               .sort(null)
@@ -1645,20 +1660,26 @@ function selectChartType (e) {
               .text(function (d, i) {
                 return labels[opt.dataset.Dimension(0).id[dataIndex[i]]];
               });
-
+           
+           
             g.append('path')
-              .attr('d', arc)
-              .style('fill', function (d, i) {
-                return colors[dataIndex[i]];
-              })
-              .style('stroke', '#fff');
+            .attr('d', arc)
+            .style('fill', function (d, i) {
+              return colors[dataIndex[i]];
+            })
+            .style('stroke', '#fff');      
 
             function midAngle (d) {
               return d.startAngle + (d.endAngle - d.startAngle) / 2;
             }
+            var toggleArc=false;
             g.append('text')
-              .attr('transform', function (d) {
+              .attr('transform', function (d) { 
                 var pos = outerArc.centroid(d);
+                if(toggleArc){
+                  pos = secondArc.centroid(d);                  
+                }
+                toggleArc = toggleArc?false:true;
                 pos[0] = innerArcRadius * (midAngle(d) < Math.PI ? 1.2 : -1.2);
                 return 'translate(' + pos + ')';
               })
@@ -1669,17 +1690,24 @@ function selectChartType (e) {
               .text(function (d, i) {
                 return numberFormat(opt.callback(0, dataIndex[i]));
               });
+              toggleArc=false;
               g.append('polyline')
               .attr('points', function (d) {
                 if (d.value !== 0) {
                   var pos = outerArc.centroid(d);
+                  var anglePos = outerArc.centroid(d);
+                  if(toggleArc){
+                    pos = secondArc.centroid(d);   
+                    anglePos = secondArc.centroid(d);              
+                  }
+                  toggleArc = toggleArc?false:true;
+                  var angle = midAngle(d);
                   pos[0] = innerArcRadius * 0.95 * (midAngle(d) < Math.PI ? 1.2 : -1.2);
-                  
-                  return [arc.centroid(d), outerArc.centroid(d), pos];
+                  return [lineArc.centroid(d), anglePos, pos];
                 }
               })
               .attr('fill', 'none')
-              .attr('stroke', '#808080');
+              .attr('stroke', '#c3c2c6  ');
           },
           'radarchart': function (chart) {
     
