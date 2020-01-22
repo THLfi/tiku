@@ -470,6 +470,9 @@ ul.tree-browser {
 	.modal-dialog {
 		width: 80%;
 	}
+	.modal-dialog .container {
+		max-width: 100%;
+	}
 	.toolbar-control>div {
 		margin-left: 16.7%;
 		padding-left: 30px;
