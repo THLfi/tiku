@@ -1788,14 +1788,14 @@ function selectChartType (e) {
               var axisLabels = axis.append("text")
                 .attr("class", "legend")
                 .text(function(d){return labels[d]; })
-                .style("font-family", "sans-serif")
+                .style("font-family", "Source sans pro")
                 .style("font-size", "11px")
                 .attr("text-anchor", "middle")
                 .attr("dy", "1.5em")
                 .attr("transform", function(d, i){return "translate(0, -10)"})
-                .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-60*Math.sin((i+1)*radiansPerSegment);})
+                .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-80*Math.sin((i+1)*radiansPerSegment);})
                 .attr("y", function(d, i){return radius*(1-Math.cos((i+1)*radiansPerSegment))-20*Math.cos((i+1)*radiansPerSegment);})
-                .call(wrap, 40 + radius*(1-Math.sin(1)*radiansPerSegment)-60*Math.sin(1*radiansPerSegment))
+                .call(wrap, 35 + radius*(1-Math.sin(1)*radiansPerSegment)-60*Math.sin(1*radiansPerSegment))
                 .call(function(text) {
                   text.each(function(d, i) {
                     var text = d3.select(this);
@@ -1809,7 +1809,7 @@ function selectChartType (e) {
               var legendHeight = chart.select('.legend').node().getBBox().height;
               var scaleFactor = (opt.height - legendHeight - opt.margin * 3) / opt.height;
 
-              g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight)+ ')');
+              g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight-20)+ ')');
 
              for (var series = 0; series < opt.series.length; ++series) {
               var sg = g
