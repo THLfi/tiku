@@ -1384,7 +1384,8 @@ function selectChartType (e) {
                 .attr('class', 'series series' + series)
                 .attr('fill', function (d, i) {
                   if (opt.em) {
-                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
+                    var id = columnMekkoChartData[i].itemId;
+                    return opt.em.indexOf(id) >= 0 ? colors[series] : '#808080';
                   } else {
                     return colors[series];
                   }
