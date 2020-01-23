@@ -53,14 +53,18 @@ public class MeasureExtension extends SummaryMeasure implements Extension {
         for (MeasureItem mi : delegate.getMeasures()) {
             if (MeasureItem.Type.LABEL.equals(mi.getType())) {
                 IDimensionNode node = findNode(language, mi.getCode());
-                if (null != node) {
+                if (null != node && !nodes.contains(node)) {
                     nodes.add(node);
                 }
             } else {
-                nodes.addAll(((HydraFilter) summary.getSelection(mi.getCode())).getSelected());
+                List<IDimensionNode> nodesToAdd = ((HydraFilter) summary.getSelection(mi.getCode())).getSelected();
+                for (IDimensionNode node : nodesToAdd) {
+                    if (!nodes.contains(node)) {
+                        nodes.add(node);
+                    }
+                }
             }
         }
-
     }
 
     public IDimensionNode findNode(String language, String item) {
