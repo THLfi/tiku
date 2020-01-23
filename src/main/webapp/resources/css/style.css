@@ -478,17 +478,22 @@ ul.tree-browser {
 	.modal-dialog {
 		width: 80%;
 	}
-	.modal-dialog .container {
-		max-width: 100%;
-	}
-	.toolbar-control>div {
-		 margin-left: 0;
-		padding-left: 0px; 
-	}
+.modal-dialog .container {
+	max-width: 100%;
+}
+.toolbar-control>div {
+		margin-left: 0;
+	padding-left: 0px; 
+}
 }
 .separator{
 	margin-right: 10.7%;	
 }
+
+.modal-backdrop {
+	z-index: -1;
+	}
+
 .browser-toggle {
 	display: none;
 }
