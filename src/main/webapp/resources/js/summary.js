@@ -2771,13 +2771,13 @@ function selectChartType (e) {
                 dataset: dataset,
                 rowCount: parseInt(target.attr('data-row-count')),
                 columnCount: parseInt(target.attr('data-column-count')),
-                rowDimHighlights: target.attr('data-row-dim-highlights').trimRight().split(' '),
-                colDimHighlights: target.attr('data-column-dim-highlights').trimRight().split(' '),
+                rowDimHighlights: target.attr('data-row-dim-highlights').trim().split(' '),
+                colDimHighlights: target.attr('data-column-dim-highlights').trim().split(' '),
                 align: target.attr('data-align').split(' '),
                 suppress: target.attr('data-suppress'),
                 highlight: target.attr('data-highlight'),
-                totalHighlightRows: target.attr('data-row-highlight-nodes').trimRight().split(' '),
-                totalHighlightColumns: target.attr('data-column-highlight-nodes').trimRight().split(' ')
+                totalHighlightRows: target.attr('data-row-highlight-nodes').trim().split(' '),
+                totalHighlightColumns: target.attr('data-column-highlight-nodes').trim().split(' ')
               });
           } else if ('list' === type) {
             summary
