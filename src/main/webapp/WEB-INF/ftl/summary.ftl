@@ -217,6 +217,7 @@
               [#if "barstacked" = presentation.type]data-stacked="true" data-stacked="true"[/#if]
               [#if "barstacked100" = presentation.type]data-stacked="true" data-percent="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
+              [#if presentation.showSampleSize]data-n="true"[/#if]             
               [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n_index>0],[/#if]${n.surrogateId}[/#list]"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}">
@@ -235,6 +236,7 @@
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]
+              [#if presentation.showSampleSize]data-n="true"[/#if]              
               [#if presentation.emphasizedNode??]data-em="[#list presentation.emphasizedNode as n][#if n??][#if emindex>0],[/#if][#assign emindex=1/]${n.surrogateId}[/#if][/#list]"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}"
@@ -253,6 +255,7 @@
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}"
+               [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
@@ -267,6 +270,7 @@
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}"
+              [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
@@ -277,7 +281,8 @@
           <div
               id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation pie"
-              data-ref="${factTable}.json?${presentation.dataUrl}">
+              data-ref="${factTable}.json?${presentation.dataUrl}"
+              [#if presentation.showSampleSize]data-n="true"[/#if]>
               [@export presentation "image" /]
               <img src="${rc.contextPath}/resources/img/loading.gif" alt="loading"/>
           </div>
@@ -287,6 +292,7 @@
           <div
               id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
               class="presentation gauge"
+              [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.min??]data-min="${presentation.min}"[/#if]
               [#if presentation.max??]data-max="${presentation.max}"[/#if]
               [#if presentation.palette??]data-palette="${presentation.palette}"[/#if]

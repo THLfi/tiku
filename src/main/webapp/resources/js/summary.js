@@ -154,11 +154,13 @@ function selectChartType (e) {
     var drawCanvasAndSetUrlFunction = function() {
 
       try {
-        var canvas = isMap? $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0): $('<canvas>').attr('width', width ).attr('height', height+40 ).get(0);       
+        var mapHeightAdd = isMap ? 40: 0;
+        var canvas = $('<canvas>').attr('width', width ).attr('height', height+mapHeightAdd ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, +width , +height+40 );
+        
         if (isMap) {
+          ctx.fillRect(0, 0, +width , +height+mapHeightAdd );
           ctx.drawImage(img,
             left, 0, //map image where to start inserting
             croppedImgWidth, svgHeight,   //what size is the map    
@@ -166,6 +168,7 @@ function selectChartType (e) {
             croppedImgWidth, svgHeight);     //what size to scretch map    
              ctx.drawImage(lImg,0,0);
         } else {
+          ctx.fillRect(0, 0, width, height);
           ctx.drawImage(img,0,0);
         }
         
@@ -241,8 +244,11 @@ function selectChartType (e) {
 
   thl.pivot.exportImg = function (opt) {
     $(opt.target[0]).find('.img-action a').each(function (e) {
-      var width = 600;
-      var height = 400;      
+      var width = 800;
+      var height = 400;         
+      if (opt.legendData) {         
+        width = 600;
+      }         
       var link = $(this);
       if (link.attr('href') === '#') {
         var svg = $(this).closest('.presentation').find('svg');             
@@ -1216,11 +1222,14 @@ function selectChartType (e) {
         }
 
         function label (d, i, series) {
-          var label = labels[opt.dataset.Dimension(1).id[series]];          
-          var sampleSize = opt.callback(series, i, 3);
-          if (sampleSize) {
-            label += ' (n = ' + sampleSize + ')';
-          }          
+          var label = labels[opt.dataset.Dimension(1).id[series]];
+          if (opt.showCi || opt.showN) 
+          {
+            var sampleSize = opt.callback(series, i, 3);
+            if (sampleSize) {
+              label += ' (n = ' + sampleSize + ')';
+            }
+          }
           return label;
         }
 
@@ -1244,16 +1253,17 @@ function selectChartType (e) {
           if( txt && txt.size>0 ){
             title = title + ': ' + txt + ' '
           }  
-          tooltip.text(title);         
+          tooltip.text(title); 
+          self.select('title').text('');        
           return false;
         }
 
         function hideToolTip () {
-          var self = d3.select(this);
-          tooltip.text('');
+          var self = d3.select(this);         
           tooltip.style('visibility', 'hidden');
           self.attr('r', 4);
-          self.attr('stroke-width', 1);          
+          self.attr('stroke-width', 1);     
+          self.select('title').text(tooltip.text());     
         }
 
         function moveToolTip () {
@@ -2825,6 +2835,7 @@ function selectChartType (e) {
               range: [$(p).attr('data-min'), $(p).attr('data-max')],
               palette: $(p).attr('data-palette'),              
               showCi: $(p).attr('data-ci') === 'true',
+              showN: $(p).attr('data-n') === 'true',
               em: $(p).attr('data-em') ? $(p).attr('data-em').split(',') : undefined,
               limits: target.attr('data-limits'),
               limitLabels: function() {

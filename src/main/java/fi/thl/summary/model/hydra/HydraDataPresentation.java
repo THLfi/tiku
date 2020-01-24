@@ -128,7 +128,7 @@ public class HydraDataPresentation extends DataPresentation {
         if (delegate.getShowConfidenceInterval()) {
             url.showConfidenceInterval();
         }
-        if (delegate.isShowSampleSize()) {
+        if (delegate.getShowSampleSize()) {
             url.showSampleSize();
         }
 
@@ -279,6 +279,16 @@ public class HydraDataPresentation extends DataPresentation {
     @Override
     public boolean getShowConfidenceInterval() {
         return delegate.getShowConfidenceInterval();
+    }
+    
+    @Override
+    public boolean getShowSampleSize() {
+        return delegate.getShowSampleSize();
+    }
+    
+    @Override
+    public boolean isShowSampleSize() {
+        return delegate.isShowSampleSize();
     }
 
     @Override
