@@ -1233,11 +1233,34 @@ function selectChartType (e) {
           return label;
         }
 
+        
         function showToolTip () {
           d3.event.preventDefault();
           var self = d3.select(this);
-          self.attr('r', 3);
-          self.attr('stroke-width', 3);
+          return showToolTipBasic(self,3,3);   
+                 
+        }
+
+        function hideToolTip () {
+          var self = d3.select(this);    
+          return hideToolTipBasic(self,5,3);            
+        }
+
+        function showToolTipPie () {
+          d3.event.preventDefault();
+          var self = d3.select(this);
+          return showToolTipBasic(self,3,3);   
+                 
+        }
+
+        function hideToolTipPie () {
+          var self = d3.select(this);    
+          return hideToolTipBasic(self,5,1);            
+        }
+        function showToolTipBasic (self,r,strokeWidth) {
+          
+          self.attr('r', r);
+          self.attr('stroke-width', strokeWidth);
           tooltip.style('visibility', 'visible');
           tooltip.style('background-color', 'rgba(255,255,255,0.7)');
           tooltip.style('z-index', 1000);
@@ -1258,11 +1281,10 @@ function selectChartType (e) {
           return false;
         }
 
-        function hideToolTip () {
-          var self = d3.select(this);         
+        function hideToolTipBasic (self,r,strokeWidth) {              
           tooltip.style('visibility', 'hidden');
-          self.attr('r', 4);
-          self.attr('stroke-width', 1);     
+          self.attr('r', r);
+          self.attr('stroke-width', strokeWidth);     
           self.select('title').text(tooltip.text());     
         }
 
@@ -1451,7 +1473,7 @@ function selectChartType (e) {
           'barchart': function (svg) {
             var offsets = [],
               g = svg.append('g').attr('transform', 'translate(' + opt.margin + ', 0)'),
-              chartBarHeight = opt.stacked ? ordinalScale.rangeBand() - 2 * barAndColumnMargin : (ordinalScale.rangeBand() - opt.series.length * BAR_MARGIN - BAR_GROUP_MARGIN) / opt.series.length,
+              chartBarHeight = opt.stacked ? ordinalScale.rangeBand() - 2 * barAndColumnMargin : (ordinalScale.rangeBand() - opt.series.length * (BAR_MARGIN+0) - BAR_GROUP_MARGIN) / opt.series.length+2,
               scaledZero = scaleValue(0),
               padding = BAR_GROUP_MARGIN / 2.0;
 
@@ -1492,7 +1514,7 @@ function selectChartType (e) {
                 })
                 .attr('y', function (d, i) {
                   if (!opt.stacked) {
-                    return ordinalScale(d) + padding + series * (chartBarHeight + BAR_MARGIN);
+                    return ordinalScale(d) + padding + series * (chartBarHeight + BAR_MARGIN)+2;
                   } else {
                     return ordinalScale(d);
                   }
@@ -1522,7 +1544,7 @@ function selectChartType (e) {
                   },
                   function (d, i) {
                 	  if (!opt.stacked) {
-                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN )-(BAR_MARGIN/2+1);
+                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN )-(BAR_MARGIN/2);
                         } else {
                           return ordinalScale(d) + chartBarHeight  ;
                         }
@@ -1664,8 +1686,8 @@ function selectChartType (e) {
                 var nodeId = opt.dataset.Dimension(0).id[dataIndex[i]];
                 submitDrillDown(nodeId, dimensionData[nodeId].dim);
               })
-              .on('mouseover', showToolTip)
-              .on('mouseout', hideToolTip)
+              .on('mouseover', showToolTipPie)
+              .on('mouseout', hideToolTipPie)
               .on('mousemove', moveToolTip)
               ;
             g.append('svg:title')
@@ -2271,6 +2293,7 @@ function selectChartType (e) {
             .attr('transform', 'translate(' + yAxisPos + ',0)')
             .call(yAxis)
             .selectAll('.tick')
+            .style('stroke-width', '0px')
             .on('mouseover', function (d) {
               // TODO
             })
@@ -2522,7 +2545,11 @@ function selectChartType (e) {
           }
           else {
             drawHorizontalOrdinalAxis(svg, opt.type === 'linechart');
+
           }
+          svg.selectAll('.tick line')
+          .style('stroke-width', '1px')//vertical lines
+          .style('stroke', '#dcdfe2');
         } else if (['barchart'].indexOf(opt.type) >= 0) {
           if (opt.stacked) {
             opt.height = opt.data.length * (barHeight + BAR_GROUP_MARGIN) + opt.margin * 2;
@@ -2538,14 +2565,13 @@ function selectChartType (e) {
           xAxisPos = opt.height - 2 * opt.margin - 6;
           ordinalScale.rangeRoundBands([0, xAxisPos - 5]);
           scaleValue.range([yAxisPos, yAxisPos + xAxisWidth - 4 * opt.margin]);
-
           drawHorizontalValueAxis(svg);
-          drawVerticalOrdinalAxis(yAxisPos, svg, false);
-          svg.selectAll('.tick line')          
-          .style('stroke-width', '0px');
-        }
-        svg.selectAll('.tick line')
+          svg.selectAll('.tick line')
+          .style('stroke-width', '1px')//vertical lines
           .style('stroke', '#dcdfe2');
+          drawVerticalOrdinalAxis(yAxisPos, svg, false);
+        }
+        
         svg.selectAll('.axis path')
           .style('stroke', 'none')
           .style('fill', 'none');
