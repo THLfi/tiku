@@ -173,6 +173,10 @@ public class DataPresentation implements Presentation {
     public void setShowSampleSize(boolean showSampleSize) {
         this.showSampleSize = showSampleSize;
     }
+    
+    public boolean getShowSampleSize() {
+        return this.showSampleSize;
+    }
 
     public boolean getShowConfidenceInterval() {
         return showConfidenceInterval;

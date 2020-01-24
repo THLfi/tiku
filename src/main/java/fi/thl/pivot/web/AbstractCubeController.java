@@ -43,7 +43,8 @@ public abstract class AbstractCubeController extends AbstractController {
             @RequestParam(value = "sort", required = false) String sortNode,
             @RequestParam(value = "mode", required = false, defaultValue = "desc") String sortMode,
             @RequestParam(value = "sc", required = false, defaultValue = "") String showCodes,
-            @RequestParam(value = "ci", required=false) String ci, @RequestParam(value="n", required=false) String n) {
+            @RequestParam(value = "ci", required=false) String ci, 
+            @RequestParam(value = "n", required=false) String n) {
         CubeRequest cr = new CubeRequest();
 
         cr.setSubject(subject);
