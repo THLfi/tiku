@@ -1544,7 +1544,7 @@ function selectChartType (e) {
                   },
                   function (d, i) {
                 	  if (!opt.stacked) {
-                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN )-(BAR_MARGIN/2);
+                          return ordinalScale(d) + chartBarHeight + series * (chartBarHeight + BAR_MARGIN )-(chartBarHeight/2)+BAR_MARGIN;
                         } else {
                           return ordinalScale(d) + chartBarHeight  ;
                         }
@@ -1619,7 +1619,7 @@ function selectChartType (e) {
                   return opt.callback(series, i) == null ? 0 : 3;
                 })
                 .attr('cx', function (d, i) {
-                  return ordinalScale(d) + spacing / 2.0 - 3;
+                  return ordinalScale(d) + spacing / 2.0 - 5;
                 })
                 .attr('cy', offsetColumn(series))
                 .on('mouseover', showToolTip)
