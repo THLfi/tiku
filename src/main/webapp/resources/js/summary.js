@@ -45,6 +45,8 @@ function selectChartType (e) {
 
   function wrap(text, width) {
     // https://bl.ocks.org/mbostock/7555321
+    // Give some reasonable min value for the width, otherwise single characters will be splitted to separate lines
+    width = Math.max(width, 30);
     text.each(function() {
       var text = d3.select(this),
           words = text.text().split(/\s+/).reverse(),
@@ -1802,8 +1804,8 @@ function selectChartType (e) {
                .text(numberFormat((j+1)*(maxValue-minValue)/axisTicks + minValue));
             }
             
-
-             var axis = g.selectAll(".axis")
+            var axisContainer = g.append('g').attr('class', 'axis-container');
+            var axis = axisContainer.selectAll(".axis")
               .data(datum)
               .enter()
               .append("g")
@@ -1826,9 +1828,9 @@ function selectChartType (e) {
                 .attr("text-anchor", "middle")
                 .attr("dy", "1.5em")
                 .attr("transform", function(d, i){return "translate(0, -10)"})
-                .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-80*Math.sin((i+1)*radiansPerSegment);})
+                .attr("x", function(d, i){return radius*(1-Math.sin((i+1)*radiansPerSegment))-60*Math.sin((i+1)*radiansPerSegment);})
                 .attr("y", function(d, i){return radius*(1-Math.cos((i+1)*radiansPerSegment))-20*Math.cos((i+1)*radiansPerSegment);})
-                .call(wrap, 35 + radius*(1-Math.sin(1)*radiansPerSegment)-60*Math.sin(1*radiansPerSegment))
+                .call(wrap, 40 + radius*(1-Math.sin(1)*radiansPerSegment)-60*Math.sin(1*radiansPerSegment))
                 .call(function(text) {
                   text.each(function(d, i) {
                     var text = d3.select(this);
@@ -1839,12 +1841,12 @@ function selectChartType (e) {
                   });
                 });
 
-              var legendHeight = chart.select('.legend').node().getBBox().height;
-              var scaleFactor = (opt.height - legendHeight - opt.margin * 3) / opt.height;
+            var radarAreaHeight = svg.select('g.axis-container').node().getBBox().height;
+            var legendHeight = chart.select('.legend').node().getBBox().height;
+            var scaleFactor = (opt.height - legendHeight -opt.margin * 4) / radarAreaHeight;
+            g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight)+ ')');
 
-              g.attr('transform', 'scale('+ scaleFactor+') translate(' + centerOffset/scaleFactor + ',' + (opt.margin * 3 + maxAxisLabelHeight-20)+ ')');
-
-             for (var series = 0; series < opt.series.length; ++series) {
+            for (var series = 0; series < opt.series.length; ++series) {
               var sg = g
                 .append('g')
                 .selectAll('g')
