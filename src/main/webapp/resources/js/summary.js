@@ -2244,7 +2244,8 @@ function selectChartType (e) {
             xAxis
               .ticks(opt.dataset.Dimension(0).length)
               .tickValues(function() {
-                return Object.values(columnMekkoChartData)
+                return Object.keys(columnMekkoChartData)
+                  .map(function(key) { return columnMekkoChartData[key]; })
                   .sort(function(a, b) { return a.sortOrder - b.sortOrder; })
                   .map(function(dataItem) { return dataItem.itemXPosition});
               });
