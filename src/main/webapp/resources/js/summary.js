@@ -83,18 +83,14 @@ function selectChartType (e) {
     if (opt.legendData) {         
       isMap = true;
     }      
-    var mapWidth = opt.target[0].offsetWidth;   
-    var svgHeight;    
+    var mapWidth = opt.target[0].offsetWidth;
+    var svgHeight;
     if(doc.attr('height') !== undefined) {
-      svgHeight = +doc.attr('height');      
-      
+      svgHeight = +doc.attr('height');
     } else {
-      var vb = +doc[0].getAttribute('viewBox');
-      if(vb){
-        svgHeight = vb.split(' ')[3];
-      }      
-    }    
-
+      svgHeight = +doc[0].getAttribute('viewBox').split(' ')[3];
+    }
+    
     var svgWidth = (+svgHeight/height)*width;
     if(doc.attr('width') !== undefined) {
       svgWidth = +doc.attr('width');
@@ -123,7 +119,11 @@ function selectChartType (e) {
     if(doc.attr('height')) {
       data = doc.parent().html();
     } else {
-      data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + height + '" ');
+      if(isMap){
+        data = doc.parent().html().replace('<svg ', '<svg width="' + width + '" height="' + height + '" ');
+      } else {
+        data = doc.parent().html().replace('<svg ', '<svg width="' + (width + 20) + '" height="' + (svgHeight + 20) + '" ');
+      }
     }
     data = data.replace(/&nbsp;/g,' ');
     if(data.indexOf('xmlns') < 0) {
@@ -154,8 +154,8 @@ function selectChartType (e) {
     var drawCanvasAndSetUrlFunction = function() {
 
       try {
-        var mapHeightAdd = isMap ? 40: 0;
-        var canvas = $('<canvas>').attr('width', width ).attr('height', height+mapHeightAdd ).get(0);       
+        var mapHeightAdd = isMap ? 50: 0;
+        var canvas = isMap?$('<canvas>').attr('width', width ).attr('height', height+mapHeightAdd ).get(0):$('<canvas>').attr('width', (width+40) ).attr('height', (svgHeight+40) ).get(0);       
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         
@@ -168,8 +168,8 @@ function selectChartType (e) {
             croppedImgWidth, svgHeight);     //what size to scretch map    
              ctx.drawImage(lImg,0,0);
         } else {
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img,0,0);
+          ctx.fillRect(0, 0, (width+40), (svgHeight+40));
+          ctx.drawImage(img,10,10);
         }
         
         callback(canvas);
@@ -2598,7 +2598,7 @@ function selectChartType (e) {
 
         svg.selectAll('text')
           .style('font-family', 'Source Sans Pro')
-          .style('font-size', '10pt')
+          .style('font-size', '8pt')
           .style('color', '#606060');
 
         // Genereate data urls for each chart so that user can download
