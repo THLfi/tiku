@@ -487,7 +487,8 @@ ul.tree-browser {
 }
 }
 .separator{
-	margin-right: 10.7%;	
+	margin-right: 10.7%;
+	padding: 0px 0px;	
 }
 
 .modal-backdrop {
