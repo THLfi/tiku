@@ -501,18 +501,18 @@
           <span class="hide-xs">${message("site.help")}</span>
         </a>
       </div>
-
+	 [#if reports?size>0]
+       <div class="btn-group pull-left help" role="group">
+          <a  href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
+       </div>
+      [/#if] 
       [#if env == "deve" || env == "test"]
       <div class="btn-group pull-right help" role="group">
           <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source"> Näytä lähdekoodi </a>
       </div>
       [/#if]
       [#--<a href="#">pdf</a>--]
-      [#if reports?size>0]
-       <div class="btn-group pull-left help" >
-          <a class="btn btn-default" href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
-       </div>
-      [/#if] 
+      
     </div>
     </div>
 
