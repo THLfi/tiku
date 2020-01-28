@@ -11,6 +11,26 @@
     [#return "- ${code} - " /]
 [/#function]
 
+[#macro footer]
+  <footer class="default">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xs-12">
+          <a title="${message("site.company")}" href="http://www.thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
+   	        <img class="footer-logo" src="${rc.contextPath}/resources/img/THL.svg"/>
+   	      </a>
+        </div>
+        [#-- This is useful when we have destination for the links
+        <div class="col-xs-3 col-xs-offset-6">
+          <a href="">${message("site.dataPrivacyDocument")}</a>
+          <a href="">${message("site.accessibilityDocument")}</a>
+        </div>
+         --]
+      </div>
+    </div>
+  </footer>
+[/#macro]
+
 [#macro amor_page title="Ympäristössä olevat aineistot"]
 <!DOCTYPE html>
 <html>
@@ -41,8 +61,7 @@
             });
         </script>
     </head>
-    <body>
-      <body>
+    <body class="common">
 
       <header class="summary-header container-fluid">
           <div class="logo">
@@ -73,26 +92,8 @@
         [#nested /]
       </div>
 
-      <footer>
-          <div class="license">
-              <div class="container">
-              <div class="row">
-                  <div class="col-sm-4">
-                  <a title="${message("site.company")}"
-                      href="http://www.thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
-                           <img class="logoimg" src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${lang}_RGB.svg"
-                              title="${message("site.company")}"
-                              alt="${message("site.company")}"
-                               />
-                  </a>
-                  </div>
-                  <div class="col-sm-8">
-                  &copy; ${message("site.company")} ${.now?string("yyyy")}
-                  </div>
-              </div>
-              </div>
-          </div>
-      </footer>
+	  [@footer/]
+
       <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

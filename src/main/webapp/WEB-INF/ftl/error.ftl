@@ -1,4 +1,5 @@
 [#ftl]<!DOCTYPE html>
+[#include "common.ftl" /]
 
 [#if lang??]
 [#else]
@@ -32,7 +33,7 @@
 
 
     </head>
-    <body>
+    <body class="common">
 
     <header class="summary-header container">
         <h1>${message("site.error")}</h1>
@@ -55,56 +56,8 @@
       </div>
     </div>
 
-    <footer>
+    [@footer/]
 
-     <div class="mega">
-            <div class="container">
-            <div class="row">
-
-
-                <div class="col-sm-3">
-                    <h2>${message("site.thl.services")}</h2>
-
-                    <ul>
-                    	<li><a href="http://sotkanet.fi">${message("site.sotkanet")}</a></li>
-                        <li><a href="http://www.hyvinvointikompassi.fi">${message("site.hyvinvointikompassi")}</a></li>
-                        <li><a href="http://www.thl.fi/tietokantaraportit">${message("site.tietokantaraportit")}</a></li>
-                        <li><a href="http://www.terveytemme.fi">${message("site.terveytemme")}</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-sm-3">
-                    <h2>${message("site.contact")}</h2>
-                    <p>
-                        ${message("site.contact.information")}
-                    </p>
-
-                </div>
-            </div>
-            </div>
-        </div>
-
-
-        <div class="license">
-            <div class="container">
-            <div class="row">
-                <div class="col-sm-4">
-                <a title="${message("site.company")}"
-                    href="http://www.thl.fi/[#if lang! != "fi"]${lang}/web/thlfi-${lang}[/#if]">
-                         <img class="logoimg" 
-                            src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${lang}_RGB.svg"
-                            title="${message("site.company")}"
-                            alt="${message("site.company")}"
-                            height="42" />
-                </a>
-                </div>
-                <div class="col-sm-8">
-                &copy; ${message("site.title")} ${.now?string("yyyy")}
-                </div>
-            </div>
-            </div>
-        </div>
-    </footer>
     <script src="${rc.contextPath}/resources/js/jquery.js"></script>
     <script src="${rc.contextPath}/resources/js/bootstrap.js"></script>
 
