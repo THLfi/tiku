@@ -30,6 +30,7 @@ import com.google.common.collect.Collections2;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.AmorDao;
+import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.model.Report;
 import fi.thl.pivot.model.Report.ReportType;
 import fi.thl.pivot.model.Tuple;
@@ -94,10 +95,19 @@ public class AmorListController {
 
     @Monitored
     @RequestMapping("/{env}/{locale:[a-z][a-z]}/{subject}")
-    public String listReportsInSubject(@PathVariable String env, @PathVariable final String subject, Model model) {
+    public String listReportsInSubject(@PathVariable String env, @PathVariable String locale, @PathVariable final String subject, Model model) {
+        locale = validateLanguage(locale);
         model.addAttribute("showRestrictedView", true);
-        model.addAttribute("reports", listReportsInSubject(env, subject));
+        model.addAttribute("reports", listReportsInSubjectForLanguage(env, subject, locale));
+        model.addAttribute("lang", locale);
         return "amor-list";
+    }
+
+    private String validateLanguage(String lang) {
+        if (!lang.matches("\\w{2}")) {
+            return "fi";
+        }
+        return lang;
     }
 
     private Collection<Report> listReportsInSubject(String env, final String subject) {
@@ -106,6 +116,27 @@ public class AmorListController {
             @Override
             public boolean apply(Report input) {
                 return subject.equals(input.getSubject());
+            }
+        });
+
+    }
+
+    private Collection<Report> listReportsInSubjectForLanguage(String env, final String subject, final String locale) {
+        return Collections2.filter(dao.listReportsLocalized(env, subject, locale), new Predicate<Report>() {
+
+            @Override
+            public boolean apply(Report input) {
+                String id = String.format("%s.%s.%s.%s",
+                    input.getSubject(),
+                    input.getHydra(),
+                    input.getFactTable(),
+                    input.getRunId()
+                );
+                HydraSource source = dao.loadSource(env, id);
+                if (!source.isMetadataLoaded()) {
+                    source.loadMetadata();
+                }
+                return subject.equals(input.getSubject()) && source.getLanguages().contains(locale);
             }
         });
     }
@@ -128,15 +159,17 @@ public class AmorListController {
 
 
     @Monitored
-    @RequestMapping("/{env}/{locale}/{subject}/{hydra}")
-    public String listReportsInHydra(@PathVariable String env, @PathVariable final String subject,
+    @RequestMapping("/{env}/{locale:[a-z][a-z]}/{subject}/{hydra}")
+    public String listReportsInHydra(@PathVariable String env, @PathVariable String locale, @PathVariable final String subject,
             @PathVariable final String hydra, Model model) {
+        locale = validateLanguage(locale);
         model.addAttribute("showRestrictedView", true);
-        model.addAttribute("reports", Collections2.filter(dao.listReports(env, subject), new Predicate<Report>() {
+        model.addAttribute("lang", locale);
+        model.addAttribute("reports", Collections2.filter(listReportsInSubjectForLanguage(env, subject, locale), new Predicate<Report>() {
 
             @Override
             public boolean apply(Report input) {
-                return subject.equals(input.getSubject()) && hydra.equals(input.getHydra());
+                return hydra.equals(input.getHydra());
             }
         }));
         return "amor-list";

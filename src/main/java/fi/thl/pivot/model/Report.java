@@ -15,6 +15,7 @@ public class Report {
     private Label title = new Label(), subjectTitle = new Label();
     private boolean isProtected;
     private String name;
+    private String factTable;
 
     public String getSubject() {
         return subject;
@@ -54,6 +55,14 @@ public class Report {
 
     public void setFact(String fact) {
         this.fact = fact;
+    }
+
+    public String getFactTable() {
+        return factTable;
+    }
+
+    public void setFactTable(String factTable) {
+        this.factTable = factTable;
     }
 
     public ReportType getType() {

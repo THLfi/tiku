@@ -163,9 +163,25 @@ public class AmorDao {
 
     @AuditedMethod
     public List<Report> listReports(String environment, String subject) {
+        return queryLocalizedReports(environment, subject, "fi");
+    }
+
+    @AuditedMethod
+    public List<Report> listReportsLocalized(String environment, String subject, String locale) {
+        return queryLocalizedReports(environment, subject, locale);
+    }
+
+    private List<Report> queryLocalizedReports(String environment, String subject, String locale) {
         Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment " + environment);
-        return jdbcTemplate.query(String.format(queries.getProperty("list-reports-with-subject"), schema), new ReportMapper(),
-                subject, environment, subject, environment);
+        return jdbcTemplate.query(String.format(queries.getProperty("list-reports-with-subject"), schema), new ReportMapper() {
+            @Override
+            public Report mapRow(ResultSet rs, int arg1) throws SQLException {
+                Report r = super.mapRow(rs, arg1);
+                r.setFactTable(rs.getString("fact_table"));
+                return r;
+            }
+        },
+                locale, locale, subject, environment, subject, environment);
     }
     /**
      * Lists reports within the given amor subject. Used to provide a quick way

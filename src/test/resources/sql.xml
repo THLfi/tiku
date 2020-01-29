@@ -96,7 +96,7 @@ left join amor_%2$s.meta_ref_id_map using (ref)
 	select 
 		subject, hydra, added_meta_hydra, run_id, logical_name, view_type,
 		case when view_type = 'cube'
-			then amor_%1$s.f_cube_property(subject, hydra, state, logical_name, 'name', 'fi') 
+			then amor_%1$s.f_cube_property(subject, hydra, state, logical_name, 'name', 'fi')
 			else
 		    amor_%1$s.f_summary_name(subject, hydra, state, logical_name,'fi')
 		end as name
@@ -131,39 +131,42 @@ left join amor_%2$s.meta_ref_id_map using (ref)
 	]]></entry>
 	<entry key="list-reports-with-subject"><![CDATA[
 	select 
-		subject, hydra, added_meta_hydra, run_id, logical_name, view_type,
+		subject, hydra, added_meta_hydra, run_id, logical_name, fact_table, view_type,
 		case when view_type = 'cube'
-			then amor_%1$s.f_cube_property(subject, hydra, state, logical_name, 'name', 'fi') 
+			then amor_%1$s.f_cube_property(subject, hydra, state, logical_name, 'name', ?)
 			else
-			  amor_%1$s.f_summary_name(subject, hydra, state, logical_name,'fi')
+			  amor_%1$s.f_summary_name(subject, hydra, state, logical_name, ?)
 		end as name
 	 from (
 	select 
-	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, 'cube' as view_type, state
+	   h.subject, h.hydra, added_meta_hydra, h.run_id, logical_name, logical_name as fact_table, 'cube' as view_type, state
 	from amor_%1$s.meta_hydra as h
 	join amor_%1$s.meta_table as t on
 		h.run_id = t.run_id
 	join amor_%1$s.meta_state_current as cube_state on 
 		h.subject = cube_state.subject and
 		h.hydra = cube_state.hydra and
-		h.run_id = cube_state.run_id 
+		h.run_id = cube_state.run_id
 	where 
-	   logical_name like 'fact%%' 
+	   logical_name like 'fact%%'
 	   and h.subject = ?
 	   and state = ?
 	union all
 	select 
-	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id, 'summary' as view_type,state
+	   h.subject, h.hydra, h.added_meta_hydra, h.run_id, summary_id as logical_name, t.logical_name as fact_table, 'summary' as view_type,state
 	   from amor_%1$s.amor_summaries summary
        join amor_%1$s.meta_hydra h on
        		summary.run_id = h.run_id
+       join amor_%1$s.meta_table as t on
+            h.run_id = t.run_id
        join amor_%1$s.meta_state_current as meta_state on 
-		h.subject = meta_state.subject and
-		h.hydra = meta_state.hydra and
-		h.run_id = meta_state.run_id 
-       where 
-         h.subject = ?
-         and state = ?
+            h.subject = meta_state.subject and
+            h.hydra = meta_state.hydra and
+            h.run_id = meta_state.run_id
+        where
+            logical_name like 'fact%%'
+            and h.subject = ?
+            and state = ?
     ) d
 	order by subject, hydra, logical_name, added_meta_hydra desc
 	]]></entry>
