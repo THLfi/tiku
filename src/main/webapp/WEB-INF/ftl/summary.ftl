@@ -537,7 +537,7 @@
 
                 <div class="data-info col-xs-12 text-center">
                   <span class="bold">${message("site.contact")}: </span>${message("site.contact.information")}<br/>
-                  &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("cube.updated")} ${runDate?string("dd.MM.yyyy")}
+                  &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("summary.data-updated")} ${runDate?string("dd.MM.yyyy")}
                 </div>
             </div>
 
