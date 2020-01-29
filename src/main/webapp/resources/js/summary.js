@@ -1498,7 +1498,7 @@ function selectChartType (e) {
                 .attr('class', 'series series' + series)
                 .attr('fill', function (d, i) {
                   if (opt.em) {
-                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#519b2f';
+                    return opt.em.indexOf(d) >= 0 ? colors[series] : '#808080';
                   } else {
                     return colors[series];
                   }
@@ -2547,7 +2547,7 @@ function selectChartType (e) {
             columnMekkoChartWidthScale.range([0, xAxisWidth - yAxisPos]);
           }
           else {
-            drawHorizontalOrdinalAxis(svg, opt.type === 'linechart');
+            drawHorizontalOrdinalAxis(svg, false);
 
           }
           svg.selectAll('.tick line')
