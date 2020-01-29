@@ -501,6 +501,7 @@ ul.tree-browser {
 
 .modal-backdrop {
 	z-index: -1;
+	background: #fff;
 	}
 
 .browser-toggle {
