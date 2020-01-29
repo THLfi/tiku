@@ -1,12 +1,7 @@
 [#ftl]<!DOCTYPE html>
+[#include "common.ftl" /]
 
 [#setting locale=lang]
-[#function message code]
-    [#if rc.getMessage(code)??]
-        [#return rc.getMessage(code) /]
-    [/#if]
-    [#return "- ${code} - " /]
-[/#function]
 
 <html>
     <head>
@@ -27,7 +22,7 @@
 
         </style>
     </head>
-    <body>
+    <body class="common">
 
     <div class="pivot-header">
         <h1>${cubeLabel.getValue(lang)}</h1>
@@ -63,10 +58,7 @@
         </div>
 
     </div>
-
-    <div class="pivot-footer">
-      &copy; ${message("site.company")} ${.now?string("yyyy")}
-    </div>
+	[@footer/]
 
     </body>
 </html>

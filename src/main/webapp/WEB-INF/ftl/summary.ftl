@@ -1,4 +1,5 @@
 [#ftl]<!DOCTYPE html>
+[#include "common.ftl" /]
 
 [#setting locale="fi"]
 
@@ -9,13 +10,6 @@
 
 [#function value val]
     [#return val /]
-[/#function]
-
-[#function message code]
-    [#if rc.getMessage(code)??]
-        [#return rc.getMessage(code, "[${code}]") /]
-    [/#if]
-    [#return "- ${code} - " /]
 [/#function]
 
 [#function subtitleHeadingLevel presentation]
@@ -174,7 +168,7 @@
 [#macro summary_presentations]
 [#list summary.sections as row]
 
-  <div class="row">
+  <div class="row presentation-row">
     [#list row.children as block]
 
     [#assign colWidth][#if block.width??]${block.width}[#else]${12/row.children?size}[/#if][/#assign]
@@ -434,7 +428,7 @@
         <![endif]-->
 
     </head>
-    <body>
+    <body class="common">
 
     <header class="summary-header container-fluid">
         <div class="logo">
@@ -540,6 +534,11 @@
 
                   [@summary_presentations /]
                 </div>
+
+                <div class="data-info col-xs-12 text-center">
+                  <span class="bold">${message("site.contact")}: </span>${message("site.contact.information")}<br/>
+                  &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("cube.updated")} ${runDate?string("dd.MM.yyyy")}
+                </div>
             </div>
 
             <div class="clearfix"></div>
@@ -550,62 +549,7 @@
 
     </div>
 
-
-
-    <footer>
-        <div class="mega">
-            <div class="container">
-            <div class="row">
-                <nav class="col-sm-3">
-                    <h2>${message("site.content")}</h2>
-                    <ul>
-                        [#list reports as report]
-                        <li><a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${report.subject}/${report.hydra}/summary_${report.fact}">${report.title.getValue(lang)}</a></li>
-                        [/#list]
-                    </ul>
-                </nav>
-
-                <div class="col-sm-3">
-                    <h2>${message("site.thl.services")}</h2>
-
-                    <ul>
-                        <li><a href="https://sotkanet.fi">${message("site.sotkanet")}</a></li>
-                        <li><a href="http://www.hyvinvointikompassi.fi">${message("site.hyvinvointikompassi")}</a></li>
-                        <li><a href="http://www.terveytemme.fi">${message("site.terveytemme")}</a></li>
-                        <li>${message("site.tietokantaraportit")}</li>
-                    </ul>
-                </div>
-
-                <div class="col-sm-offset-3 col-sm-3">
-                    <h2>${message("site.contact")}</h2>
-                    <p>
-                        ${message("site.contact.information")}
-                    </p>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <div class="license">
-            <div class="container">
-            <div class="row">
-                <div class="col-sm-4">
-                <a title="${message("site.company")}"
-                    href="http://www.thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
-                         <img class="logoimg" 
-                            src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg"
-                            title="${message("site.company")}"
-                            alt="${message("site.company")}"
-                             />
-                </a>
-                </div>
-                <div class="col-sm-8">
-                &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("cube.updated")} ${runDate?string("dd.MM.yyyy")}
-                </div>
-            </div>
-            </div>
-        </div>
-    </footer>
+    [@footer/]
 
     <script>
         [#include "summary-script.ftl" /]
