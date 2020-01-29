@@ -452,30 +452,49 @@ function selectChartType (e) {
         legend.update = function() {
           var ul = $('<ul>');
           var lastBound = Number.MAX_VALUE;
+          var isFirstInterval = true;
+          var isLastInterval = false;
           for(var i = 0; i < limits.length - 1; ++i) {
-            if(lastBound == limits[i + 1]) {
+            var currentBound = limits[i + 1];
+            // skip first interval if the next one is equal
+            if ((i == 0) && (limits[1] == limits[0])) {
+              lastBound = limits[0];
               continue;
             }
+            // skip repeating limits
+            if (lastBound == currentBound) {
+              continue;
+            }
+            // finish (always with closed upper bound) when maximum limit reached
+            if (limits[limits.length-1] == currentBound) {
+              isLastInterval = true;
+            }
+
             var li = $('<li>')
             var lbl = opt.limitLabels();
             if(lbl.length > i) {
                 li.text(lbl[i]);
             } else {
                 if (opt.include === 'gte') {
-                  var upperLimit = (i === limits.length-2) ? limits[i + 1] : openBoundValue(limits[i + 1]);
+                  var upperLimit = isLastInterval ? currentBound : openBoundValue(currentBound);
                   li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(upperLimit));
                 }
                 else if (opt.include === 'lte') {
-                  var lowerLimit = (i === 0) ? limits[0] : openBoundValue(limits[i]);
-                  li.text(numberFormat(lowerLimit) + '\u2013' + numberFormat(limits[i + 1]));
+                  var lowerLimit = isFirstInterval ? limits[i] : openBoundValue(limits[i]);
+                  li.text(numberFormat(lowerLimit) + '\u2013' + numberFormat(currentBound));
                 }
             }
+            isFirstInterval = false;
             var l = $('<span></span>')
               .css('background', colors[mapLimitIndex(limits, i)]);
             li.prepend(l);
             ul.append(li);
-            lastBound = limits[i + 1];
             opt.legendData.labels.push({label: li.text(), color: colors[mapLimitIndex(limits, i)]});
+
+            if (isLastInterval) {
+              break;
+            }
+            lastBound = currentBound;
           }
           $(this._div)
             .append($('<strong></strong>').text(opt.label))
