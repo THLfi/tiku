@@ -687,10 +687,12 @@ function selectChartType (e) {
             var row = $('<tr>'),
               dimension = opt.dataset.Dimension(opt.rowCount + level).id;
 
-            // Add empty cell that spans row headings
-            row.append(
-              $('<th>').attr('colspan', opt.rowCount)
-            );
+            // Add empty cell that spans row and column headings
+            if (level == 0) {
+              row.append(
+                $('<th>').attr('colspan', opt.rowCount).attr('rowspan', spanPerLevel.length)
+              );
+            }
 
             // Create header cells for current level
             for (var j = 0; j < repeatFactor; ++j) {
