@@ -95,11 +95,19 @@ public class AmorListController {
 
     @Monitored
     @RequestMapping("/{env}/{locale:[a-z][a-z]}/{subject}")
-    public String listReportsInSubject(@PathVariable String env, @PathVariable final String locale, @PathVariable final String subject, Model model) {
+    public String listReportsInSubject(@PathVariable String env, @PathVariable String locale, @PathVariable final String subject, Model model) {
+        locale = validateLanguage(locale);
         model.addAttribute("showRestrictedView", true);
         model.addAttribute("reports", listReportsInSubjectForLanguage(env, subject, locale));
         model.addAttribute("lang", locale);
         return "amor-list";
+    }
+
+    private String validateLanguage(String lang) {
+        if (!lang.matches("\\w{2}")) {
+            return "fi";
+        }
+        return lang;
     }
 
     private Collection<Report> listReportsInSubject(String env, final String subject) {
@@ -151,9 +159,10 @@ public class AmorListController {
 
 
     @Monitored
-    @RequestMapping("/{env}/{locale}/{subject}/{hydra}")
+    @RequestMapping("/{env}/{locale:[a-z][a-z]}/{subject}/{hydra}")
     public String listReportsInHydra(@PathVariable String env, @PathVariable String locale, @PathVariable final String subject,
             @PathVariable final String hydra, Model model) {
+        locale = validateLanguage(locale);
         model.addAttribute("showRestrictedView", true);
         model.addAttribute("lang", locale);
         model.addAttribute("reports", Collections2.filter(listReportsInSubjectForLanguage(env, subject, locale), new Predicate<Report>() {
