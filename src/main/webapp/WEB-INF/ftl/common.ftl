@@ -16,7 +16,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12">
-          <a title="${message("site.company")}" href="http://www.thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
+          <a title="${message("site.company")}" href="http://thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
    	        <img class="footer-logo" src="${rc.contextPath}/resources/img/THL.svg"/>
    	      </a>
         </div>
