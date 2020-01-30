@@ -441,33 +441,18 @@ function selectChartType (e) {
           }).reduce(function (a, b) { return Math.max(a, b) });
         }
 
-        function openBoundValue(limit, numDecimals) {
-          var step = Math.pow(10, -numDecimals);
-
-          if (opt.include === 'gte') {
-            return (Number(limit) - step).toFixed(numDecimals);
-          }
-          else if (opt.include === 'lte') {
-            return (Number(limit) + step).toFixed(numDecimals);
-          }
+        function openBoundValue(limit, numDecimals, stepSign) {
+          var step = Math.pow(10, -numDecimals) * stepSign;
+          return (Number(limit) + step).toFixed(numDecimals);
         }
 
-        function intervalLabel(lowerBound, upperBound, ultimateMin, ultimateMax, numDecimals) {
+        function intervalLabel(lowerBound, lowerBoundOpen, upperBound, upperBoundOpen, numDecimals) {
           if (lowerBound == upperBound) {
-            return numberFormat(lowerBound.toFixed(numDecimals));
+            return numberFormat((+lowerBound).toFixed(numDecimals));
           }
 
-          var upper, lower;
-          if (opt.include === 'gte') {
-            upper = (upperBound == ultimateMax) ?
-              upperBound.toFixed(numDecimals) : openBoundValue(upperBound, numDecimals);
-            lower = lowerBound.toFixed(numDecimals);
-          }
-          else if (opt.include === 'lte') {
-            upper = upperBound.toFixed(numDecimals);
-            lower = (lowerBound == ultimateMin) ?
-              lowerBound.toFixed(numDecimals) : openBoundValue(lowerBound, numDecimals);
-          }
+          var lower = lowerBoundOpen ? openBoundValue(lowerBound, numDecimals, 1) : (+lowerBound).toFixed(numDecimals);
+          var upper = upperBoundOpen ? openBoundValue(upperBound, numDecimals, -1) : (+upperBound).toFixed(numDecimals);
 
           return numberFormat(lower) + '\u2013' + numberFormat(upper);
         }
@@ -481,23 +466,16 @@ function selectChartType (e) {
         };
         legend.update = function() {
           var ul = $('<ul>');
-          var lastUpperBound = Number.MAX_VALUE;
-          var numBoundRepeats = 0;
-          var isFirstInterval = true;
-          var isLastInterval = false;
           var limitDecimals = mostDecimals(limits);
           for(var i = 0; i < limits.length - 1; ++i) {
+            var previousBound = limits[i - 1];
             var lowerBound = limits[i];
             var upperBound = limits[i + 1];
+            var nextBound = limits[i + 2];
 
-            // don't repeat identical intervals
-            if (lowerBound == upperBound) {
-              numBoundRepeats++;
-              if (numBoundRepeats > 1) {
-                continue;
-              }
-            } else {
-              numBoundRepeats = 0;
+            // don't repeat identical single value classes
+            if (upperBound == previousBound) {
+              continue;
             }
 
             var li = $('<li>')
@@ -505,19 +483,31 @@ function selectChartType (e) {
             if(lbl.length > i) {
                 li.text(lbl[i]);
             } else {
-              li.text(intervalLabel(lowerBound, upperBound, limits[0], limits[limits.length-1], limitDecimals));
+              var leftBoundOpen = opt.include == 'lte';
+              var rightBoundOpen = opt.include == 'gte';
+              // use closed bounds for the outermost limits
+              if (lowerBound == limits[0]) {
+                leftBoundOpen = false;
+              }
+              if (upperBound == limits[limits.length - 1]) {
+                rightBoundOpen = false;
+              }
+              // never use closed bound next to a single value class
+              if (lowerBound == previousBound) {
+                leftBoundOpen = true;
+              }
+              if (upperBound == nextBound) {
+                rightBoundOpen = true;
+              }
+
+              li.text(intervalLabel(lowerBound, leftBoundOpen, upperBound, rightBoundOpen, limitDecimals));
             }
-            isFirstInterval = false;
             var l = $('<span></span>')
               .css('background', colors[mapLimitIndex(limits, i)]);
             li.prepend(l);
             ul.append(li);
             opt.legendData.labels.push({label: li.text(), color: colors[mapLimitIndex(limits, i)]});
 
-            if (isLastInterval) {
-              break;
-            }
-            lastUpperBound = upperBound;
           }
           $(this._div)
             .append($('<strong></strong>').text(opt.label))
