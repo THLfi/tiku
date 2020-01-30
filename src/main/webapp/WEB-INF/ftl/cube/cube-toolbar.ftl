@@ -1,17 +1,11 @@
 [#ftl]
 <div>
-[#if backUrl??]
-       <div class="btn-group separator help" >
-          <a class="btn btn-default" href="${rc.contextPath}/${backUrl}"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
-       </div>
-      [/#if]
-     
-    <div class="btn-group dropdown" role="group" aria-label="...">
-	  
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">${message("cube.options")} <span class="caret"></span></button>
-	  
+    <div class="btn-group dropdown" role="group" aria-label="...">	  
+      <button type="button" class="btn btn-default dropdown-toggle small-button" data-toggle="dropdown" aria-expanded="false">	            
+	      <span>${message("cube.options")}</span>         
+	      <span class="caret"></span>
+      </button>	  
       <ul class="dropdown-menu" role="menu">
-
       <li class="reset-action" role="presentation"><a role="menuitem"><span class="glyphicon glyphicon-refresh"></span> ${message("cube.reset")}</a></li>
       <li class="transpose-action" role="presentation"><a role="menuitem"><span class="glyphicon glyphicon-resize-full"></span> ${message("cube.transpose")}</a></li>
       <li class="hide-zero-action" role="presentation"><a role="menuitem"><span class="glyphicon"></span>  [#if RequestParameters.fz??]${message("cube.filter-zero.off")}[#else]${message("cube.filter-zero.on")}[/#if]</a></li>
@@ -28,9 +22,17 @@
       </ul>
 
     </div>
+    
     <div class="btn-group dropdown" role="group" aria-label="...">
 
-      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">${message("cube.export")} <span class="caret"></span></button>
+      <button type="button" class="btn btn-default dropdown-toggle small-button" data-toggle="dropdown" aria-expanded="false">	    
+	      
+	      <i class="fa fa-download"></i>  	
+	     <span class="hide-xs">
+		     ${message("cube.export")}
+	     </span>   
+	     <span class="hide-xs caret"></span> 
+      </button>
 
       <ul class="dropdown-menu" role="menu">
       [#assign reqParameters][#compress]
@@ -68,8 +70,18 @@
       </ul>
 
     </div>
+    [#if backUrl??]
+     <div class="btn-group dropdown" role="group" aria-label="...">
+       <div class="btn btn-default small-button" >
+          <a class="btn btn-default small-button" href="${rc.contextPath}/${backUrl}">
+         	<i class=" fa fa-th"></i> 
+			<span class="hide-xs">${message("site.changeMaterial")}</span>		
+           </a>
+       </div></div>
+      [/#if]
+     <div class="btn-group pull-right  vlcube"></div>
     [#if metaLink??]
-    <div class="btn-group" role="group" aria-label="...">
+    <div class="btn-group pull-right" role="group" aria-label="...">
       <a class="btn btn-default" target="_blank" href="${metaLink.getValue(lang)}">
         <span class="glyphicon glyphicon-info-sign"></span>
         <span class="hide-xs">${message("summary.more")}</span>
@@ -83,9 +95,10 @@
           <span class="hide-xs">${message("site.help")}</span>
         </a>
     </div>
+    
 
     [#if requireLogin]
-     <div class="btn-group dropdown" role="group" aria-label="...">
+     <div class="btn-group dropdown pull-right" role="group" aria-label="...">
         <form class="form" method="POST" action="${target}/logout">
             <button type="submit" class="btn btn-default">
               <span class="glyphicon glyphicon-log-out"></span>

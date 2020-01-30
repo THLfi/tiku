@@ -418,9 +418,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css?v=${buildTimestamp}" />
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/summary.css?v=${buildTimestamp}" />
+       
 
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/resources/js/html5shiv.js"></script>
@@ -468,18 +470,23 @@
 
         <div class="btn-group pull-left filter-toggle">
           <button class="btn btn-default">
-             <span class="icon-bar"></span>
-             <span class="icon-bar"></span>
-             <span class="icon-bar"></span>
+             <i class="fa fa-sliders"></i>                       
              <span class="sr-only">${message("cube.options")}</span>
          </button>
        </div>
-
+       
+    
+       
+       
+      <div class="btn-group pull-right help vl"></div>
 
       [#if requireLogin]
       <div class="btn-group pull-right" role="group" aria-label="${message("site.logout")}">
           <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
-              <button type="submit" class="btn btn-default">${message("site.logout")}</button>
+              <button type="submit" class="btn btn-default">
+              	<i class="fas fa-sign-out-alt"></i>
+              	<span class="hide-xs">${message("site.logout")}</span>
+              </button>
           </form>
       </div>
       [/#if]
@@ -495,16 +502,25 @@
           <span class="hide-xs">${message("site.help")}</span>
         </a>
       </div>
-	 [#if reports?size>0]
-       <div class="btn-group pull-left help" role="group">
-          <a  href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"><span class="hide-xs glyphicon glyphicon-th fa-2x"></span> ${message("site.changeMaterial")}</a>
-       </div>
-      [/#if] 
+	 
       [#if env == "deve" || env == "test"]
-      <div class="btn-group pull-right help" role="group">
-          <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source"> Näytä lähdekoodi </a>
+      <div class="btn-group pull-right help small-button" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
+          		
+          		<i class="fa fa-code"></i> 
+		  		<span class="hide-xs">${message("site.showSource")}</span>		
+		  </a>
       </div>
       [/#if]
+      [#if reports?size>0]
+       <div class="btn-group pull-right help small-button" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"/>
+			<i class="fa fa-th"></i> 
+			<span class="hide-xs">${message("site.changeMaterial")}</span>		
+      </div>
+     [/#if] 
+     <div></div>
+     
       [#--<a href="#">pdf</a>--]
       
     </div>

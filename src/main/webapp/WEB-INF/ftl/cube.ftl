@@ -23,9 +23,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
         <link rel="stylesheet" href="${rc.contextPath}/resources/css/style.css?v=${buildTimestamp}" />
-
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/resources/js/html5shiv.js"></script>
           <script src="${rc.contextPath}/resources/js/respond.min.js"></script>
@@ -64,14 +64,11 @@
     </div>
 
     <div class="pivot-body">
-    <div class="pivot-sidebar">
-
+    <div class="pivot-sidebar2">
          <button class="browser-toggle btn btn-default">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <i class="fa fa-sliders"></i>            
             <span class="sr-only">${message("cube.options")}</span>
-        </button>
+         </button>
          <ul class="tree-browser">
 
          </ul>
