@@ -508,7 +508,7 @@
           <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
           		
           		<i class="fa fa-code"></i> 
-		  		<span class="hide-xs">${message("site.showSource")}</span>		
+		  		<span class="hide-xs">${message("summary.view-source")}</span>
 		  </a>
       </div>
       [/#if]
