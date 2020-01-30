@@ -422,24 +422,39 @@ function selectChartType (e) {
           bounds : [-548576, 6291456, 1548576, 8388608]
         });
 
-        function openBoundValue(limit) {
+        function determineDecimals(value) {
           var numDecimals = opt.decimals;
           if (numDecimals == -1 || (!numDecimals && numDecimals !== 0)) {
-            var decimalParts = limit.toString().split('.');
+            var decimalParts = value.toString().split('.');
             if (decimalParts.length < 2) {
               numDecimals = 0;
             } else {
               numDecimals = decimalParts[1].length || 0;
             }
           }
-          var step = Math.pow(10, -numDecimals);
+          return numDecimals;
+        }
 
-          if (opt.include === 'gte') {
-            return (Number(limit) - step).toFixed(numDecimals);
+        function mostDecimals(values) {
+          return limits.map(function (value) {
+            return determineDecimals(value);
+          }).reduce(function (a, b) { return Math.max(a, b) });
+        }
+
+        function openBoundValue(limit, numDecimals, stepSign) {
+          var step = Math.pow(10, -numDecimals) * stepSign;
+          return (Number(limit) + step).toFixed(numDecimals);
+        }
+
+        function intervalLabel(lowerBound, lowerBoundOpen, upperBound, upperBoundOpen, numDecimals) {
+          if (lowerBound == upperBound) {
+            return numberFormat((+lowerBound).toFixed(numDecimals));
           }
-          else if (opt.include === 'lte') {
-            return (Number(limit) + step).toFixed(numDecimals);
-          }
+
+          var lower = lowerBoundOpen ? openBoundValue(lowerBound, numDecimals, 1) : (+lowerBound).toFixed(numDecimals);
+          var upper = upperBoundOpen ? openBoundValue(upperBound, numDecimals, -1) : (+upperBound).toFixed(numDecimals);
+
+          return numberFormat(lower) + '\u2013' + numberFormat(upper);
         }
 
         var legend = L.control({position : 'bottomleft'});
@@ -451,23 +466,16 @@ function selectChartType (e) {
         };
         legend.update = function() {
           var ul = $('<ul>');
-          var lastBound = Number.MAX_VALUE;
-          var isFirstInterval = true;
-          var isLastInterval = false;
+          var limitDecimals = mostDecimals(limits);
           for(var i = 0; i < limits.length - 1; ++i) {
-            var currentBound = limits[i + 1];
-            // skip first interval if the next one is equal
-            if ((i == 0) && (limits[1] == limits[0])) {
-              lastBound = limits[0];
+            var previousBound = limits[i - 1];
+            var lowerBound = limits[i];
+            var upperBound = limits[i + 1];
+            var nextBound = limits[i + 2];
+
+            // don't repeat identical single value classes
+            if (upperBound == previousBound) {
               continue;
-            }
-            // skip repeating limits
-            if (lastBound == currentBound) {
-              continue;
-            }
-            // finish (always with closed upper bound) when maximum limit reached
-            if (limits[limits.length-1] == currentBound) {
-              isLastInterval = true;
             }
 
             var li = $('<li>')
@@ -475,26 +483,31 @@ function selectChartType (e) {
             if(lbl.length > i) {
                 li.text(lbl[i]);
             } else {
-                if (opt.include === 'gte') {
-                  var upperLimit = isLastInterval ? currentBound : openBoundValue(currentBound);
-                  li.text(numberFormat(limits[i]) + '\u2013' + numberFormat(upperLimit));
-                }
-                else if (opt.include === 'lte') {
-                  var lowerLimit = isFirstInterval ? limits[i] : openBoundValue(limits[i]);
-                  li.text(numberFormat(lowerLimit) + '\u2013' + numberFormat(currentBound));
-                }
+              var leftBoundOpen = opt.include == 'lte';
+              var rightBoundOpen = opt.include == 'gte';
+              // use closed bounds for the outermost limits
+              if (lowerBound == limits[0]) {
+                leftBoundOpen = false;
+              }
+              if (upperBound == limits[limits.length - 1]) {
+                rightBoundOpen = false;
+              }
+              // never use closed bound next to a single value class
+              if (lowerBound == previousBound) {
+                leftBoundOpen = true;
+              }
+              if (upperBound == nextBound) {
+                rightBoundOpen = true;
+              }
+
+              li.text(intervalLabel(lowerBound, leftBoundOpen, upperBound, rightBoundOpen, limitDecimals));
             }
-            isFirstInterval = false;
             var l = $('<span></span>')
               .css('background', colors[mapLimitIndex(limits, i)]);
             li.prepend(l);
             ul.append(li);
             opt.legendData.labels.push({label: li.text(), color: colors[mapLimitIndex(limits, i)]});
 
-            if (isLastInterval) {
-              break;
-            }
-            lastBound = currentBound;
           }
           $(this._div)
             .append($('<strong></strong>').text(opt.label))
@@ -539,9 +552,13 @@ function selectChartType (e) {
                 if(opt.include === 'lte' && +v.value <= limits[i]) {
                   color = colors[mapLimitIndex(limits, i - 1)];
                   break;
-                } else if (opt.include === 'gte' && +v.value < limits[i]) {
-                  color = colors[mapLimitIndex(limits, i - 1)];
-                  break;
+                } else if (opt.include === 'gte') {
+                  var isSingleValueClass = limits[i-1] == limits[i];
+                  var isMaxReached = limits [i-1] == limits[limits.length-1];
+                  if (+v.value < limits[i] || (isSingleValueClass && +v.value == limits[i]) || isMaxReached) {
+                    color = colors[mapLimitIndex(limits, i - 1)];
+                    break;
+                  }
                 }
               }
               if(color === undefined) {
