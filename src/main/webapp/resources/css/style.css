@@ -66,7 +66,7 @@ a {
 	width: 0;
 	border: 5px solid #2a6496;
 	border-color: #2a6496 transparent transparent transparent;
-	padding-top: 0px;
+	padding-top: 12px;
 }
 
 #languages li a:before {
@@ -515,7 +515,7 @@ ul.tree-browser {
 	display: list-item;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
 	h1 {
 		font-size: 12pt;
 		line-height: 15pt;
@@ -642,6 +642,27 @@ ul.tree-browser {
 		z-index: 1000;
 	}
 }
+
+.vl {
+	border-left: 1px solid #444;
+	height: 25px;
+	margin-right: 50px;
+	padding-right: 50px;
+  }
+  
+  .vlcube {
+	border-left: 1px solid #444;
+	height: 35px;
+	padding-left: 6px;
+	margin-right: 35px;
+	padding-right: 35px;
+  }
+
+  .small-button{
+	
+	padding-left: 6px !important;
+	padding-right: 6px !important;
+  }
 
 .full-screen .pivot-sidebar,
 .full-screen .pivot-header,
