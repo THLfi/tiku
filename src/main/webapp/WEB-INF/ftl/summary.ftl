@@ -514,9 +514,10 @@
       [/#if]
       [#if reports?size>0]
        <div class="btn-group pull-right help small-button" role="group">
-          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/"/>
+          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/">
 			<i class="fa fa-th"></i> 
-			<span class="hide-xs">${message("site.changeMaterial")}</span>		
+			<span class="hide-xs">${message("site.changeMaterial")}</span>	
+			 </a>	
       </div>
      [/#if] 
      <div></div>
