@@ -77,11 +77,14 @@
          	<i class=" fa fa-th"></i> 
 			<span class="hide-xs">${message("site.changeMaterial")}</span>		
            </a>
-       </div></div>
+       </div>
+      </div>
       [/#if]
-     <div class="btn-group pull-right  vlcube"></div>
+     
+     	
+     
     [#if metaLink??]
-    <div class="btn-group pull-right" role="group" aria-label="...">
+    <div class="btn-group " role="group" aria-label="...">
       <a class="btn btn-default" target="_blank" href="${metaLink.getValue(lang)}">
         <span class="glyphicon glyphicon-info-sign"></span>
         <span class="hide-xs">${message("summary.more")}</span>
@@ -89,7 +92,7 @@
     </div>
     [/#if]
 
-    <div class="btn-group pull-right" role="group" aria-label="...">
+    <div class="btn-group" role="group" aria-label="...">
         <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
           <span class="glyphicon glyphicon-question-sign"></span>
           <span class="hide-xs">${message("site.help")}</span>
@@ -98,7 +101,7 @@
     
 
     [#if requireLogin]
-     <div class="btn-group dropdown pull-right" role="group" aria-label="...">
+     <div class="btn-group dropdown" role="group" aria-label="...">
         <form class="form" method="POST" action="${target}/logout">
             <button type="submit" class="btn btn-default">
               <span class="glyphicon glyphicon-log-out"></span>
@@ -107,5 +110,7 @@
         </form>
     </div>
     [/#if]
+     <div class="btn-group rightest" role="group" aria-label="..."></div>
+   
 </div>
 </div>
