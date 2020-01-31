@@ -494,8 +494,8 @@ ul.tree-browser {
 .modal-dialog .container {
 	max-width: 100%;
 }
-.tree-browser .hide-xl,
-#languages .hide-xl {
+
+.hide-xl {
 		display: none;
 	}
 
@@ -657,15 +657,14 @@ ul.tree-browser {
 }
 
 .vl {
-	border-left: 1px solid #444;
-	height: 25px;
-	margin-right: 50px;
-	padding-right: 50px;
+	width: fit-content;
+	border-right: 1px solid #fff;
+	height: 30px;
   }
   
   .vlcube {
 	  width: fit-content;
-	border-right: 1px solid #444;
+	border-right: 1px solid #fff;
 	height: 35px;
 	 
 	

@@ -454,7 +454,8 @@
 
       <div id="languages">
         [#if supportedLanguages?? && supportedLanguages?size > 1]
-          <ul>
+          <ul>         
+          <li><div class="hide-xl btn-group vl"></div></li>
           [#list supportedLanguages as x]
             [#if x != lang]
               <li><a href="${rc.contextPath}/${cubeRequest.getSummaryUrl(x)}">${x}</a></li>
@@ -478,7 +479,7 @@
     
        
        
-      <div class="btn-group pull-right help vl"></div>
+      <div class="pull-right rightest"></div>
 
       [#if requireLogin]
       <div class="btn-group pull-right" role="group" aria-label="${message("site.logout")}">
@@ -503,8 +504,17 @@
         </a>
       </div>
 	 
+	 [#if reports?size>0]
+       <div class="btn-group  help small-button" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/">
+			<i class="fa fa-th"></i> 
+			<span class="hide-xs">${message("site.changeMaterial")}</span>	
+			 </a>	
+      </div>
+     [/#if] 
+     
       [#if env == "deve" || env == "test"]
-      <div class="btn-group pull-right help small-button" role="group">
+      <div class="btn-group help small-button" role="group">
           <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
           		
           		<i class="fa fa-code"></i> 
@@ -512,15 +522,8 @@
 		  </a>
       </div>
       [/#if]
-      [#if reports?size>0]
-       <div class="btn-group pull-right help small-button" role="group">
-          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/">
-			<i class="fa fa-th"></i> 
-			<span class="hide-xs">${message("site.changeMaterial")}</span>	
-			 </a>	
-      </div>
-     [/#if] 
-     <div></div>
+      
+     
      
       [#--<a href="#">pdf</a>--]
       
