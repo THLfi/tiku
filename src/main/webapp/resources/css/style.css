@@ -494,7 +494,8 @@ ul.tree-browser {
 .modal-dialog .container {
 	max-width: 100%;
 }
-.tree-browser .hide-xl {
+.tree-browser .hide-xl,
+#languages .hide-xl {
 		display: none;
 	}
 
