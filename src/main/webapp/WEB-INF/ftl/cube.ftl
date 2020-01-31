@@ -44,9 +44,12 @@
         <div class="logo">
             <img src="${rc.contextPath}/resources/img/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
+        
         <div id="languages">
+        
           [#if supportedLanguages?? && supportedLanguages?size > 1]
             <ul>
+             <li><div class="hide-xl btn-group vlcube"></div></li>
             [#list supportedLanguages as x]
               [#if x != lang]
                 <li><a href="${rc.contextPath}/${cubeRequest.getCubeUrl(x)}">${x}</a></li>
@@ -64,7 +67,7 @@
     </div>
 
     <div class="pivot-body">
-    <div class="pivot-sidebar2">
+    <div class="pivot-sidebar">
          <button class="browser-toggle btn btn-default">
             <i class="fa fa-sliders"></i>            
             <span class="sr-only">${message("cube.options")}</span>
