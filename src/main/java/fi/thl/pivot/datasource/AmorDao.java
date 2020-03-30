@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import fi.thl.pivot.exception.CubeNotFoundException;
@@ -138,6 +139,7 @@ public class AmorDao {
 
                 @Override
                 public HydraSource load(String key) throws Exception {
+                    LOG.debug("Loading source for " + key);
                     return loadSource(key);
                 }
                 
@@ -145,9 +147,27 @@ public class AmorDao {
 
     private Cache<String, String> versionCache = CacheBuilder
             .newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
-    
+
+    @AuditedMethod
+    public void invalidate(String environment, String subject, String hydra) {
+        String prefix = String.join(".", environment, subject, hydra);
+        for(String k: sourceCache.asMap().keySet()) {
+            if(k.startsWith(prefix)) {
+                LOG.debug("Invalidated source cache entry: " + k);
+                sourceCache.invalidate(k);
+            }
+        }
+        for(String k : versionCache.asMap().keySet()) {
+            if(k.startsWith(prefix)) {
+                LOG.debug("Invalidated version cache entry: " + k);
+                versionCache.invalidate(k);
+            }
+        }
+    }
+
 
     @AuditedMethod
     public List<Report> listReports(String environment) {
@@ -289,13 +309,7 @@ public class AmorDao {
         Preconditions.checkArgument(checkEnvironment(environment), "IllegalEnvironment");
         Preconditions.checkNotNull(id, "No source id provided");
 
-        String[] params = id.split(ID_SEPARATOR);
-        Preconditions.checkArgument(params.length <= ID_ELEMENT_COUNT,
-                "Invalid id provided " + Lists.newArrayList(params));
-
-        String latestRunId = determineReportVersion(environment, params);
-        id = id.replaceAll("latest", latestRunId);
-        id += "." + environment;
+        id = determineSourceId(environment, id);
 
         try {
             return sourceCache.get(id);
@@ -304,15 +318,29 @@ public class AmorDao {
         }
     }
 
+    private String determineSourceId(String environment, String id) {
+        String[] params = id.split(ID_SEPARATOR);
+        Preconditions.checkArgument(params.length <= ID_ELEMENT_COUNT,
+                "Invalid id provided " + Lists.newArrayList(params));
+
+        String latestRunId = determineReportVersion(environment, params);
+        id = id.replaceAll("latest", latestRunId);
+        id =  environment + "." + id;
+        return id;
+    }
+
+    /*
+     * id pattern:  environment.subject.hydra.fact.version
+     */
     private HydraSource loadSource(String id) {
         String[] params = id.split(ID_SEPARATOR);
         List<HydraSource> sources = jdbcTemplate.query(String.format(queries.getProperty("list-sources"), schema),
-                new ResultSetToSource(), params[0],
-                params[1], params[2], Long.parseLong(params[3]), params[4]);
+                new ResultSetToSource(), params[1],
+                params[2], params[3], Long.parseLong(params[4]), params[0]);
 
         if (sources.size() == 1) {
             HydraSource source = sources.get(0);
-            source.setRunId(params[3]);
+            source.setRunId(params[4]);
             return source;
         }
         return null;
@@ -328,6 +356,7 @@ public class AmorDao {
             if(null == latestRunId) {
                 Report r = loadLatestReport(environment, params[0], params[1], params[2]);
                 latestRunId = r == null ? "0" : r.getRunId();
+                LOG.debug("Caching latest version for " + key + " as " + latestRunId);
                 versionCache.put(key, latestRunId);
             }
         } else {

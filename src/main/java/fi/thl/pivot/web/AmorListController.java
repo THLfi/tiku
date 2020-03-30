@@ -186,6 +186,17 @@ public class AmorListController {
         return createJsonStatCollection(env, subject, reports, hydra);
     }
 
+    @Monitored
+    @RequestMapping(value = "/{env}/refresh/{subject}/{hydra}", produces = "text/plain;charset=UTF-8")
+    public ResponseEntity<String> refresh(@PathVariable String env, @PathVariable final String subject,
+                                                         @PathVariable final String hydra,
+                                                         Model model, HttpServletResponse response) {
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("UTF-8");
+        dao.invalidate(env, subject, hydra);
+        return new ResponseEntity<String>("ok", HttpStatus.OK);
+    }
+
     private Collection<Report> listReportsInHydra(String env, final String subject, final String hydra) {
         return Collections2.filter(dao.listReports(env, subject), new Predicate<Report>() {
 
