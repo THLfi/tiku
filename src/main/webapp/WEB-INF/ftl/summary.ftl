@@ -412,6 +412,13 @@
 [/#macro]
 [#macro label e][#if e?? && e.label??]${e.label.getValue(lang)} [#else]???[/#if][/#macro]
 
+[#macro printContactInfo type]
+  [#if contactInformation.getContactInformationByTypeName(type)??]
+    [#assign contactLabel = contactInformation.getContactInformationByTypeName(type) /]
+    <span class="contact-info">${contactLabel.getValue(lang)!}</span>
+  [/#if]
+[/#macro]
+
 <html lang="${lang!"fi"}">
     <head>
         <title>${summary.title.getValue(lang)} - ${factName.getValue(lang)} -  ${message("site.title")}</title>
@@ -556,8 +563,20 @@
                 </div>
 
                 <div class="data-info col-xs-12 text-center">
-                  <span class="bold">${message("site.contact")}: </span>${message("site.contact.information")}<br/>
-                  &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("summary.data-updated")} ${runDate?string("dd.MM.yyyy")}
+                  <span class="bold">${message("site.contact")}: </span>
+                  [#if contactInformation??]
+                  <div class="inline-block">
+                    [@printContactInfo "name"/]
+                    [@printContactInfo "mail"/]
+                    [@printContactInfo "phone"/]
+                    [@printContactInfo "link"/]
+                  </div>
+                  [#else]
+                  ${message("site.contact.information")}
+                  [/#if]
+                  <div>
+                    &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("summary.data-updated")} ${runDate?string("dd.MM.yyyy")}
+                  </div>
                 </div>
             </div>
 

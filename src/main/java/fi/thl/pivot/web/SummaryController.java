@@ -144,6 +144,7 @@ public class SummaryController extends AbstractController {
         model.addAttribute("isOpenData", source.isOpenData());
         model.addAttribute("factTable", summary.getFactTable());
         model.addAttribute("uiLanguage", summaryRequest.getLocale());
+        model.addAttribute("contactInformation", source.getContactInformation());
 
         model.addAttribute("reports",
                 listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));

@@ -412,6 +412,17 @@
 .data-info address {
   display: inline;
 }
+.data-info div.inline-block {
+  display: inline-block;
+}
+.data-info .contact-info {
+  padding-left: 2px;
+}
+.data-info .contact-info + .contact-info::before {
+  content: "\2022";
+  padding-right: 5px;
+}
+
 span.disc::after {
   padding: 0 5px;
   content: "\2022";

@@ -214,6 +214,7 @@ public abstract class HydraSource {
     private String masterPassword;
     private Map<String, Label> predicates = new HashMap<>();
     private Map<String, Limits> limits = new HashMap<>();
+    private ContactInformation contactInformation;
     
     protected HydraSource() {
     }
@@ -382,6 +383,11 @@ public abstract class HydraSource {
                 this.denyCubeAccess = true;
             } else if (t.predicate.startsWith(PREDICATE_NAMED_VIEW_PREFIX)) {
                 assignNamedView(t);
+            } else if (t.predicate.startsWith("meta:contact")) {
+            	if (contactInformation == null) {
+            		contactInformation = new ContactInformation();
+            	}
+            	contactInformation.addContactData(t);
             } else {
                 if (!this.predicates.containsKey(t.predicate)) {
                     this.predicates.put(t.predicate, new Label());
@@ -856,5 +862,9 @@ public abstract class HydraSource {
     public final Set<NamedView> getNamedViews() {
         return Collections.unmodifiableSet(namedViews);
     }
+
+	public ContactInformation getContactInformation() {
+		return contactInformation;
+	}
 
 }
