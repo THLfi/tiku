@@ -415,7 +415,13 @@
 [#macro printContactInfo type]
   [#if contactInformation.getContactInformationByTypeName(type)??]
     [#assign contactLabel = contactInformation.getContactInformationByTypeName(type) /]
+    [#if type == "link"]
+    <span class="contact-info">
+      <a target="_blank" href="${contactLabel.getValue(lang)!}">${contactLabel.getValue(lang)!}</a>
+    </span>
+    [#else]
     <span class="contact-info">${contactLabel.getValue(lang)!}</span>
+    [/#if]
   [/#if]
 [/#macro]
 

@@ -709,3 +709,8 @@ footer.default a {
 	margin-right: 10px;
 	text-decoration: underline;
 }
+
+.report .title .fa-lock {
+	color: #CC0000;
+	margin-left: 5px;
+}
