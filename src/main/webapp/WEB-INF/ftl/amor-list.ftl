@@ -61,7 +61,9 @@
       [#else]
         <i class="fa fa-table"></i>
       [/#if]
-      <a href="${rc.contextPath}/${env}/${lang}/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}">${report.name!report.fact}</a></h2>
+      <a href="${rc.contextPath}/${env}/${lang}/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}">${report.name!report.fact}</a>
+      [#if report.isProtected() ]<i class="fa fa-lock"></i>[/#if]
+    </h2>
     <div class="info">
       <span class="updated">[#if "SUMMARY"=report.type]${message("summary.data-updated")}[#else]${message("cube.updated")}[/#if]: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
       [#if "SUMMARY"=report.type && (env = "test" || env = "deve")]

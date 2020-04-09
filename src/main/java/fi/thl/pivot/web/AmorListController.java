@@ -136,6 +136,7 @@ public class AmorListController {
                 if (!source.isMetadataLoaded()) {
                     source.loadMetadata();
                 }
+                input.setIsProtected(source.isProtected());
                 return subject.equals(input.getSubject()) && source.getLanguages().contains(locale);
             }
         });

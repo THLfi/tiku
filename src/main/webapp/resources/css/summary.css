@@ -418,6 +418,9 @@
 .data-info .contact-info {
   padding-left: 2px;
 }
+.data-info .contact-info a {
+  color: inherit;
+}
 .data-info .contact-info + .contact-info::before {
   content: "\2022";
   padding-right: 5px;
