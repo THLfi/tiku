@@ -348,15 +348,6 @@ function selectChartType (e) {
          layerGroupsByCategory = {},
          markerGroupsByCategory = {};
 
-        var colors;
-        if(opt.palette === 'gray') {
-          colors = ['#b2b2b2', '#8c8c8c','#666666','#3f3f3f','#191919'];
-        } else if (opt.palette == 'ranking') {
-          colors = ['#bf4073', '#d888a9','#B2B2B2','#7699d6', '#2f62ad'];
-        } else {
-          colors = ['#b2b2b2', '#7cd0d8','#7699d6', '#2f61ad', '#0e1e47'];
-        }
-
         var areaCodes = {}
         $.each(dimensionData, function(i, v) {
           if(v.dim === 'area') {
@@ -385,6 +376,7 @@ function selectChartType (e) {
           limits = opt.limits.split(',');
         }
 
+        var colors = mapPalette.createMapColors(opt.palette, 5);
 
         function mapLimitIndex(limits, i) {
           var j = i;
@@ -536,7 +528,7 @@ function selectChartType (e) {
               weight : 2,
               opacity : 1,
               fillOpacity : 1,
-              color : '#666666'
+              color : mapPalette.borderColor
           }
         }).addTo(map);
      
@@ -544,7 +536,7 @@ function selectChartType (e) {
         geojson = L.Proj.geoJson(maps.features[opt.stage], {
           style: function (feature) {
             var v = opt.dataset.Data({'area': areaCodes[feature.properties.code]});
-            var color = '#f2f2f2'
+            var color = mapPalette.defaultColor;
 
             if(v !== undefined && /^\d+(\.\d+)?$/.test(v.value)) {
               color = undefined;
@@ -565,7 +557,7 @@ function selectChartType (e) {
                 color = colors[mapLimitIndex(limits, 4)];
               }
             } else {
-              color = '#f2f2f2';
+              color = mapPalette.defaultColor;
             }
 
             return {
@@ -573,7 +565,7 @@ function selectChartType (e) {
                 weight : 1,
                 opacity : 1,
                 fillOpacity : 1,
-                color : '#666666'
+                color : mapPalette.borderColor
             };
           },
           onEachFeature: function(feature, layer) {
