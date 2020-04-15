@@ -714,3 +714,11 @@ footer.default a {
 	color: #CC0000;
 	margin-left: 5px;
 }
+
+div.quick-info {
+	width: 95%;
+}
+
+div.quick-info ul {
+	padding-left: 12px;
+}

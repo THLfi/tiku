@@ -80,6 +80,13 @@
 
     <div class="pivot-content">
 
+        <div class="alert alert-info pull-left hidden quick-info">
+            <div class="col-sm-11">${message("cube.quick-info")}</div>
+            <button id="close-quick-info" type="button" class="close" data-dismiss="alert" aria-label="Sulje">
+                <span aria-hidden="true">×</span>
+            </button>        
+        </div>
+
         <div class="pull-right">
             <span class="glyphicon glyphicon-resize-full"></span>
         </div>
