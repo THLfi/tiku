@@ -40,7 +40,7 @@
         <div class="pivot-content">
                <form class="form col-xs-6" method="POST">
 
-                    <p>${message("login.intro")}
+                    <p>${message("login.intro")}</p>
 
                     [#if authenticationFailed]
                         <div class="row">
@@ -49,6 +49,7 @@
                             </div>
                         </div>
                     [/#if]
+                    <input type="hidden" name="csrf" value="${csrf!}" />
                     <div class="form-group">
                         <label for="pwd">${message("login.password")}</label>
                         <input class="form-control" type="password" name="password" id="pwd" autofocus />

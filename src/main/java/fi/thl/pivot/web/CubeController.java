@@ -87,7 +87,10 @@ public class CubeController extends AbstractCubeController {
     }
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
-    public String loginToCube(@ModelAttribute CubeRequest cubeRequest, @RequestParam String password, HttpServletResponse response) {
+    public String loginToCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf, HttpServletResponse response) {
+        if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
+            validateCsrf(csrf);
+        }
         login(cubeRequest.getEnv(), cubeRequest.getCube(), password);
         return "redirect:/" + cubeRequest.getCubeUrl();
     }
