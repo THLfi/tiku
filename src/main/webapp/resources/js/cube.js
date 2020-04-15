@@ -565,5 +565,17 @@
         1);
       changeView(input, dimension + thl.separator + nodes.join(thl.subsetSeparator) + thl.subsetSeparator);
     });
+
+    if (!document.cookie.match(/cube_info/)) {
+      $('.quick-info').removeClass('hidden');
+      $('#close-quick-info').click(function() {
+        var date = new Date();
+        var expireTime = date.getTime() + 10000 * 24 * 60 * 60 * 1000;
+        date.setTime(expireTime);
+        document.cookie = "cube_info=shown;expires=" + date.toGMTString() + "; path=/";
+        $('.quick-info').addClass('hidden');
+      });
+    }
+
   });
 })(window.jQuery, window.thl);
