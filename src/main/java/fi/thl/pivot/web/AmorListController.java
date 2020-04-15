@@ -137,6 +137,9 @@ public class AmorListController {
                     source.loadMetadata();
                 }
                 input.setIsProtected(source.isProtected());
+                if (ReportType.CUBE.equals(input.getType()) && source.isCubeAccessDenied()) {
+                    input.setIsProtected(true);
+                }
                 return subject.equals(input.getSubject()) && source.getLanguages().contains(locale);
             }
         });
