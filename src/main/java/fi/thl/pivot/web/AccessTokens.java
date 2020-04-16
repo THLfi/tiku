@@ -2,6 +2,7 @@ package fi.thl.pivot.web;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
@@ -14,9 +15,6 @@ import org.springframework.web.context.WebApplicationContext;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AccessTokens {
-
-    @Autowired
-    private HttpSession session;
 
     private Set<String> tokens = new HashSet<>();
     private String csrf;
@@ -31,7 +29,7 @@ public class AccessTokens {
 
     public String getCsrf() {
         if (csrf == null) {
-            csrf = session.getId() + System.currentTimeMillis();
+            csrf = UUID.randomUUID().toString();
         }
         return csrf;
     }
