@@ -1060,9 +1060,10 @@ function selectChartType (e) {
           // draw ci whisker
 
           var isBarChart = type === 'bar';
+          var whiskerClasses = 'ci series series' + series;
           g.enter()
             .append('line')
-            .attr('class', 'ci')
+            .attr('class', whiskerClasses)
             .attr('stroke', 'black')
             .attr('stroke-width', 1.5)
             .attr('x1', isBarChart ? ciLower : xPos)
@@ -1071,7 +1072,7 @@ function selectChartType (e) {
             .attr('y2', isBarChart ? xPos : ciUpper);
           g.enter()
             .append('line')
-            .attr('class', 'ci')
+            .attr('class', whiskerClasses)
             .attr('stroke', 'black')
             .attr('stroke-width', 1.5)
             .attr('x1', function (d, i) {
@@ -1096,7 +1097,7 @@ function selectChartType (e) {
             });
           g.enter()
             .append('line')
-            .attr('class', 'ci')
+            .attr('class', whiskerClasses)
             .attr('stroke', 'black')
             .attr('stroke-width', 1.5)
             .attr('x1', function (d, i) {
