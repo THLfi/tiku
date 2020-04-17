@@ -1,5 +1,7 @@
 package fi.thl.pivot.web;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
@@ -130,6 +132,7 @@ public abstract class AbstractController {
         model.addObject("uiLanguage", ThreadRole.getLanguage());
         model.addObject("authenticationFailed", e.isAuthenticationFailed());
         model.addObject("cubeLabel", e.getSource().getName());
+        model.addObject("csrf", accessToken.getCsrf());
 
         return model;
     }
@@ -246,4 +249,29 @@ public abstract class AbstractController {
     protected final String sessionAttributeName(String env, String cube) {
         return env + "/" + cube;
     }
+
+    protected String getCsrf() {
+        return accessToken.getCsrf();
+    }
+
+    protected void validateCsrf(String csrf) {
+        if (csrf == null || !accessToken.getCsrf().equals(csrf)) {
+            throw new IllegalArgumentException("Invalid csrf token");
+        }
+    }
+
+    protected boolean isExternalAddress(String remoteIp) {
+        InetAddress address;
+        InetAddress localhost;
+        try {
+            address = InetAddress.getByName(remoteIp);
+            localhost = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+        	LOG.error("Failed to test ip-address", e);
+            return true;
+        }
+        boolean isLocalAddress = address.isSiteLocalAddress() || address.isLoopbackAddress() || address.equals(localhost);
+        return !isLocalAddress;
+    }
+
 }

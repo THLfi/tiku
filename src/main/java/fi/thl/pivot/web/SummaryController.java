@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import fi.thl.pivot.model.IDimensionNode;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,10 @@ public class SummaryController extends AbstractController {
     }
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
-    public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, @RequestParam String password) {
+    public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf) {
+        if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
+        	validateCsrf(csrf);
+        }
         Summary summary = amorDao.loadSummary(summaryRequest.getEnv(), summaryRequest.getCube());
         login(summaryRequest.getEnv(),
                 amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password);
