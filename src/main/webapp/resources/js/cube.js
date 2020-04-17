@@ -1,12 +1,31 @@
 (function ($, thl) {
   $(document).ready(function () {
 
+    var stickyHeadersSupported = function() {
+      // Sticky headers works with Chrome and Firefox (Safari to be tested)
+      // Original stickytable code was unusable with IE11 due performance issues.
+      return /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor) // Chrome
+      ||
+      !(window.mozInnerScreenX == null) // Firefox
+      ||
+      navigator.vendor.indexOf('Apple') > -1; // Safari and other browsers running under Apple OS
+    }();
+
     $('.glyphicon-resize-full').click(function() {
       var t = $(this);
+      if (t.hasClass('glyphicon-resize-full') && stickyHeadersSupported) {
+        $('table.cube').wrap('<div class="sticky-table sticky-ltr-cells"></div>');
+        $(document).trigger('stickyTable');
+      }
+      else if ($('.sticky-table').length) {
+        $('table.cube th.sticky-cell').removeAttr('style');
+        $('table.cube tr.sticky-header th').removeAttr('style');
+        $('table.cube tr.sticky-header').removeAttr('style');
+        $('table.cube').unwrap();
+      }
       t.toggleClass('glyphicon-resize-full glyphicon-resize-small');
       $('body').toggleClass('full-screen');
-    }) ;
-
+    });
 
     function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {
