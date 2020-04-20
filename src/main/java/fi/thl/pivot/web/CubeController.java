@@ -91,7 +91,7 @@ public class CubeController extends AbstractCubeController {
         if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
             validateCsrf(csrf);
         }
-        login(cubeRequest.getEnv(), cubeRequest.getCube(), password);
+        login(cubeRequest.getEnv(), cubeRequest.getCube(), password, request);
         return "redirect:/" + cubeRequest.getCubeUrl();
     }
 

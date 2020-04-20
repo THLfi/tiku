@@ -98,7 +98,7 @@ public class SummaryController extends AbstractController {
         }
         Summary summary = amorDao.loadSummary(summaryRequest.getEnv(), summaryRequest.getCube());
         login(summaryRequest.getEnv(),
-                amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password);
+                amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password, request);
         return "redirect:/" + summaryRequest.getSummaryUrl();
     }
 
