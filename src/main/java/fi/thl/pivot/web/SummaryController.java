@@ -93,27 +93,30 @@ public class SummaryController extends AbstractController {
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
     public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf) {
+        session = request.getSession();
         if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
         	validateCsrf(csrf);
         }
         Summary summary = amorDao.loadSummary(summaryRequest.getEnv(), summaryRequest.getCube());
         login(summaryRequest.getEnv(),
-                amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password);
+                amorDao.replaceFactInIdentifier(summaryRequest.getCube(), summary.getFactTable()), password, request);
         return "redirect:/" + summaryRequest.getSummaryUrl();
     }
 
     @RequestMapping(value = "/logout", produces = "text/html;charset=UTF-8")
-    public String loginToCube(@ModelAttribute SummaryRequest summaryRequest) {
+    public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, HttpServletRequest request) {
+    	session = request.getSession();
         logout();
         return "redirect:/" + summaryRequest.getSummaryUrl();
     }
 
     @Monitored
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
-    public String displaySummary(@ModelAttribute SummaryRequest summaryRequest, WebRequest request, Model model)
+    public String displaySummary(@ModelAttribute SummaryRequest summaryRequest, WebRequest request, Model model, HttpServletRequest servletRequest)
             throws CubeNotFoundException {
 
         LOG.info("ACCESS Rendering summary " + summaryRequest.getCube());
+        this.session = servletRequest.getSession();
 
         // Load summary and hydra definitions for the current summary
         // If the source does not exists then display 404 for the user

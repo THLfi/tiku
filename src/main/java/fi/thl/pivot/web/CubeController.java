@@ -34,6 +34,7 @@ public class CubeController extends AbstractCubeController {
     public String displayCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
         LOG.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
+        this.session = request.getSession();
         String backUrl = String.format("%s/%s/%s/", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject());
         // Redirect to default view if no parameters set
         if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
@@ -88,15 +89,17 @@ public class CubeController extends AbstractCubeController {
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
     public String loginToCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf, HttpServletResponse response) {
+        session = request.getSession();
         if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
             validateCsrf(csrf);
         }
-        login(cubeRequest.getEnv(), cubeRequest.getCube(), password);
+        login(cubeRequest.getEnv(), cubeRequest.getCube(), password, request);
         return "redirect:/" + cubeRequest.getCubeUrl();
     }
 
     @RequestMapping(value = "/logout", produces = "text/html;charset=UTF-8")
-    public String logout(@ModelAttribute CubeRequest cubeRequest, @PathVariable String env, @PathVariable String cube) {
+    public String logout(@ModelAttribute CubeRequest cubeRequest, @PathVariable String env, @PathVariable String cube, HttpServletRequest request) {
+    	session = request.getSession();
         logout();
         return "redirect:/" + cubeRequest.getCubeUrl();
     }

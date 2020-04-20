@@ -2,8 +2,11 @@ package fi.thl.pivot.web;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
+
+import com.google.common.collect.Maps;
 
 import fi.thl.pivot.datasource.AmorDao;
 import fi.thl.pivot.datasource.HydraSource;
@@ -159,12 +164,13 @@ public abstract class AbstractController {
      * @param cube
      * @param password
      */
-    protected void login(String env, String cube, String password) {
+    protected void login(String env, String cube, String password, HttpServletRequest request) {
         LOG.debug("SECURITY User attempting to login to cube " + cube);
         HydraSource source = amorDao.loadSource(env, cube);
         if (null != source) {
             loadMetadata(source);
             if (source.isProtectedWith(password)) {
+                recreateSession(request);
                 LOG.info("SECURITY User logged into " + env + "/" + cube + ", session: " + session.getId());
                 session.setAttribute(sessionAttributeName(env, cube), password);
             } else {
@@ -267,11 +273,25 @@ public abstract class AbstractController {
             address = InetAddress.getByName(remoteIp);
             localhost = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
-        	LOG.error("Failed to test ip-address", e);
+            LOG.error("Failed to test ip-address", e);
             return true;
         }
         boolean isLocalAddress = address.isSiteLocalAddress() || address.isLoopbackAddress() || address.equals(localhost);
         return !isLocalAddress;
+    }
+
+    protected void recreateSession(HttpServletRequest request) {
+        Map<String, Object> sessionAttributes = Maps.newHashMap();
+        Enumeration<String> sessionKeys = session.getAttributeNames();
+        while (sessionKeys.hasMoreElements()) {
+            String key = sessionKeys.nextElement();
+            sessionAttributes.put(key , session.getAttribute(key));
+        }
+        session.invalidate();
+        session = request.getSession(true);
+        for (Map.Entry<String, Object> sessionAttribute : sessionAttributes.entrySet()) {
+            session.setAttribute(sessionAttribute.getKey(), sessionAttribute.getValue());
+        }
     }
 
 }
