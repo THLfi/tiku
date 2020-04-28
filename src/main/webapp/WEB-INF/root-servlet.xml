@@ -23,7 +23,9 @@
 	<mvc:resources mapping="/favicon.ico" location="/resources/img/favicon.ico" />
 
 	<!-- annotation-driven must be after mvc:resources to make things work -->
-	<mvc:annotation-driven />
+	<mvc:annotation-driven>
+		<mvc:path-matching trailing-slash="true"/>
+	</mvc:annotation-driven>
 
 	<mvc:interceptors>
 		<mvc:interceptor>
