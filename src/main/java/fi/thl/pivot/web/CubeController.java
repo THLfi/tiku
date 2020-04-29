@@ -35,7 +35,7 @@ public class CubeController extends AbstractCubeController {
             throws CubeNotFoundException, CubeAccessDeniedException {
         LOG.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
         this.session = request.getSession();
-        String backUrl = String.format("%s/%s/%s/", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject());
+        String backUrl = String.format("%s/%s/%s", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject());
         // Redirect to default view if no parameters set
         if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
             HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());

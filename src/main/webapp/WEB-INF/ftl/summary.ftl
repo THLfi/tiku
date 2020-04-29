@@ -516,29 +516,24 @@
           <span class="hide-xs">${message("site.help")}</span>
         </a>
       </div>
-	 
-	 [#if reports?size>0]
-       <div class="btn-group  help small-button" role="group">
-          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}/">
-			<i class="fa fa-th"></i> 
-			<span class="hide-xs">${message("site.changeMaterial")}</span>	
-			 </a>	
-      </div>
-     [/#if] 
-     
-      [#if env == "deve" || env == "test"]
-      <div class="btn-group help small-button" role="group">
-          <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
-          		
-          		<i class="fa fa-code"></i> 
-		  		<span class="hide-xs">${message("summary.view-source")}</span>
-		  </a>
+
+      [#if reports?size>0]
+      <div class="btn-group  help small-button" role="group">
+        <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}">
+          <i class="fa fa-th"></i>
+          <span class="hide-xs">${message("site.changeMaterial")}</span>	
+   	    </a>	
       </div>
       [/#if]
-      
-     
-     
-      [#--<a href="#">pdf</a>--]
+
+      [#if env == "deve" || env == "test"]
+      <div class="btn-group help small-button" role="group">
+        <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
+          <i class="fa fa-code"></i> 
+          <span class="hide-xs">${message("summary.view-source")}</span>
+        </a>
+      </div>
+      [/#if]
       
     </div>
     </div>
