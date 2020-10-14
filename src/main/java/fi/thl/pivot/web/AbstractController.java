@@ -2,6 +2,8 @@ package fi.thl.pivot.web;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
@@ -11,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import fi.thl.pivot.exception.SameDimensionAsRowAndColumnException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,7 +44,7 @@ import fi.thl.pivot.util.ThreadRole;
  */
 public abstract class AbstractController {
 
-    private static final Logger LOG = Logger.getLogger(AbstractController.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractController.class);
 
     @Autowired
     protected AmorDao amorDao;
@@ -59,6 +63,9 @@ public abstract class AbstractController {
 
     @Autowired
     protected ApplicationContext ctx;
+    
+    @Autowired
+    BuildProperties buildProperties;
     
     /**
      * Provides a friendly error messages when content is not found
@@ -94,7 +101,7 @@ public abstract class AbstractController {
 
     @ExceptionHandler(CubeAccessDeniedException.class)
     public ModelAndView handleCubeAccessDenied(CubeAccessDeniedException e, HttpServletResponse resp) {
-        LOG.warn("SECURITY: " + e.getMessage());
+        logger.warn("SECURITY: " + e.getMessage());
         resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
         ModelAndView model = new ModelAndView("error");
         model.addObject("lang", ThreadRole.getLanguage());
@@ -111,7 +118,7 @@ public abstract class AbstractController {
      */
     @ExceptionHandler(Exception.class)
     public ModelAndView handleGeneralException(Exception e, HttpServletResponse resp) {
-        LOG.error("Could not render view", e);
+        logger.error("Could not render view", e);
         resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         ModelAndView model = new ModelAndView("error");
         model.addObject("lang", ThreadRole.getLanguage());
@@ -146,11 +153,11 @@ public abstract class AbstractController {
     public void setBuildVersion(Model model, RedirectAttributes r) {
         if(null != ctx) {
             try {
-                Properties p = (Properties)ctx.getBean("build-version");
-                model.addAttribute("buildVersion", p.getProperty("build.version"));
-                model.addAttribute("buildTimestamp", p.getProperty("build.timestamp"));
+                //Properties p = (Properties)ctx.getBean("build-version");
+                model.addAttribute("buildVersion", buildProperties.getVersion());               
+                model.addAttribute("buildTimestamp",Timestamp.from(buildProperties.getTime()));
             } catch (Exception e) {
-                LOG.warn("Could not set build version " + e.getMessage());;
+                logger.warn("Could not set build version " + e.getMessage());;
             }
         }
     }
@@ -165,20 +172,20 @@ public abstract class AbstractController {
      * @param password
      */
     protected void login(String env, String cube, String password, HttpServletRequest request) {
-        LOG.debug("SECURITY User attempting to login to cube " + cube);
+        logger.debug("SECURITY User attempting to login to cube " + cube);
         HydraSource source = amorDao.loadSource(env, cube);
         if (null != source) {
             loadMetadata(source);
             if (source.isProtectedWith(password)) {
                 recreateSession(request);
-                LOG.info("SECURITY User logged into " + env + "/" + cube + ", session: " + session.getId());
+                logger.info("SECURITY User logged into " + env + "/" + cube + ", session: " + session.getId());
                 session.setAttribute(sessionAttributeName(env, cube), password);
             } else {
-                LOG.warn("SECURITY User provided an incorrect password while logging into " + env + "/" + cube + ", session: " + session.getId());
+                logger.warn("SECURITY User provided an incorrect password while logging into " + env + "/" + cube + ", session: " + session.getId());
                 throw new UserNotAuthenticatedException(source, true);
             }
         } else {
-            LOG.warn("Source not found " + cube);
+            logger.warn("Source not found " + cube);
         }
     }
 
@@ -186,7 +193,7 @@ public abstract class AbstractController {
      * Logs the user out of each cube and environment
      */
     protected void logout() {
-        LOG.info("SECURITY user logged out, " + session.getId());
+        logger.info("SECURITY user logged out, " + session.getId());
         session.invalidate();
     }
 
@@ -214,31 +221,31 @@ public abstract class AbstractController {
         if (source.isProtected()) {
             Object pwdAttribute = session.getAttribute(sessionAttributeName(request.getEnv(), cubeId));
             if (pwdAttribute == null) {
-                LOG.debug("SECURITY Users is not autheticated to access cube " + request.getEnv() + "/" + cubeId);
+                logger.debug("SECURITY Users is not autheticated to access cube " + request.getEnv() + "/" + cubeId);
                 throw new UserNotAuthenticatedException(source);
             }
             if (!source.isProtectedWith((String) pwdAttribute)) {
-                LOG.debug("SECURITY Users is not autheticated to access cube, unsupported password " + request.getEnv() + "/" + cubeId);
+                logger.debug("SECURITY Users is not autheticated to access cube, unsupported password " + request.getEnv() + "/" + cubeId);
                 throw new UserNotAuthenticatedException(source);
             }
 
             checkIfCubeIsAccessible(request, source);
 
-            LOG.info("SECURITY User is accessing protected cube " + request.getEnv() + "/" + cubeId + ", session: " + session.getId());
+            logger.info("SECURITY User is accessing protected cube " + request.getEnv() + "/" + cubeId + ", session: " + session.getId());
             model.addAttribute("requireLogin", true);
             String pwd = (String) pwdAttribute;
             
             ThreadRole.setRole(new Role(source.isMasterPassword(pwd)? Role.Type.Master : Role.Type.Regular, pwd));
         } else {
             checkIfCubeIsAccessible(request, source);
-            LOG.debug("SECURITY Users is accessing an open cube");
+            logger.debug("SECURITY Users is accessing an open cube");
             model.addAttribute("requireLogin", false);
         }
     }
 
     private void checkIfCubeIsAccessible(AbstractRequest request, HydraSource source) {
         if (source.isCubeAccessDenied() && request instanceof CubeRequest) {
-            LOG.debug("SECURITY Attempt to access data with token " + request.toDataUrl());
+            logger.debug("SECURITY Attempt to access data with token " + request.toDataUrl());
             if (!accessToken.canAccess(request.toDataUrl())) {
                 throw new CubeAccessDeniedException(request.getEnv(), request.getCube());
             }
@@ -249,7 +256,7 @@ public abstract class AbstractController {
         if (!source.isMetadataLoaded()) {
             source.loadMetadata();
         }
-        LOG.debug("metadata loaded");
+        logger.debug("metadata loaded");
     }
 
     protected final String sessionAttributeName(String env, String cube) {
@@ -273,7 +280,7 @@ public abstract class AbstractController {
             address = InetAddress.getByName(remoteIp);
             localhost = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
-            LOG.error("Failed to test ip-address", e);
+            logger.error("Failed to test ip-address", e);
             return true;
         }
         boolean isLocalAddress = address.isSiteLocalAddress() || address.isLoopbackAddress() || address.equals(localhost);

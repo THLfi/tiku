@@ -5,7 +5,8 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple pivot rendered that provides a csv output with N row and M column
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class TextView {
 
-    private final Logger log = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(TextView.class);
 
     private final Pivot pivot;
     private final String language;
@@ -41,7 +42,7 @@ public class TextView {
             if (null == cell) {
                 throw new IllegalStateException("Null cell detected");
             }
-            log.trace(cell.getRowNumber() + ":" + cell.getColumnNumber());
+            logger.trace(cell.getRowNumber() + ":" + cell.getColumnNumber());
 
             if (lastRowNum != cell.getRowNumber()) {
                 if (lastRowNum >= 0) {

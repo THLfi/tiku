@@ -1,6 +1,7 @@
 package fi.thl.pivot.aspect;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,7 +21,7 @@ import fi.thl.pivot.annotation.Monitored;
 @Aspect
 public class MonitoredAspect {
 
-    private static final Logger LOG = Logger.getLogger(MonitoredAspect.class);
+    private final Logger logger = LoggerFactory.getLogger(MonitoredAspect.class);
 
     @Around("execution(* fi.thl.pivot..*(..)) && @annotation(fi.thl.pivot.annotation.Monitored)")
     public Object invoke(ProceedingJoinPoint invocation) throws Throwable {
@@ -30,7 +31,7 @@ public class MonitoredAspect {
             return invocation.proceed();
         } finally {
             localWatch.stop();
-            LOG.debug(invocation.toShortString() + ": " + localWatch.prettyPrint());
+            logger.debug(invocation.toShortString() + ": " + localWatch.prettyPrint());
         }
     }
 }

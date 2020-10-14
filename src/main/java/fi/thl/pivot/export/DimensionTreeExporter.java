@@ -11,7 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import fi.thl.pivot.model.IDimensionNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 
 import fi.thl.pivot.model.Dimension;
@@ -19,7 +20,7 @@ import fi.thl.pivot.model.Label;
 
 public class DimensionTreeExporter {
 
-    private static final Logger LOG = Logger.getLogger(JsonStatExporter.class);
+    private final Logger logger = LoggerFactory.getLogger(DimensionTreeExporter.class);
 
     public void export(Model model, OutputStream out) throws IOException {
         PrintWriter writer = null;
@@ -187,7 +188,7 @@ public class DimensionTreeExporter {
                 writer.close();
             }
         } catch (Exception e) {
-            LOG.warn("Could not close output stream");
+            logger.warn("Could not close output stream");
         }
     }
 }

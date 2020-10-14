@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -20,7 +21,7 @@ import fi.thl.pivot.util.CumulativeStopWatch;
 public class ModifiablePivot implements Pivot {
 
     private static final boolean ASSERT_ENABLED = ModifiablePivot.class.desiredAssertionStatus();
-    private static final Logger LOG = Logger.getLogger(ModifiablePivot.class);
+    private final Logger logger = LoggerFactory.getLogger(ModifiablePivot.class);
 
     private PivotCellSentinel sentinel = new PivotCellSentinel(-1, -1);
 
@@ -52,8 +53,8 @@ public class ModifiablePivot implements Pivot {
     }
 
     public void logTimeSpent() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(sw.prettyPrint());
+        if (logger.isDebugEnabled()) {
+            logger.debug(sw.prettyPrint());
         }
     }
 

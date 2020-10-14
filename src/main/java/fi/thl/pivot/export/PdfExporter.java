@@ -10,7 +10,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -25,7 +26,7 @@ import freemarker.template.TemplateException;
 
 public class PdfExporter {
 
-    private static final Logger LOG = Logger.getLogger(PdfExporter.class);
+    private final Logger logger = LoggerFactory.getLogger(PdfExporter.class);
  
     private FreeMarkerConfig freemarker;
 
@@ -38,19 +39,19 @@ public class PdfExporter {
         try {
             
             ITextRenderer renderer = new ITextRenderer();
-            LOG.debug("Creating HTML representation of cube ");
+            logger.debug("Creating HTML representation of cube ");
             renderer.setDocument(createHtmlTable(model),  null);
             renderer.layout();
-            LOG.debug("Rendering HTML as PDF");
+            logger.debug("Rendering HTML as PDF");
             renderer.createPDF(out, true);
         } catch (DocumentException e) {
-            LOG.error("Failed to create pdf", e);
+            logger.error("Failed to create pdf", e);
             throw new IOException(e);
         } catch (TemplateException e) {
-            LOG.error("Failed to render template", e);
+            logger.error("Failed to render template", e);
             throw new IOException(e);
         } catch (Exception e) {
-            LOG.error("Failed to create pdf", e);
+            logger.error("Failed to create pdf", e);
             throw new IOException(e);
         }
     }

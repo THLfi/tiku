@@ -4,7 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,12 +18,12 @@ import fi.thl.pivot.export.CsvExporter;
 @Controller
 public class CubeCsvController extends AbstractCubeController {
 
-    private static final Logger LOG = Logger.getLogger(CubeCsvController.class);
+    private final Logger logger = LoggerFactory.getLogger(CubeCsvController.class);
 
     @Monitored
     @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.csv", headers="Accept=*/*", produces = "text/csv;charset=UTF-8")
     public void displayCubeAsCSV(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) throws IOException {
-        LOG.debug(String.format("ACCESS CSV cube requested %s %s %s ", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
+    	logger.debug(String.format("ACCESS CSV cube requested %s %s %s ", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
         CubeService cs = createCube(cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest, resolveSearchType(cubeRequest.getSearchType()), model);
         if (cs.isCubeCreated()) {

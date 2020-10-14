@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.supercsv.io.CsvListWriter;
 import org.supercsv.prefs.CsvPreference;
@@ -31,7 +32,7 @@ import org.supercsv.prefs.CsvPreference;
 public class CsvExporter {
 
     private static final String EMPTY_COLUMN = "";
-    private static final Logger LOG = Logger.getLogger(CsvExporter.class);
+    private final Logger logger = LoggerFactory.getLogger(CsvExporter.class);
     private int columnLevelCount;
     private int rowLevelCount;
     private Pivot pivot;
@@ -123,7 +124,7 @@ public class CsvExporter {
         try {
             writer.close();
         } catch (Exception e) {
-            LOG.warn("Could not close CSV writer", e);
+            logger.warn("Could not close CSV writer", e);
         }
     }
 

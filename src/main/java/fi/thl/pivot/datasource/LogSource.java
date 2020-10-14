@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 
 import fi.thl.pivot.model.IDimensionNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -26,7 +27,7 @@ import fi.thl.pivot.web.CubeService;
 @Component
 public class LogSource {
 
-    private static final Logger LOG = Logger.getLogger(LogSource.class);
+    private final Logger logger = LoggerFactory.getLogger(LogSource.class);
     private static final String USAGE_TEMPLATE = "insert into amor_%s.user_log(log_id,subject, hydra, fact, run_id, host, ip_addr, session_id, \"view\", filter_zero, filter_empty) values (?, ?, ?, ?,  ?, ? ,?,  ?, ?, ?, ?)";
     private static final String SELECTION_TEMPLATE = "insert into amor_%s.user_log_selection(log_id, dimension, node, usage) values (?, ?, ?, ?)";
 
@@ -102,7 +103,7 @@ public class LogSource {
                 }
             });
         } catch (Exception e) {
-            LOG.warn("Could not log event " + e.getMessage());
+            logger.warn("Could not log event " + e.getMessage());
         }
     }
 

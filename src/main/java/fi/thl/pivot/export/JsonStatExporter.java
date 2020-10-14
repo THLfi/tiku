@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 
 import com.google.common.base.Joiner;
@@ -19,7 +20,7 @@ import fi.thl.pivot.util.ThreadRole;
 
 public class JsonStatExporter {
 
-    private static final Logger LOG = Logger.getLogger(JsonStatExporter.class);
+    private final Logger logger = LoggerFactory.getLogger(JsonStatExporter.class);
     private static final Pattern NUMBER = Pattern.compile("^-?\\d+([,\\.]\\d+)?$");
 
     public void export(Model model, OutputStream out) throws IOException {
@@ -241,7 +242,7 @@ public class JsonStatExporter {
                 writer.close();
             }
         } catch (Exception e) {
-            LOG.warn("Could not close output stream");
+            logger.warn("Could not close output stream");
         }
     }
 }

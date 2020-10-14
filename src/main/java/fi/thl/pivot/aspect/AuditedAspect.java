@@ -1,6 +1,7 @@
 package fi.thl.pivot.aspect;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,16 +20,16 @@ import fi.thl.pivot.annotation.AuditedMethod;
 @Aspect
 public class AuditedAspect {
 
-    private static final Logger LOG = Logger.getLogger(AuditedAspect.class);
+    private final Logger logger = LoggerFactory.getLogger(AuditedAspect.class);
 
     @Around("execution(* fi.thl.pivot..*(..)) && @annotation(fi.thl.pivot.annotation.AuditedMethod)")
     public Object invoke(ProceedingJoinPoint invocation) throws Throwable {
         try {
             Object o = invocation.proceed();
-            LOG.debug("Call to " + invocation + " completed");
+            logger.debug("Call to " + invocation + " completed");
             return o;
         } catch (Throwable t) {
-            LOG.debug("Call to " + invocation + " failed", t);
+        	logger.debug("Call to " + invocation + " failed", t);
             throw t;
         }
     }

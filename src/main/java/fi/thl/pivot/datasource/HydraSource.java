@@ -14,7 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
@@ -74,7 +75,7 @@ public abstract class HydraSource {
      */
     protected static abstract class TreeRowCallbackHandler {
 
-        private static final Logger LOG = Logger.getLogger(TreeRowCallbackHandler.class);
+        protected final Logger logger = LoggerFactory.getLogger(TreeRowCallbackHandler.class);
 
         private final Map<String, Dimension> dimensions;
         private final Map<String, IDimensionNode> nodes;
@@ -121,18 +122,18 @@ public abstract class HydraSource {
 
             DimensionLevel nodeLevel = dimensionLevels.get(dimension + "-" + dimensionLevel);
             if (nodeLevel == null) {
-                LOG.warn("No level found for node " + dimension + "-" + dimensionLevel);
+                logger.warn("No level found for node " + dimension + "-" + dimensionLevel);
                 return;
             }
             IDimensionNode node;
             if (isRootNode()) {
-                LOG.debug("Found root node " + getMetaReference() + " for " + dimension);
+                logger.debug("Found root node " + getMetaReference() + " for " + dimension);
                 Preconditions.checkArgument(nodeLevel.getNodes().size() == 1);
                 node = nodeLevel.getNodes().get(0);
                 node.setId(getNodeId());
             } else {
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Adding node " + getMetaReference() + " to " + dimension + "-" + dimensionLevel + ": "
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Adding node " + getMetaReference() + " to " + dimension + "-" + dimensionLevel + ": "
                             + nodeLevel);
                 }
                 node = nodeLevel.createNode(getNodeId(), new Label(), nodes.get(getParentId()));
@@ -153,9 +154,9 @@ public abstract class HydraSource {
                 String key = dimension + "-" + dimensionLevel;
 
                 if (null == prevLevel) {
-                    LOG.warn("No prev level found for " + dimension);
+                    logger.warn("No prev level found for " + dimension);
                 } else if (!dimensionLevel.equals(prevLevel.getId()) && !dimensionLevels.containsKey(key)) {
-                    LOG.debug("Added new level " + key);
+                    logger.debug("Added new level " + key);
                     DimensionLevel newLevel = prevLevel.addLevel(dimensionLevel);
                     dimensionLevels.put(key, newLevel);
                     currentLevel.put(dimension, newLevel);
@@ -165,7 +166,7 @@ public abstract class HydraSource {
 
         private void createDimension(final Map<String, Dimension> dimensions, String dimension) {
             if (!dimensions.containsKey(dimension)) {
-                LOG.debug("Found new dimension " + dimension);
+                logger.debug("Found new dimension " + dimension);
                 dimensions.put(dimension,
                         new Dimension(dimension, Label.create("fi", dimension), Label.create("fi", dimension)));
 
@@ -196,7 +197,7 @@ public abstract class HydraSource {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(HydraSource.class);
+    private final Logger logger = LoggerFactory.getLogger(HydraSource.class);
 
     private Set<NamedView> namedViews = new TreeSet<>();
     private Map<String, Dimension> dimensions;
@@ -308,17 +309,17 @@ public abstract class HydraSource {
 
         watch.start("load fact dimension metadata");
         loadFactDimensionMetadata(newDimensionColumns);
-        LOG.debug("Fact metadata loaded, found dimensions " + newDimensionColumns);
+        logger.debug("Fact metadata loaded, found dimensions " + newDimensionColumns);
         watch.stop();
 
         watch.start("load nodes");
         loadNodes(newDimensions, dimensionLevels, newNodes, nodesByRef);
-        LOG.debug(String.format("Dimension tree read from %s found %d dimensions, %d levels and %d nodes",
+        logger.debug(String.format("Dimension tree read from %s found %d dimensions, %d levels and %d nodes",
                 getTreeSource(), newDimensions.size(),
                 dimensionLevels.size(), newNodes.size()));
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("dimensions: " + newDimensions);
-            LOG.trace("dimensionLevels: " + dimensionLevels);
+        if (logger.isTraceEnabled()) {
+            logger.trace("dimensions: " + newDimensions);
+            logger.trace("dimensionLevels: " + dimensionLevels);
         }
         watch.stop();
 
@@ -332,7 +333,7 @@ public abstract class HydraSource {
 
         watch.start("load metadata");
         loadMetadata(propertiesByRef);
-        LOG.debug("Loaded " + propertiesByRef.size() + " metadata entries ");
+        logger.debug("Loaded " + propertiesByRef.size() + " metadata entries ");
         watch.stop();
 
         watch.start("assign metadata");
@@ -360,8 +361,8 @@ public abstract class HydraSource {
         this.columns = newDimensionColumns;
         this.nodeIndex = newNodeIndex;
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Cube name loaded: " + watch.prettyPrint());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Cube name loaded: " + watch.prettyPrint());
         }
 
     }
@@ -610,7 +611,7 @@ public abstract class HydraSource {
             } else if ("meta:order".equals(p.predicate)) {
                 limit.setLimitOrder(p.value);
             } else {
-                LOG.warn("Unrecognized limit predicate " + p.predicate + " in " + runid);
+                logger.warn("Unrecognized limit predicate " + p.predicate + " in " + runid);
             }
         }
     }
@@ -635,7 +636,7 @@ public abstract class HydraSource {
                 }
             } catch (NumberFormatException e) {
 
-                LOG.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid
+                logger.warn("Could not parse " + p.predicate + " of " + ref + " in " + runid
                         + ". Limit is not valid number: '" + p.value + "'");
             }
         }
@@ -656,7 +657,7 @@ public abstract class HydraSource {
         for (String dimension : newDimensions.keySet()) {
             if (!newDimensionColumns.contains(dimension + "_key")) {
                 dimensionsNotInUse.add(dimension);
-                LOG.debug("Dropped dimension " + dimension + " as it is not present in the fact table "
+                logger.debug("Dropped dimension " + dimension + " as it is not present in the fact table "
                         + getFactSource());
             }
         }
@@ -669,7 +670,7 @@ public abstract class HydraSource {
             final List<String> newDimensionColumns) {
         for (String column : newDimensionColumns) {
             if (!newDimensions.keySet().contains(column.replaceAll("_key", ""))) {
-                LOG.warn("No metadata described for dimension " + column);
+                logger.warn("No metadata described for dimension " + column);
             }
         }
     }
@@ -707,21 +708,21 @@ public abstract class HydraSource {
         } else if (is.length == 2) {
             assignLevelMetadata(nodeMetadata, is, d);
         } else {
-            LOG.warn("Invalid value for 'is' " + Arrays.asList(is));
+            logger.warn("Invalid value for 'is' " + Arrays.asList(is));
         }
     }
 
     private void warnInvalidIsPredicate(Map.Entry<String, List<Property>> nodeMetadata, String[] is) {
         if (null == is) {
-            LOG.warn("No node found for ref " + nodeMetadata.getKey() + " and no predicate 'is' found either");
+            logger.warn("No node found for ref " + nodeMetadata.getKey() + " and no predicate 'is' found either");
         } else {
-            LOG.warn("An empty value for is for ref " + nodeMetadata.getKey());
+            logger.warn("An empty value for is for ref " + nodeMetadata.getKey());
         }
     }
 
     private void assignLevelMetadata(Map.Entry<String, List<Property>> nodeMetadata, String[] is, Dimension d) {
         if (null == d) {
-            LOG.warn("No dimension provided");
+            logger.warn("No dimension provided");
             return;
         }
         DimensionLevel level = d.getRootLevel();
@@ -738,7 +739,7 @@ public abstract class HydraSource {
             level = level.getChildLevel();
         }
         if (!levelFound) {
-            LOG.warn("No level " + is[1] + " found for dimension " + is[0]);
+            logger.warn("No level " + is[1] + " found for dimension " + is[0]);
         }
     }
 
@@ -754,7 +755,7 @@ public abstract class HydraSource {
             Map.Entry<String, List<Property>> nodeMetadata) {
         IDimensionNode node = nodesByRef.get(nodeMetadata.getKey());
         if (node == null) {
-            LOG.warn("No node found with key" + nodeMetadata.getKey());
+            logger.warn("No node found with key" + nodeMetadata.getKey());
             return;
         }
         node.setReference(nodeMetadata.getKey());
@@ -769,7 +770,7 @@ public abstract class HydraSource {
                 if (p.value != null && p.value.matches("^\\d+$")) {
                     node.setSort(p.lang, Long.parseLong(p.value));
                 } else {
-                    LOG.warn("Illegal value '" + p.value + "' for sort predicate for node " + nodeMetadata.getKey());
+                    logger.warn("Illegal value '" + p.value + "' for sort predicate for node " + nodeMetadata.getKey());
                 }
             } else if (PREDICATE_CODE.equals(p.predicate)) {
                 node.setCode(p.value);
@@ -777,7 +778,7 @@ public abstract class HydraSource {
                 if (p.value != null && p.value.matches("^\\d+$")) {
                     node.setDecimals(Integer.parseInt(p.value));
                 } else {
-                    LOG.warn("Illegal value '" + p.value + "' for decimal predicate for node " + nodeMetadata.getKey());
+                    logger.warn("Illegal value '" + p.value + "' for decimal predicate for node " + nodeMetadata.getKey());
                 }
             } else if (PREDICATE_PASSWD.equals(p.predicate)) {
                 node.setPassword(p.value);

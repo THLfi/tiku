@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -33,7 +34,7 @@ public class Dataset {
 
     private static final Joiner JOINER = Joiner.on(';');
 
-    private static final Logger LOG = Logger.getLogger(Dataset.class);
+    private final Logger logger = LoggerFactory.getLogger(Dataset.class);
 
     private Map<Integer, Object> values = new TreeMap<>();
 
@@ -48,11 +49,11 @@ public class Dataset {
     @SuppressWarnings("unchecked")
     public void put(String value, List<IDimensionNode> keys) {
         if (null == keys || keys.isEmpty()) {
-            LOG.trace("Cannot add value to dataset: No keys set for value");
+            logger.trace("Cannot add value to dataset: No keys set for value");
             return;
         }
         if (null == value) {
-            LOG.trace("Cannot add value to dataset: Null value detected for " + stringIds(keys));
+            logger.trace("Cannot add value to dataset: Null value detected for " + stringIds(keys));
             return;
         }
 
@@ -92,7 +93,7 @@ public class Dataset {
             if (o instanceof TreeMap) {
                 v = (TreeMap<Integer, Object>) o;
             } else {
-                LOG.warn("Could not resolve id " + ids.get(i) + " as treemap");
+                logger.warn("Could not resolve id " + ids.get(i) + " as treemap");
                 return (String) v.get(ids.get(lastIdIndex));
             }
         }

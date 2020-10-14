@@ -8,7 +8,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import fi.thl.pivot.model.IDimensionNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,19 +30,19 @@ import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.exception.CubeNotFoundException;
 import fi.thl.pivot.model.Report;
-import fi.thl.summary.model.Presentation;
-import fi.thl.summary.model.Selection;
-import fi.thl.summary.model.Summary;
-import fi.thl.summary.model.hydra.HydraDataPresentation;
-import fi.thl.summary.model.hydra.HydraFilter;
-import fi.thl.summary.model.hydra.HydraSummary;
-import fi.thl.summary.model.hydra.HydraTablePresentation;
+import fi.thl.pivot.summary.model.Presentation;
+import fi.thl.pivot.summary.model.Selection;
+import fi.thl.pivot.summary.model.Summary;
+import fi.thl.pivot.summary.model.hydra.HydraDataPresentation;
+import fi.thl.pivot.summary.model.hydra.HydraFilter;
+import fi.thl.pivot.summary.model.hydra.HydraSummary;
+import fi.thl.pivot.summary.model.hydra.HydraTablePresentation;
 
 @Controller
 @RequestMapping("/{env}/{locale}/{subject}/{hydra}/summary_{summaryId}")
 public class SummaryController extends AbstractController {
 
-    private static final Logger LOG = Logger.getLogger(SummaryController.class);
+    private final Logger logger = LoggerFactory.getLogger(SummaryController.class);
 
     public static class SummaryRequest extends AbstractRequest {
 
@@ -115,7 +116,7 @@ public class SummaryController extends AbstractController {
     public String displaySummary(@ModelAttribute SummaryRequest summaryRequest, WebRequest request, Model model, HttpServletRequest servletRequest)
             throws CubeNotFoundException {
 
-        LOG.info("ACCESS Rendering summary " + summaryRequest.getCube());
+        logger.info("ACCESS Rendering summary " + summaryRequest.getCube());
         this.session = servletRequest.getSession();
 
         // Load summary and hydra definitions for the current summary
@@ -125,7 +126,7 @@ public class SummaryController extends AbstractController {
         HydraSource source = amorDao.loadSource(summaryRequest.getEnv(), cubeId);
 
         if (null == source) {
-            LOG.debug("Cube not found for summary " + cubeId);
+            logger.debug("Cube not found for summary " + cubeId);
             throw new CubeNotFoundException();
         }
         loadMetadata(source);
@@ -157,7 +158,7 @@ public class SummaryController extends AbstractController {
         model.addAttribute("reports",
                 listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));
 
-        LOG.debug("Sending user to template summary with summary " + summaryRequest.getCube());
+        logger.debug("Sending user to template summary with summary " + summaryRequest.getCube());
 
         return "summary";
     }
@@ -169,7 +170,7 @@ public class SummaryController extends AbstractController {
                     throws CubeNotFoundException {
 
         if ("deve".equals(summaryRequest.getEnv()) || "test".equals(summaryRequest.getEnv())) {
-            LOG.info("ACCESS Displaying source of summary " + summaryRequest.getCube());
+            logger.info("ACCESS Displaying source of summary " + summaryRequest.getCube());
 
             // Load summary and hydra definitions for the current summary
             // If the source does not exists then display 404 for the user

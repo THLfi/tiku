@@ -15,7 +15,8 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
@@ -74,11 +75,11 @@ public class JDBCSource extends HydraSource {
             try {
                 handleRow();
             } catch (SQLException e) {
-                LOG.error("Failed to process tree", e);
+                logger.error("Failed to process tree", e);
                 throw e;
 
             } catch (Exception e) {
-                LOG.error("Failed to process tree", e);
+                logger.error("Failed to process tree", e);
                 throw new SQLException("", e);
             }
         }
@@ -132,7 +133,7 @@ public class JDBCSource extends HydraSource {
 
         private ResultSet queryForColumnsInFactTable(DatabaseMetaData dmd) throws SQLException {
             String[] tableNameParts = factTable.split("\\.");
-            LOG.debug("Fetching metadata for table " + Lists.newArrayList(tableNameParts));
+            logger.debug("Fetching metadata for table " + Lists.newArrayList(tableNameParts));
 
             String schemaName = isSchemaDefined(tableNameParts) ? tableNameParts[0].toLowerCase() : "";
             String tableName = isSchemaDefined(tableNameParts) ? tableNameParts[1].toLowerCase() : tableNameParts[0].toLowerCase();
@@ -153,12 +154,12 @@ public class JDBCSource extends HydraSource {
 
         private void listDimensionKeyColumnsInTable( ResultSet rs) throws SQLException {
             while (rs.next()) {
-                LOG.debug(String.format("Column '%s' detected in fact table", rs.getString("COLUMN_NAME")));
+                logger.debug(String.format("Column '%s' detected in fact table", rs.getString("COLUMN_NAME")));
                 if (rs.getString("COLUMN_NAME").toLowerCase().endsWith("_key")) {
                     dimensionColumns.add(rs.getString("COLUMN_NAME").toLowerCase());
                 }
             }
-            LOG.debug("All columns processed");
+            logger.debug("All columns processed");
         }
 
         private boolean isSchemaDefined(String[] tableNameParts) {
@@ -183,7 +184,7 @@ public class JDBCSource extends HydraSource {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(JDBCSource.class);
+    private final Logger logger = LoggerFactory.getLogger(JDBCSource.class);
     private final String factTable;
     private final String treeTable;
     private final String metaTable;
@@ -251,7 +252,7 @@ public class JDBCSource extends HydraSource {
     public Dataset loadSubset(Query queryNodes, List<IDimensionNode> filter, boolean showValueTypes) {
         final Dataset newDataSet = new Dataset();
         final String query = buildFactQuery(queryNodes.getNodesPerDimension().values(), filter, showValueTypes);
-        LOG.debug("Loading subset of facts using :" + query);
+        logger.debug("Loading subset of facts using :" + query);
         jdbcTemplate.setFetchSize(FETCH_SIZE);
         jdbcTemplate.query(query, new RowCallbackHandler() {
             @Override
@@ -270,7 +271,7 @@ public class JDBCSource extends HydraSource {
         try {
             JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), new ListDimensionColumnsBasedOnDatabaseMetadata(newDimensionColumns));
         } catch (MetaDataAccessException e) {
-            LOG.error("could not fetch metadata for " + factTable, e);
+            logger.error("could not fetch metadata for " + factTable, e);
         }
     }
 

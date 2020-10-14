@@ -5,10 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
-import org.apache.log4j.SimpleLayout;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,9 +20,6 @@ public class CsvSourceTest {
 
     @Before
     public void loadCube() {
-        ConsoleAppender appender = new ConsoleAppender(new SimpleLayout());
-        appender.setThreshold(Priority.DEBUG);
-        Logger.getLogger("fi.thl").addAppender(appender);
         source = new CSVSource(new File("src/test/resources/test-fact.csv"), new File("src/test/resources/test-tree.csv"),
                 new File("src/test/resources/test-meta.csv"));
         source.loadMetadata();

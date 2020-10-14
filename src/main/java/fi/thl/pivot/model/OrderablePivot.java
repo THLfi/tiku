@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -21,7 +22,7 @@ public class OrderablePivot extends AbstractPivotForwarder {
         Ascending, Descending
     }
 
-    private static final Logger LOG = Logger.getLogger(OrderablePivot.class);
+    private final Logger logger = LoggerFactory.getLogger(OrderablePivot.class);
 
     private int sortIndex;
     private SortMode sortMode;
@@ -65,7 +66,7 @@ public class OrderablePivot extends AbstractPivotForwarder {
     }
 
     public void sortBy(final int sortIndex, SortBy sortBy, SortMode sortMode) {
-        LOG.debug(String.format("Sorting pivot by column : %s , %d ascending: %s", sortBy, sortIndex, sortMode));
+        logger.debug(String.format("Sorting pivot by column : %s , %d ascending: %s", sortBy, sortIndex, sortMode));
         Preconditions.checkNotNull("Missing sortBy argument", sortBy);
         Preconditions.checkNotNull("Missing sortMode argument", sortMode);
 

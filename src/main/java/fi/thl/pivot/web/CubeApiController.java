@@ -5,7 +5,8 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,11 +27,11 @@ import fi.thl.pivot.export.JsonStatExporter;
 @RequestMapping("/{env}/{locale}/{subject}/{hydra}")
 public class CubeApiController extends AbstractCubeController {
 
-    private static final Logger LOG = Logger.getLogger(CubeApiController.class);
+    private final Logger logger = LoggerFactory.getLogger(CubeApiController.class);
 
     @RequestMapping(value = "/fact_{cube}.js", headers="Accept=*/*", produces = "text/javascript")
     public String displayCubeAsJsonStatP(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) {
-        LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
+        logger.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
         CubeService cs = createCube(cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest, resolveSearchType(cubeRequest.getSearchType()), model);
         if (cs.isCubeCreated()) {
@@ -50,7 +51,7 @@ public class CubeApiController extends AbstractCubeController {
     @Monitored
     @RequestMapping(value = "/fact_{cube:[^\\.]+}.json", headers="Accept=*/*", produces = "application/json")
     public void displayCubeAsJsonStat(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp, OutputStream out) throws IOException {
-        LOG.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
+        logger.debug(String.format("ACCESS JSON-STAT cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
         
         try {
@@ -65,11 +66,11 @@ public class CubeApiController extends AbstractCubeController {
                 resp.setCharacterEncoding("utf-8");
                 new JsonStatExporter().export(model, out);
             } else {
-                LOG.debug("Cube is not created");
+                logger.debug("Cube is not created");
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
-            LOG.debug("Cube access is forbidden", e);
+            logger.debug("Cube access is forbidden", e);
             resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
         }
@@ -78,7 +79,7 @@ public class CubeApiController extends AbstractCubeController {
     @Monitored
     @RequestMapping(value = "/fact_{cube}.dimensions.json", headers="Accept=*/*", produces = "text/javascript")
     public void displayDimensionsAsJson(@ModelAttribute CubeRequest cubeRequest,         Model model, HttpServletResponse resp, OutputStream out) throws IOException{
-        LOG.debug(String.format("ACCESS Cube dimensions requested %s %s", cubeRequest.getEnv(), cubeRequest.getCube()));
+        logger.debug(String.format("ACCESS Cube dimensions requested %s %s", cubeRequest.getEnv(), cubeRequest.getCube()));
 
         HydraSource source = amorDao.loadSource(cubeRequest.getEnv(), cubeRequest.getCube());
         if (null != source) {

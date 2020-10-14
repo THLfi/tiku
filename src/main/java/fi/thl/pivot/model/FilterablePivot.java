@@ -3,7 +3,8 @@ package fi.thl.pivot.model;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
@@ -17,7 +18,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class FilterablePivot extends AbstractPivotForwarder {
 
-    private static final Logger LOG = Logger.getLogger(FilterablePivot.class);
+    private final Logger logger = LoggerFactory.getLogger(FilterablePivot.class);
 
     private  interface HeaderCallback {
         IDimensionNode getHeaderAt(int level, int index);

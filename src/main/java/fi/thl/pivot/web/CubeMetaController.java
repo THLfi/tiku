@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +26,7 @@ import fi.thl.pivot.web.tools.FindNodes.SearchType;
 @RequestMapping("/{env}/{locale}/{subject}/{hydra}/fact_{cube}")
 public class CubeMetaController extends AbstractCubeController {
 
-    private static final Logger LOG = Logger.getLogger(CubeController.class);
+    private final Logger logger = LoggerFactory.getLogger(CubeController.class);
 
     @Monitored
     @RequestMapping(value = "/{id}", produces = "text/html;charset=UTF-8", method = RequestMethod.GET)
@@ -65,7 +66,7 @@ public class CubeMetaController extends AbstractCubeController {
             try {
                 model.addAttribute("nodes", fn.apply(id));
             } catch (IllegalArgumentException e) {
-                LOG.warn("Could not find nodes for metadata with numeric id" + id);
+            	logger.warn("Could not find nodes for metadata with numeric id" + id);
                 model.addAttribute("nodes", new ArrayList<DimensionNode>());
             }
             model.addAttribute("lang", cubeRequest.getLocale());

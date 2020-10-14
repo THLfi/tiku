@@ -5,7 +5,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StopWatch;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 
@@ -16,6 +17,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
  *
  */
 public class LoggingFreeMarkerView extends FreeMarkerView {
+	
+	private final Logger logger = LoggerFactory.getLogger(LoggingFreeMarkerView.class);
 
     @Override
     protected void doRender(Map<String, Object> model,
@@ -27,7 +30,7 @@ public class LoggingFreeMarkerView extends FreeMarkerView {
             super.doRender(model, request, response);
         } finally {
             watch.stop();
-            Logger.getLogger(getClass()).debug(
+            logger.debug(
                     "View rendered: " + watch.shortSummary());
         }
     }

@@ -5,7 +5,8 @@ import java.util.stream.Collectors;
 
 import fi.thl.pivot.exception.SameDimensionAsRowAndColumnException;
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.util.StopWatch;
 
@@ -34,7 +35,7 @@ public class CubeService {
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(CubeService.class);
+    private final Logger logger = LoggerFactory.getLogger(CubeService.class);
 
     private List<String> rowHeaders;
     private List<String> columnHeaders;
@@ -101,7 +102,7 @@ public class CubeService {
         Dataset dataSet = source.loadSubset(query, filter, null != request.getCi() || null != request.getN());
         sw.stop();
 
-        LOG.debug("data loaded");
+        logger.debug("data loaded");
      
         sw.start("Create pivot");
         ModifiablePivot mPivot = new ModifiablePivot(dataSet);
@@ -130,8 +131,8 @@ public class CubeService {
             sw.stop();
         }
 
-        LOG.debug(String.format("Cube pivot created (%d, %s)", pivot.getRowCount(), pivot.getColumnCount()));
-        LOG.debug(sw.prettyPrint());
+        logger.debug(String.format("Cube pivot created (%d, %s)", pivot.getRowCount(), pivot.getColumnCount()));
+        logger.debug(sw.prettyPrint());
         this.cubeCreated = true;
     }
 
@@ -401,22 +402,22 @@ public class CubeService {
     }
 
     private void applyFilters(FilterablePivot fPivot) {
-        LOG.debug(String.format("Constructed pivot (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
+        logger.debug(String.format("Constructed pivot (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
 
         List<Predicate<PivotCell>> filters = new ArrayList<>();
         // filters.add(new FilterImpossibleHierarchy(fPivot));
-        // LOG.debug(String.format("Filtered pivot ImpossibleHierarchy (%d,
+        // logger.debug(String.format("Filtered pivot ImpossibleHierarchy (%d,
         // %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
 
         if (isEmptyValuesFiltered && isZeroValuesFiltered) {
             filters.add(new FilterZeroOrEmpty());
-            LOG.debug(String.format("Filtered pivot zero or empty (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
+            logger.debug(String.format("Filtered pivot zero or empty (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
         } else if (isZeroValuesFiltered) {
             filters.add(new FilterZero());
-            LOG.debug(String.format("Filtered pivot zero (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
+            logger.debug(String.format("Filtered pivot zero (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
         } else if (isEmptyValuesFiltered) {
             filters.add(new FilterEmpty());
-            LOG.debug(String.format("Filtered pivot empty (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
+            logger.debug(String.format("Filtered pivot empty (%d, %s)", fPivot.getRowCount(), fPivot.getColumnCount()));
         }
 
         fPivot.applyFilters(filters);

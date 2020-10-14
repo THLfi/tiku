@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import fi.thl.pivot.model.IDimensionNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -35,7 +36,7 @@ public final class FindNodes implements Function<String, List<IDimensionNode>> {
         SURROGATE, IDENTIFIER, URI
     }
 
-    private static final Logger LOG = Logger.getLogger(FindNodes.class);
+    private final Logger logger = LoggerFactory.getLogger(FindNodes.class);
 
     private final HydraSource source;
     private final SearchType searchType;
@@ -54,8 +55,8 @@ public final class FindNodes implements Function<String, List<IDimensionNode>> {
             convertIdentifiersToNodes(identifier, nodes);
         }
 
-        if (LOG.isTraceEnabled()) {
-            LOG.trace(identifier + " => " + nodes);
+        if (logger.isTraceEnabled()) {
+            logger.trace(identifier + " => " + nodes);
         }
         return nodes.isEmpty() ? null : nodes;
     }
@@ -77,9 +78,9 @@ public final class FindNodes implements Function<String, List<IDimensionNode>> {
         for (String id : asId(identifier)) {
             IDimensionNode node = findNodeUsingSelectedSearchType(id);
             if (node == null) {
-                LOG.warn(String.format("Attempt to load %s with id %s FAILED", identifier, id));
+                logger.warn(String.format("Attempt to load %s with id %s FAILED", identifier, id));
             } else if (!node.canAccess()) {
-                LOG.warn(String.format("Attempt to load %s with id %s DENIED as user cannot access it", identifier, id));
+                logger.warn(String.format("Attempt to load %s with id %s DENIED as user cannot access it", identifier, id));
             } else {
                 nodes.add(node);
             }

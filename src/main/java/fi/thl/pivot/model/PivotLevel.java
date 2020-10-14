@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -13,7 +14,7 @@ public class PivotLevel implements Iterable<IDimensionNode> {
 
     private static final boolean ASSERT_ENABLED = PivotLevel.class.desiredAssertionStatus();
     
-    private static final Logger LOG = Logger.getLogger(PivotLevel.class);
+    private final Logger logger = LoggerFactory.getLogger(PivotLevel.class);
     private Dimension dimension;
     private List<IDimensionNode> nodes = Lists.newArrayList();
 
@@ -87,7 +88,7 @@ public class PivotLevel implements Iterable<IDimensionNode> {
     public IDimensionNode get(int i) {
         if(ASSERT_ENABLED) {
             if (i < 0 || i >= nodes.size()) {
-                LOG.warn(String.format("User attempted to access node in %d but only %d nodes available", i, nodes.size()));
+                logger.warn(String.format("User attempted to access node in %d but only %d nodes available", i, nodes.size()));
                 return null;
             }
         }

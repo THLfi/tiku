@@ -12,8 +12,10 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,7 +46,7 @@ import fi.thl.pivot.model.Tuple;
 @Controller
 public class AmorListController {
 
-    private static final Logger LOG = Logger.getLogger(AmorListController.class);
+    private final Logger logger = LoggerFactory.getLogger(AmorListController.class);
 
     @Autowired
     private AmorDao dao;
@@ -223,7 +225,7 @@ public class AmorListController {
             Report r = dao.loadLatestReport(env, subject, hydra, fact);
 
             if (null == r) {
-                LOG.error(String.format("Failed to show latest version of cube (%s, %s, %s, %s) - not found", env,
+                logger.error(String.format("Failed to show latest version of cube (%s, %s, %s, %s) - not found", env,
                         subject, hydra, fact));
                 return new ResponseEntity<String>("{\"error\":\"Not found\"}", HttpStatus.NOT_FOUND);
             } else {
@@ -233,7 +235,7 @@ public class AmorListController {
                         HttpStatus.OK);
             }
         } catch (Exception e) {
-            LOG.error(
+            logger.error(
                     String.format("Failed to show latest version of cube (%s, %s, %s, %s)", env, subject, hydra, fact),
                     e);
             return new ResponseEntity<String>(
@@ -265,10 +267,15 @@ public class AmorListController {
     private ResponseEntity<String> createJsonStatCollection(String env, final String subject,
             Collection<Report> reports, String label) {
         JSONObject collection = new JSONObject();
-        collection.put("version", "2.0");
-        collection.put("class", "collection");
-        collection.put("label", label);
-        collection.put("updated", new SimpleDateFormat("yyyy-MM-dd").format(getLatestUpdate(reports)));
+        try {
+			collection.put("version", "2.0");
+			collection.put("class", "collection");
+			collection.put("label", label);
+			collection.put("updated", new SimpleDateFormat("yyyy-MM-dd").format(getLatestUpdate(reports)));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         JSONObject link = new JSONObject();
         JSONArray items = new JSONArray();
@@ -302,12 +309,17 @@ public class AmorListController {
             for (Tuple t : metadata) {
                 if (t.predicate.equals("name")) {
                     JSONObject r = new JSONObject();
-                    r.put("class", "dataset");
-                    r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang,
-                            report.getSubject(), report.getHydra(),
-                            report.getFact()));
-                    items.put(r);
-                    r.put("label", t.object);
+                    try {
+						r.put("class", "dataset");
+						r.put("href", String.format("https://sampo.thl.fi/pivot/%s/%s/%s/%s/%s.json", env, t.lang,
+						        report.getSubject(), report.getHydra(),
+						        report.getFact()));
+						items.put(r);
+						r.put("label", t.object);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                     JSONArray note = new JSONArray();
                     if (isOpenData) {
                         note.put("© Terveyden ja hyvinvoinnin laitos 2016, Creative Commons BY 4.0");
@@ -317,8 +329,13 @@ public class AmorListController {
                 }
             }
         }
-        link.put("item", items);
-        collection.put("link", link);
+        try {
+			link.put("item", items);
+			collection.put("link", link);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         return new ResponseEntity<>(collection.toString(), HttpStatus.OK);
     }

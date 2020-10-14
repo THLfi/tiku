@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import fi.thl.pivot.model.*;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 
@@ -108,7 +109,7 @@ public class CSVSource extends HydraSource {
     private final File treeSource;
     private final File factSource;
     private final File metaSource;
-    private static final Logger LOG = Logger.getLogger(CSVSource.class);
+    private final Logger logger = LoggerFactory.getLogger(CSVSource.class);
 
     public CSVSource(File factSource, File treeSource, File metaSource) {
         this.factSource = factSource;
@@ -133,7 +134,7 @@ public class CSVSource extends HydraSource {
         try {
             reader = new CsvMapReader(new FileReader(factSource), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
             String[] header = reader.getHeader(true);
-            LOG.debug("Loading data from colums: " + Arrays.asList(header));
+            logger.debug("Loading data from colums: " + Arrays.asList(header));
             Map<String, String> row = null;
             while ((row = reader.read(header)) != null) {
                 IDimensionNode[] keys = new IDimensionNode[getColumns().size()];
@@ -144,7 +145,7 @@ public class CSVSource extends HydraSource {
                 if (null != row.get("val")) {
                     newDataSet.put(row.get("val"), Arrays.asList(keys));
                 } else {
-                    LOG.warn("No value found in row " + row);
+                    logger.warn("No value found in row " + row);
                 }
             }
         } catch (IOException e) {
@@ -153,7 +154,7 @@ public class CSVSource extends HydraSource {
             try {
                 Closeables.close(reader, true);
             } catch (IOException e) {
-                LOG.warn("Could not close CSV file reader", e);
+                logger.warn("Could not close CSV file reader", e);
             }
         }
         return newDataSet;
@@ -178,7 +179,7 @@ public class CSVSource extends HydraSource {
             try {
                 Closeables.close(reader, true);
             } catch (IOException e) {
-                LOG.warn("Could not close CSV file reader", e);
+                logger.warn("Could not close CSV file reader", e);
             }
         }
     }
@@ -191,7 +192,7 @@ public class CSVSource extends HydraSource {
         try {
             reader = new CsvMapReader(new FileReader(treeSource), CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
             String[] header = reader.getHeader(true);
-            LOG.debug("Loading nodes from columns " + Arrays.asList(header));
+            logger.debug("Loading nodes from columns " + Arrays.asList(header));
             CsvTreeCallbackHandler ctch = new CsvTreeCallbackHandler(newDimensions, newNodes, nodesByRef, dimensionLevels);
             Map<String, String> row = null;
             int rowNum = 0;
@@ -201,7 +202,7 @@ public class CSVSource extends HydraSource {
                 rows.add(row);
                 ++rowNum;
             }
-            LOG.debug("Read " + rowNum + " rows from tree file");
+            logger.debug("Read " + rowNum + " rows from tree file");
             processDataRootFirst(ctch, rows);
 
         } catch (IOException e) {
@@ -210,7 +211,7 @@ public class CSVSource extends HydraSource {
             try {
                 Closeables.close(reader, true);
             } catch (IOException e) {
-                LOG.warn("Could not close CSV file reader", e);
+                logger.warn("Could not close CSV file reader", e);
             }
         }
     }
@@ -243,7 +244,7 @@ public class CSVSource extends HydraSource {
             try {
                 Closeables.close(reader, true);
             } catch (IOException e) {
-                LOG.warn("Could not close CSV file reader", e);
+                logger.warn("Could not close CSV file reader", e);
             }
         }
 

@@ -4,7 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,7 @@ import fi.thl.pivot.export.XlsxExporter;
 @Controller
 public class CubeXlsxController extends AbstractCubeController {
 
-    private static final Logger LOG = Logger.getLogger(CubeXlsxController.class);
+    private final Logger logger = LoggerFactory.getLogger(CubeXlsxController.class);
 
     @Autowired
     private MessageSource messageSource;
@@ -27,7 +28,7 @@ public class CubeXlsxController extends AbstractCubeController {
     @Monitored
     @RequestMapping(value = "/{env}/{locale}/{subject}/{hydra}/fact_{cube}.xlsx", headers="Accept=*/*", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     public void displayCubeAsXLSX(@ModelAttribute CubeRequest cubeRequest, Model model, HttpServletResponse resp) throws CubeNotFoundException, IOException {
-        LOG.debug(String.format("XLSX cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
+        logger.debug(String.format("XLSX cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
 
         if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
             throw new RuntimeException("Invalid selection");

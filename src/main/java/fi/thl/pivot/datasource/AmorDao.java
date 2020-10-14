@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import fi.thl.pivot.exception.CubeNotFoundException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,12 +32,13 @@ import com.google.common.collect.Maps;
 
 import fi.thl.pivot.annotation.AuditedMethod;
 import fi.thl.pivot.annotation.Monitored;
+import fi.thl.pivot.aspect.MonitoredAspect;
 import fi.thl.pivot.model.Report;
 import fi.thl.pivot.model.Tuple;
+import fi.thl.pivot.summary.SummaryException;
+import fi.thl.pivot.summary.SummaryReader;
+import fi.thl.pivot.summary.model.Summary;
 import fi.thl.pivot.util.Constants;
-import fi.thl.summary.SummaryException;
-import fi.thl.summary.SummaryReader;
-import fi.thl.summary.model.Summary;
 
 /**
  * <p>
@@ -58,7 +60,7 @@ import fi.thl.summary.model.Summary;
 @Component
 public class AmorDao {
 
-    private static final Logger LOG = Logger.getLogger(AmorDao.class);
+	private final Logger logger = LoggerFactory.getLogger(AmorDao.class);
     private static final int ID_ELEMENT_COUNT = 4;
     private static final String ID_SEPARATOR = "\\.";
 
@@ -139,7 +141,7 @@ public class AmorDao {
 
                 @Override
                 public HydraSource load(String key) throws Exception {
-                    LOG.debug("Loading source for " + key);
+                    logger.debug("Loading source for " + key);
                     return loadSource(key);
                 }
                 
@@ -156,13 +158,13 @@ public class AmorDao {
         String prefix = String.join(".", environment, subject, hydra);
         for(String k: sourceCache.asMap().keySet()) {
             if(k.startsWith(prefix)) {
-                LOG.debug("Invalidated source cache entry: " + k);
+                logger.debug("Invalidated source cache entry: " + k);
                 sourceCache.invalidate(k);
             }
         }
         for(String k : versionCache.asMap().keySet()) {
             if(k.startsWith(prefix)) {
-                LOG.debug("Invalidated version cache entry: " + k);
+                logger.debug("Invalidated version cache entry: " + k);
                 versionCache.invalidate(k);
             }
         }
@@ -291,10 +293,10 @@ public class AmorDao {
                             sr.read(new ByteArrayInputStream(rs.getString("summary_xml").getBytes("UTF-8")));
                             return sr.getSummary();
                         } catch (SummaryException e) {
-                            LOG.error("Could not parse summary", e);
+                            logger.error("Could not parse summary", e);
                             throw new IllegalStateException("Could not parse summary", e);
                         } catch (UnsupportedEncodingException e) {
-                            LOG.fatal("Could not resolve UTF-8", e);
+                            logger.error("Could not resolve UTF-8", e);
                             throw new IllegalStateException("Could not resolve known character encoding");
                         }
                     }
@@ -356,17 +358,17 @@ public class AmorDao {
             if(null == latestRunId) {
                 Report r = loadLatestReport(environment, params[0], params[1], params[2]);
                 latestRunId = r == null ? "0" : r.getRunId();
-                LOG.debug("Caching latest version for " + key + " as " + latestRunId);
+                logger.debug("Caching latest version for " + key + " as " + latestRunId);
                 versionCache.put(key, latestRunId);
             }
         } else {
             latestRunId = params[3];
         }
         if ("0".equals(latestRunId)) {
-            LOG.warn(String.format("Could not find run id for %s", Lists.newArrayList(params).toString()));
+            logger.warn(String.format("Could not find run id for %s", Lists.newArrayList(params).toString()));
             throw new CubeNotFoundException();
         }
-        LOG.debug(String.format("Run id %s => %s", Lists.newArrayList(params).toString(), latestRunId));
+        logger.debug(String.format("Run id %s => %s", Lists.newArrayList(params).toString(), latestRunId));
         return latestRunId;
     }
 

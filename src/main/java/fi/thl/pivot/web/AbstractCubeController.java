@@ -2,7 +2,8 @@ package fi.thl.pivot.web;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ import fi.thl.pivot.web.tools.FindNodes;
 public abstract class AbstractCubeController extends AbstractController {
 
     private static final String FACT_PREFIX = "fact_";
-    private static final Logger LOG = Logger.getLogger(AbstractCubeController.class);
+    private final Logger logger = LoggerFactory.getLogger(AbstractCubeController.class);
 
     /*
      * Handles common parameters and creates a POJO out of them so that handling
@@ -106,15 +107,15 @@ public abstract class AbstractCubeController extends AbstractController {
         service.setSearchType(searchType);
 
         model.addAttribute("lang", cubeRequest.getLocale().getLanguage());
-        LOG.debug("Creating cube");
+        logger.debug("Creating cube");
 
         if (null != service.getSource()) {
-            LOG.debug("Found cube " + cube);
+            logger.debug("Found cube " + cube);
             loadMetadata(service.getSource());
             checkLoginRequirements(cubeRequest, model, service.getSource());
             service.createCube();
             service.assignModelAttributes(model, cubeRequest);
-            LOG.debug("redirecting to user interface");
+            logger.debug("redirecting to user interface");
         }
         return service;
     }

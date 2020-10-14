@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import fi.thl.pivot.model.IDimensionNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -30,7 +31,7 @@ import fi.thl.pivot.model.Dimension;
  */
 public class FilterBuilder {
 
-    private static final Logger LOG = Logger.getLogger(FilterBuilder.class);
+    private final Logger logger = LoggerFactory.getLogger(FilterBuilder.class);
     private List<IDimensionNode> filter;
     private HydraSource source;
     private List<List<IDimensionNode>> headerNodes;
@@ -48,7 +49,7 @@ public class FilterBuilder {
     public List<IDimensionNode> asFilter() {
         filterBasedOn(source.getDimensions());
         filterBasedOn(source.getMeasures());
-        LOG.debug(String.format(
+        logger.debug(String.format(
                 "Filter created based on parameteters %s => %s", filterNodes,
                 filter));
         return filter;
@@ -57,7 +58,7 @@ public class FilterBuilder {
     private void filterBasedOn(Collection<Dimension> dimensions) {
         for (Dimension d : dimensions) {
             if (!isDimensionUsedAsHeader(d)) {
-                LOG.debug("Using dimension as filter: " + d.getId());
+                logger.debug("Using dimension as filter: " + d.getId());
                 fallbackToRootNode(d, assignFilterNode(d));
             } else {
                 assignFilterNode(d);
