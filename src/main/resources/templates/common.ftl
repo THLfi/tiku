@@ -39,9 +39,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
+        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <style>
           .table td, table.th {text-align: left;}
           .summary-body {padding-top: 20px;}

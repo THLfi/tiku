@@ -12,6 +12,7 @@
         <link rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
+        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
         <!--[if lt IE 9]>
           <script src="${resourceUrl}/js/html5shiv.js"></script>

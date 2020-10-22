@@ -71,6 +71,7 @@
         }
 
         </style>
+        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     </head>
     <body>
 

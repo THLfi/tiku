@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
   <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
+  <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
   <style>
     h1 { margin-left: 0px; border-bottom: 1px solid #ccc; }
