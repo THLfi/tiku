@@ -432,7 +432,7 @@
 
         <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
         <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/4.7.0/css/font-awesome.min.css" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
+        <link rel="stylesheet" href="${resourceUrl}/webjars/source-sans-pro/2.0.10/source-sans-pro.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css?v=${buildTimestamp}" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css?v=${buildTimestamp}" />
         <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />

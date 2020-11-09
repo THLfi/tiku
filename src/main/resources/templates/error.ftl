@@ -22,8 +22,7 @@
 
 
         <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400italic,600,600italic,700,700italic" />
+        <link rel="stylesheet" href="${resourceUrl}/webjars/source-sans-pro/2.0.10/source-sans-pro.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
         <!--[if lt IE 9]>
