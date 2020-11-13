@@ -89,6 +89,7 @@ select
     map_id surrogate_id
 from bfs_tree
 left join amor_%2$s.meta_ref_id_map using (ref)
+order by length(parent_key) nulls first, length(key), key
     ]]>
 	</entry>
 	<entry key="list-reports"><![CDATA[
