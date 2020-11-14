@@ -57,13 +57,14 @@ where
    )
  ]]></entry>
 	<entry key="traverse-tree-using-bfs"><![CDATA[
-with recursive bfs_tree  (key, parent_key, dim, stage, ref) as (
+with recursive bfs_tree  (key, parent_key, dim, stage, ref, level) as (
     select 
         key,
         parent_key,
         dim,
         stage,
-        ref
+        ref,
+        1 as level
     from
         %1$s
     where
@@ -74,7 +75,8 @@ with recursive bfs_tree  (key, parent_key, dim, stage, ref) as (
         c.parent_key,
         c.dim,
         c.stage,
-        c.ref
+        c.ref,
+        level + 1 as level
     from
         bfs_tree
     join %1$s c 
@@ -89,7 +91,7 @@ select
     map_id surrogate_id
 from bfs_tree
 left join amor_%2$s.meta_ref_id_map using (ref)
-order by length(parent_key) nulls first, length(key), key
+order by level
     ]]>
 	</entry>
 	<entry key="list-reports"><![CDATA[
