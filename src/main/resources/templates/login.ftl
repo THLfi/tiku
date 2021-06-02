@@ -17,6 +17,32 @@
           <script src="${resourceUrl}/js/html5shiv.js"></script>
           <script src="${resourceUrl}/js/respond.min.js"></script>
         <![endif]-->
+        <script src="${resourceUrl}/js/jquery.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('#password').keyup(function() {
+                        if (!isPasswordValid($('#password').val())) {
+                            $('#password-validation-error').prop('hidden', false);
+                            $('#submitbutton').prop('disabled', true);
+                        } else {
+                            $('#password-validation-error').prop('hidden', true);
+                            $('#submitbutton').prop('disabled', false);
+                        }
+                    }
+                )
+
+                function isPasswordValid(password) {
+                    var passwordValid = false;
+
+                    if (password.length <= 100)
+                        passwordValid = true;
+
+                    return passwordValid;
+                }
+            });
+        </script>
+
         <style>
 
 
@@ -49,12 +75,19 @@
                             </div>
                         </div>
                     [/#if]
+
+                   <div id="password-validation-error" class="row" hidden="true">
+                       <div class="alert alert-danger">
+                           ${message("login.password.invalid")}
+                       </div>
+                   </div>
+
                     <input type="hidden" name="csrf" value="${csrf!}" />
                     <div class="form-group">
-                        <label for="pwd">${message("login.password")}</label>
-                        <input class="form-control" type="password" name="password" id="pwd" autofocus />
+                        <label for="password">${message("login.password")}</label>
+                        <input class="form-control" type="password" name="password" id="password" autofocus />
                     </div>
-                    <button type="submit" class="btn btn-primary">${message("login.login")}</button>
+                    <button id="submitbutton" type="submit" class="btn btn-primary">${message("login.login")}</button>
                </form>
         </div>
 
