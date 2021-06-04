@@ -174,6 +174,9 @@ public abstract class AbstractController {
     protected void login(String env, String cube, String password, HttpServletRequest request) {
         logger.debug("SECURITY User attempting to login to cube " + cube);
         HydraSource source = amorDao.loadSource(env, cube);
+
+        validatePassword(source, password, env, cube);
+
         if (null != source) {
             loadMetadata(source);
             if (source.isProtectedWith(password)) {
@@ -186,6 +189,16 @@ public abstract class AbstractController {
             }
         } else {
             logger.warn("Source not found " + cube);
+        }
+    }
+
+    /**
+     * Validates inserted password
+     */
+    private void validatePassword(HydraSource source, String password, String env, String cube) {
+        if (password.length() >= 100) {
+            logger.warn("SECURITY User provided an invalid password while logging into " + env + "/" + cube + ", session: " + session.getId());
+            throw new UserNotAuthenticatedException(source, true);
         }
     }
 

@@ -34,9 +34,7 @@
 
                 function isPasswordValid(password) {
                     var passwordValid = false;
-
-                    if (password.length <= 100)
-                        passwordValid = true;
+                    if (password.length <= 100) passwordValid = true;
 
                     return passwordValid;
                 }
