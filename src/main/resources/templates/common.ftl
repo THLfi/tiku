@@ -31,7 +31,7 @@
   </footer>
 [/#macro]
 
-[#macro amor_page]
+[#macro amor_page title=message("site.common.title")]
 <!DOCTYPE html>
 <html>
     <head>
@@ -70,7 +70,7 @@
           </div>
           <div class="col-xs-10 col-md-9">
               <h1>
-                ${message("site.common.title")}
+                ${title}
                 [#if env?? && env != "prod"]
                 <span class="environment">${env}</span>
                 [/#if]
