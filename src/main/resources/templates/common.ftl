@@ -31,7 +31,7 @@
   </footer>
 [/#macro]
 
-[#macro amor_page title="Ympäristössä olevat aineistot"]
+[#macro amor_page]
 <!DOCTYPE html>
 <html>
     <head>
@@ -70,7 +70,7 @@
           </div>
           <div class="col-xs-10 col-md-9">
               <h1>
-                ${title}
+                ${message("site.common.title")}
                 [#if env?? && env != "prod"]
                 <span class="environment">${env}</span>
                 [/#if]
