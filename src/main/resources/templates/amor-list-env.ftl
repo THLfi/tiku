@@ -12,7 +12,7 @@
 [/#assign]
 
 <script src="${resourceUrl}/js/jquery.js"></script>
-<script src="${rc.contextPath}/js/amor-list.js"></script>
+<script src="${rc.contextPath}/js/amor-list.min.js"></script>
 
 [@amor_page]
 

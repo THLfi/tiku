@@ -128,9 +128,9 @@
         [#include "cube/cube-script.ftl" /]
     </script>
 
-    <script src="${rc.contextPath}/js/cube.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/cube.min.js?v=${buildTimestamp}"></script>
     <script src="${rc.contextPath}/${dimensionsUrl}"></script>
-    <script src="${rc.contextPath}/js/google-analytics.js"></script>
+    <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
 
     </body>
 </html>

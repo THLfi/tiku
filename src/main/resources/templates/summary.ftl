@@ -603,8 +603,8 @@
     <script src="${resourceUrl}/js/d3.min.js"></script>
     <script src="${resourceUrl}/js/json-stat.js"></script>
     [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]
-    <script src="${rc.contextPath}/js/map-palette.js?v=${buildTimestamp}"></script>
-    <script src="${rc.contextPath}/js/summary.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/map-palette.min.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/summary.min.js?v=${buildTimestamp}"></script>
 
     <script nonce="${cspNonce}">
     var labels = {},
@@ -637,6 +637,6 @@
       [/#list]
     [/#if]
 
-    <script src="${rc.contextPath}/js/google-analytics.js"></script>
+    <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>

@@ -88,7 +88,7 @@
 
 	  [@footer/]
 
-      <script src="${rc.contextPath}/js/google-analytics.js"></script>
+      <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>
 [/#macro]
