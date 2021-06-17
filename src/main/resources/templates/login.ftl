@@ -19,7 +19,7 @@
         <![endif]-->
         <script src="${resourceUrl}/js/jquery.js"></script>
 
-        <script src="${rc.contextPath}/js/login-password-validation.js"></script>
+        <script src="${rc.contextPath}/js/login-password-validation.min.js"></script>
 
         <style>
 
