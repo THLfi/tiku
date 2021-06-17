@@ -10,43 +10,13 @@
     <li class="first"><a href="${rc.contextPath}/">Environments</a></li>
     <li class="active">${env!}</a></li>
 [/#assign]
-[#assign javascript]
-    $('.subject-button').click(function() {
-        var target =
-            $(this)
-                .closest('tr')
-                .siblings('.subject-' + $(this).attr('subject-ref'));
-        if($(this)
-            .find('.caret')
-            .toggleClass('caret-right')
-            .is('.caret-right')) {
-            target.hide();
-        } else {
-            target.show();
-        }
-    });
-    $('.hydra-button').click(function() {
-        var p = $(this).closest('tr');
-        p.siblings('.' + p.attr('class').replace(/\s+(fh)?$/,'').replace(/\s+/g,'.')).toggle();
-        $(this).find('.caret').toggleClass('caret-right');
-    }).click();
-[/#assign]
+
+<script src="${resourceUrl}/js/jquery.js"></script>
+<script src="${rc.contextPath}/js/amor-list.js"></script>
+
 [@amor_page message("amor-list.title")]
 
-<style>
-  .report {
-    margin-bottom: 30px;
-  }
-  .title {
-    font-size: 1.2em;
-    margin: 0;
-  }
-  .info {
-    font-size: 12px;
-    margin-bottom: 15px;
-  }
-
-</style>
+<link rel="stylesheet" href="${rc.contextPath}/css/amor-list.css" />
 
 [#list reports as report]
   [#if report_index > 0 && report.hydra != last_hydra]
