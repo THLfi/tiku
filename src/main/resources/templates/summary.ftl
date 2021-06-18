@@ -592,7 +592,7 @@
 
     [@footer/]
 
-    <script>
+    <script nonce="${cspNonce}">
         [#include "summary-script.ftl" /]
     </script>
 
@@ -603,10 +603,10 @@
     <script src="${resourceUrl}/js/d3.min.js"></script>
     <script src="${resourceUrl}/js/json-stat.js"></script>
     [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]
-    <script src="${rc.contextPath}/js/map-palette.js?v=${buildTimestamp}"></script>
-    <script src="${rc.contextPath}/js/summary.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/map-palette.min.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/summary.min.js?v=${buildTimestamp}"></script>
 
-    <script>
+    <script nonce="${cspNonce}">
     var labels = {},
         dimensionData = {},
         isDrillEnabled = [#if summary.isDrillEnabled()]true[#else]false[/#if];
@@ -637,15 +637,6 @@
       [/#list]
     [/#if]
 
-    <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-20028405-1', 'auto');
-      ga('send', 'pageview');
-
-    </script>
+    <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>

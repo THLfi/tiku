@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import fi.thl.pivot.model.IDimensionNode;
+import fi.thl.pivot.web.tools.NonceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,6 +155,7 @@ public class SummaryController extends AbstractController {
         model.addAttribute("factTable", summary.getFactTable());
         model.addAttribute("uiLanguage", summaryRequest.getLocale());
         model.addAttribute("contactInformation", source.getContactInformation());
+        model.addAttribute("cspNonce", NonceGenerator.getNonce());
 
         model.addAttribute("reports",
                 listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));

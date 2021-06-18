@@ -3,6 +3,7 @@ package fi.thl.pivot.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import fi.thl.pivot.web.tools.NonceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -75,6 +76,7 @@ public class CubeController extends AbstractCubeController {
             model.addAttribute("metaLink", cs.getSource().getPredicates().get("meta:link"));
             model.addAttribute("views", cs.getSource().getNamedViews());
             model.addAttribute("backUrl",backUrl);
+            model.addAttribute("cspNonce", NonceGenerator.getNonce());
 
             return "cube";
         } else {

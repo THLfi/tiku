@@ -43,10 +43,7 @@
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
         <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-        <style>
-          .table td, table.th {text-align: left;}
-          .summary-body {padding-top: 20px;}
-        </style>
+        <link rel="stylesheet" href="${rc.contextPath}/css/common.css" />
         <!--[if lt IE 9]>
           <script src="${resourceUrl}/js/html5shiv.js"></script>
           <script src="${resourceUrl}/js/respond.min.js"></script>
@@ -56,11 +53,7 @@
         <script src="${resourceUrl}/js/jquery-ui.js"></script>
         <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
         <script src="${resourceUrl}/js/bootstrap.js"></script>
-        <script>
-            $(document).ready(function() {
-                ${javascript!}
-            });
-        </script>
+
     </head>
     <body class="common">
 
@@ -95,16 +88,7 @@
 
 	  [@footer/]
 
-      <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-20028405-1', 'auto');
-        ga('send', 'pageview');
-
-      </script>
+      <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>
 [/#macro]
