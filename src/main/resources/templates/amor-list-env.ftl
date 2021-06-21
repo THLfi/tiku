@@ -26,8 +26,8 @@
 
   <div class="report">
     <h2 class="title">
-      <i class="fa fa-database"></i>
-      <a href="${rc.contextPath}/${env}/fi/${report.subject}">${report.name!report.fact}</a></h2>
+        <i class="fas fa-database"></i>
+        <a href="${rc.contextPath}/${env}/fi/${report.subject}">${report.name!report.fact}</a></h2>
     <div class="info">
       <span class="updated">${message("cube.updated")}: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
     </div>

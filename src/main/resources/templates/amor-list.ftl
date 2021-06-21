@@ -27,12 +27,12 @@
   <div class="report">
     <h2 class="title">
       [#if "SUMMARY"=report.type]
-        <i class="fa fa-line-chart"></i>
+        <i class="fas fa-line-chart"></i>
       [#else]
-        <i class="fa fa-table"></i>
+        <i class="fas fa-table"></i>
       [/#if]
       <a href="${rc.contextPath}/${env}/${lang}/${report.subject}/${report.hydra}/[#if "SUMMARY"=report.type]summary_[/#if]${report.fact}">${report.name!report.fact}</a>
-      [#if report.isProtected() ]<i class="fa fa-lock"></i>[/#if]
+      [#if report.isProtected() ]<i class="fas fa-lock"></i>[/#if]
     </h2>
     <div class="info">
       <span class="updated">[#if "SUMMARY"=report.type]${message("summary.data-updated")}[#else]${message("cube.updated")}[/#if]: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
