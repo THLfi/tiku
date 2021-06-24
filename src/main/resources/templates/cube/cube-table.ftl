@@ -8,7 +8,7 @@
                   [#list filters as f]
                     [#if f.dimension.isMeasure()]
                         [@label f /]
-                        <a id="measure-meta" href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/${f.surrogateId}"><span class="badge">i</span></a>
+                        <a id="measure-meta" href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/${f.surrogateId}"><span class="badge bg-secondary">i</span></a>
                     [/#if]
                   [/#list]
             [/#if]

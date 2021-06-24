@@ -22,7 +22,6 @@
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">
             <i class="fa fa-download"></i>
             <span class="hide-xs">${message("cube.export")}</span>
-            <span class="hide-xs caret"></span>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2" role="menu">
             [#assign reqParameters][#compress]

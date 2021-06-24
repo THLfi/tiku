@@ -504,12 +504,12 @@
     });
 
     var dropdown = $('<div class="dropdown">');
-    var dropdownToggle = $('<button type="button" class="btn btn-xs btn-default drowdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownToggle = $('<button type="button" class="btn btn-xs btn-default drowdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
     var dropdownMenu = $('<ul class="dropdown-menu">');
-    var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
-    var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
-    var dropdownMenuHide = $('<li><a role="menuitem" class="rowhide">' + thl.messages['cube.dimension.hide'] + '</a></li>');
-    var dropdownMenuMeta = $('<li><a role="menuitem" class="info">' + thl.messages['cube.dimension.info'] + '</a></li>');
+    var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
+    var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
+    var dropdownMenuHide = $('<li><a role="menuitem" class="rowhide dropdown-item">' + thl.messages['cube.dimension.hide'] + '</a></li>');
+    var dropdownMenuMeta = $('<li><a role="menuitem" class="info dropdown-item">' + thl.messages['cube.dimension.info'] + '</a></li>');
 
     dropdownMenu
       .append(dropdownMenuSortAsc)
