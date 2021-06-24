@@ -35,6 +35,8 @@
           <script src="${resourceUrl}/js/respond.min.js"></script>
         <![endif]-->
 
+        <script src="${resourceUrl}/js/bootstrap.js"></script>
+        <script src="${rc.contextPath}/js/bootstrap/bootstrap.bundle.js"></script>
     </head>
     <body>
 
@@ -84,11 +86,9 @@
 
     <div class="pivot-content">
 
-        <div class="alert alert-info pull-left hidden quick-info">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <div class="col-sm-11">${message("cube.quick-info")}</div>
-            <button id="close-quick-info" type="button" class="close" data-dismiss="alert" aria-label="Sulje">
-                <span aria-hidden="true">×</span>
-            </button>        
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sulje"></button>
         </div>
 
         <div class="pull-right">
@@ -122,7 +122,6 @@
     <script src="${resourceUrl}/js/jquery.js"></script>
     <script src="${resourceUrl}/js/jquery-ui.js"></script>
     <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.js"></script>
     <script src="${resourceUrl}/js/jquery.stickytable.js"></script>
 
     <script nonce="${cspNonce}">

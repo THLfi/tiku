@@ -7,8 +7,8 @@
     [#return "- ${code} - " /]
 [/#function]
 [#assign breadcrumbs]
-    <li class="first"><a href="${rc.contextPath}/">Environments</a></li>
-    <li class="active">${env!}</a></li>
+    <li class="breadcrumb-item"><a href="${rc.contextPath}/">Environments</a></li>
+    <li class="breadcrumb-item active">${env!}</a></li>
 [/#assign]
 
 <script src="${resourceUrl}/js/jquery.js"></script>

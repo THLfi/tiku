@@ -2,7 +2,7 @@
 [#include "common.ftl"]
 
 [#assign breadcrumbs]
-    <li class="first active">Environments</li>
+    <li class="breadcrumb-item active">Environments</li>
 [/#assign]
 [@amor_page]
 <h1>Environments</h1>

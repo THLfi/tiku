@@ -4,8 +4,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">${message("cube.dimension.customize.title")} <span class="dimension"></span></h4>
+        <h4 class="modal-title">${message("cube.dimension.customize.title")}: <span class="dimension"></span></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
       </div>
       <div class="modal-body">
 
@@ -25,8 +25,7 @@
 
                 </div>
             </div>
-            <button type="button" class="btn btn-default">${message("cube.dimension.customize.select-all")}</button>
-
+            <button type="button" class="btn btn-secondary">${message("cube.dimension.customize.select-all")}</button>
         </div>
 
 
@@ -44,7 +43,7 @@
 
                 </div>
             </div>
-            <button type="button" class="btn btn-default">${message("cube.dimension.customize.remove-all")}</button>
+            <button type="button" class="btn btn-secondary">${message("cube.dimension.customize.remove-all")}</button>
 
         </div>
       </div>
@@ -52,7 +51,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">${message("site.modal.close")}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">${message("site.modal.close")}</button>
         <button type="button" class="btn btn-primary save">${message("site.modal.apply")}</button>
       </div>
     </div><!-- /.modal-content -->

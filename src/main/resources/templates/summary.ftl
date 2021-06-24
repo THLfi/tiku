@@ -509,12 +509,12 @@
       <div class="btn-group pull-right help" role="group">
         [#if summary.link.getValue(lang)?? && !summary.link.getValue(lang)?ends_with('n/a')]
         <a href="${summary.link.getValue(lang)}" target="_blank" type="submit" class="btn btn-default">
-          <span class="glyphicon glyphicon-info-sign"></span>
+          <span class="fas fa-info-circle"></span>
           <span class="hide-xs">${message("summary.more")}</span>
         </a>
         [/#if]
         <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
-          <span class="glyphicon glyphicon-question-sign"></span>
+          <span class="fas fa-question-circle"></span>
           <span class="hide-xs">${message("site.help")}</span>
         </a>
       </div>
