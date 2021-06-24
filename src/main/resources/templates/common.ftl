@@ -54,7 +54,7 @@
         <script src="${resourceUrl}/js/jquery-ui.js"></script>
         <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
         <script src="${resourceUrl}/js/bootstrap.js"></script>
-
+        <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="common">
 

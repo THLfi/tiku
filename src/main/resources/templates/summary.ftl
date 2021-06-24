@@ -139,24 +139,24 @@
 
 [#macro export presentation type]
 <div class="export btn-group dropdown" role="group" aria-label="...">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">${message("cube.export")} <span class="caret"></span></button>
+  <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">${message("cube.export")}</button>
   <ul class="dropdown-menu" role="menu">
     <li class="csv-action" role="presentation">
-      <a role="menuitem" href="${factTable}.csv?${presentation.dataUrl}">
-        <span class="glyphicon glyphicon-file"></span>
+      <a class="dropdown-item" role="menuitem" href="${factTable}.csv?${presentation.dataUrl}">
+        <span class="fas fa-file"></span>
         ${message("cube.export.csv")}
       </a>
     </li>
     <li class="xlsx-action" role="presentation">
-      <a role="menuitem" href="${factTable}.xlsx?${presentation.dataUrl}">
-        <span class="glyphicon glyphicon-file"></span>
+      <a class="dropdown-item" role="menuitem" href="${factTable}.xlsx?${presentation.dataUrl}">
+        <span class="fas fa-file"></span>
         ${message("cube.export.xlsx")}
       </a>
     </li>
     [#if type == "image"]
     <li class="img-action" role="presentation">
-      <a role="menuitem" href="#">
-        <span class="glyphicon glyphicon-file"></span>
+      <a class="dropdown-item" role="menuitem" href="#">
+        <span class="fas fa-file"></span>
         ${message("cube.export.image")}
       </a>
     </li>
@@ -600,7 +600,8 @@
     <script src="${resourceUrl}/js/jquery.js"></script>
     <script src="${resourceUrl}/js/jquery-ui.js"></script>
     <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.js"></script>
+    <script src="${resourceUrl}/js/bootstrap.min.js"></script>
+    <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     <script src="${resourceUrl}/js/d3.min.js"></script>
     <script src="${resourceUrl}/js/json-stat.js"></script>
     [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]

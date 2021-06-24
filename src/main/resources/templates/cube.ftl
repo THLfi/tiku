@@ -36,7 +36,7 @@
         <![endif]-->
 
         <script src="${resourceUrl}/js/bootstrap.js"></script>
-        <script src="${rc.contextPath}/js/bootstrap/bootstrap.bundle.js"></script>
+        <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
 
