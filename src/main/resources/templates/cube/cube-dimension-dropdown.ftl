@@ -2,7 +2,7 @@
 
 [#macro dimDropdown type node index maxIndex]
 <div class="dropdown" data-level="${index}">
-  <button class="btn btn-xs btn-default" id="dLabel" type="button" data-bs-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+  <button class="btn btn-secondary btn-sm" id="dLabel" type="button" data-bs-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
     <span class="fas fa-cog"></span>
   </button>
   <ul class="dropdown-menu ${type}" role="menu" aria-labelledby="dLabel">

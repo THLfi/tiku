@@ -504,7 +504,7 @@
     });
 
     var dropdown = $('<div class="dropdown">');
-    var dropdownToggle = $('<button type="button" class="btn btn-xs btn-default drowdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownToggle = $('<button type="button" class="btn btn-secondary btn-sm drowdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
     var dropdownMenu = $('<ul class="dropdown-menu">');
     var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
     var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');

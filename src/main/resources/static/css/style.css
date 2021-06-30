@@ -760,3 +760,42 @@ div.quick-info ul {
 	background-color: #e9ecef;
 	border-radius: .25rem;
 }
+
+.btn-sm {
+	padding: 1px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 3px;
+}
+
+.btn-secondary {
+	color: #333;
+	background-color: #fff;
+	border-color: #ccc;
+}
+
+.btn-secondary:hover {
+	color: #333;
+	background-color: #e6e6e6;
+	border-color: #adadad;
+}
+
+.btn-check:focus+.btn-secondary, .btn-secondary:focus {
+	color: #333;
+	background-color: #e6e6e6;
+	border-color: #8c8c8c;
+	box-shadow: none;
+}
+
+.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+	border: 1px solid #ddd;
+}
+
+body {
+	font-size: 14px;
+	line-height: 1.42857143;
+}
+
+.table>:not(:last-child)>:last-child>* {
+	border-bottom-color: #c3c2c6;
+}

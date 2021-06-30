@@ -138,30 +138,34 @@
 [/#macro]
 
 [#macro export presentation type]
-<div class="export btn-group dropdown" role="group" aria-label="...">
-  <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">${message("cube.export")}</button>
-  <ul class="dropdown-menu" role="menu">
-    <li class="csv-action" role="presentation">
-      <a class="dropdown-item" role="menuitem" href="${factTable}.csv?${presentation.dataUrl}">
-        <span class="fas fa-file"></span>
-        ${message("cube.export.csv")}
-      </a>
-    </li>
-    <li class="xlsx-action" role="presentation">
-      <a class="dropdown-item" role="menuitem" href="${factTable}.xlsx?${presentation.dataUrl}">
-        <span class="fas fa-file"></span>
-        ${message("cube.export.xlsx")}
-      </a>
-    </li>
-    [#if type == "image"]
-    <li class="img-action" role="presentation">
-      <a class="dropdown-item" role="menuitem" href="#">
-        <span class="fas fa-file"></span>
-        ${message("cube.export.image")}
-      </a>
-    </li>
-    [/#if]
-  </ul>
+<div class="row justify-content-end">
+    <div class="col-md-auto">
+        <div class="export btn-group dropdown" role="group" aria-label="...">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">${message("cube.export")}</button>
+          <ul class="dropdown-menu" role="menu">
+            <li class="csv-action" role="presentation">
+              <a class="dropdown-item" role="menuitem" href="${factTable}.csv?${presentation.dataUrl}">
+                <span class="fas fa-file"></span>
+                ${message("cube.export.csv")}
+              </a>
+            </li>
+            <li class="xlsx-action" role="presentation">
+              <a class="dropdown-item" role="menuitem" href="${factTable}.xlsx?${presentation.dataUrl}">
+                <span class="fas fa-file"></span>
+                ${message("cube.export.xlsx")}
+              </a>
+            </li>
+            [#if type == "image"]
+            <li class="img-action" role="presentation">
+              <a class="dropdown-item" role="menuitem" href="#">
+                <span class="fas fa-file"></span>
+                ${message("cube.export.image")}
+              </a>
+            </li>
+            [/#if]
+          </ul>
+        </div>
+    </div>
 </div>
 [/#macro]
 
