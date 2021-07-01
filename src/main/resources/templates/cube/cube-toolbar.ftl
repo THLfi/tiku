@@ -1,16 +1,17 @@
 [#ftl]
+
 <div class="btn-group" role="group">
     <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">${message("cube.options")}</button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
             <li class="reset-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-sync"></span> ${message("cube.reset")}</a></li>
-            <li class="transpose-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-undo-alt"></span> ${message("cube.transpose")}</a></li>
+            <li class="transpose-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-expand-alt"></span> ${message("cube.transpose")}</a></li>
             <li class="hide-zero-action" role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.fz??]${message("cube.filter-zero.off")}[#else]${message("cube.filter-zero.on")}[/#if]</a></li>
             <li class="hide-empty-action" [#if RequestParameters.fz??]disabled[/#if] role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.fo??]${message("cube.filter-empty.off")}[#else]${message("cube.filter-empty.on")}[/#if]</a></li>
             <li class="show-codes-action" role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.sc??]${message("cube.codes.off")}[#else]${message("cube.codes.on")}[/#if]</a></li>
 
             [#if views?size > 0]
-                <li role="separator" class="divider"></li>
+                <li><hr class="dropdown-divider"></li>
                 [#list views as view]
                     <li role="presentation"><a class="dropdown-item" role="menuitem" href="?${view.url}">${view.label.getValue(lang)!"n/a"}</a></li>
                 [/#list]

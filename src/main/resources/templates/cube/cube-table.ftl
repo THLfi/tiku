@@ -8,7 +8,7 @@
                   [#list filters as f]
                     [#if f.dimension.isMeasure()]
                         [@label f /]
-                        <a id="measure-meta" href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/${f.surrogateId}"><span class="badge bg-secondary">i</span></a>
+                        <a id="measure-meta" href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/${f.surrogateId}"><span class="fas fa-info-circle fa-info-circle-table"></span></a>
                     [/#if]
                   [/#list]
             [/#if]
@@ -42,7 +42,7 @@
     [/#list]
     <th class="empty" />
     <th class="column-target accept-all" colspan="${pivot.columnCount}">
-        <span class="glyphicon glyphicon-plus"></span>
+        <span class="fas fa-plus glyphicon glyphicon-plus"></span>
     </th>
 </tr>
 [#assign rowNum = -1]
@@ -64,7 +64,7 @@
             [/#list]
             [#if cell_index == 0]
             <th class="row-target accept-all" rowspan="${pivot.rowCount}">
-                <span class="glyphicon glyphicon-plus"></span>
+                <span class="fas fa-plus glyphicon glyphicon-plus"></span>
             </th>
             [/#if]
     [/#if]

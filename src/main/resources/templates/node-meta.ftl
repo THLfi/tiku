@@ -13,9 +13,9 @@
     [@breadcrumb e.parent /]
   [/#if]
   [#if leaf]
-    <li>[@label e /]</li>
+    <li class="breadcrumb-item active">[@label e /]</li>
   [#else]
-    <li><a href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${e.surrogateId}">[@label e /]</a></li>
+    <li class="breadcrumb-item"><a href="${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cube}/${e.surrogateId}">[@label e /]</a></li>
   [/#if]
 [/#macro]
 [#if nodes??]
@@ -59,8 +59,6 @@
         </p>
       [/#if]
     [/#if]
-    
-
 
     [#if node.children?size > 0]
     <h2>${message("meta.children")}</h2>

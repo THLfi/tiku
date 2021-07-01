@@ -957,7 +957,7 @@ function selectChartType (e) {
 
           if (createRowValueCells(ri * cols, row, rowIndices, columnWidths, cls, rowHlLevels[ri] || 0, columnHlLevels)) {
             if (ari === 0) {
-              thCount = $(row).find('th').size();
+              thCount = $(row).find('th').length;
               ari += 1;
             }
             rowIndex++;

@@ -11,9 +11,9 @@
       navigator.vendor.indexOf('Apple') > -1; // Safari and other browsers running under Apple OS
     }();
 
-    $('.glyphicon-resize-full').click(function() {
+    $('.fa-expand-alt-cube').click(function() {
       var t = $(this);
-      if (t.hasClass('glyphicon-resize-full') && stickyHeadersSupported) {
+      if (t.hasClass('fa-expand-alt') && stickyHeadersSupported) {
         $('table.cube').wrap('<div class="sticky-table sticky-ltr-cells"></div>');
         $(document).trigger('stickyTable');
       }
@@ -23,7 +23,7 @@
         $('table.cube tr.sticky-header').removeAttr('style');
         $('table.cube').unwrap();
       }
-      t.toggleClass('glyphicon-resize-full glyphicon-resize-small');
+      t.toggleClass('fa-expand-alt fa-compress-alt');
       $('body').toggleClass('full-screen');
     });
 
@@ -101,7 +101,7 @@
       .click(function () {
         var t = $(this);
         var span = t.find('span').toggleClass('caret-right');
-        if (span.size() > 0) {
+        if (span.length > 0) {
           t.siblings('ul').toggleClass('open');
           t.closest('li').siblings().toggleClass('closed');
         }
@@ -120,7 +120,7 @@
         var k = thl.id + ':' + t.attr('dim-ref') + '-' + t.attr('node-ref');
         if(window.sessionStorage.getItem(k)) {
           var span = t.find('span').toggleClass('caret-right');
-          if (span.size() > 0) {
+          if (span.length > 0) {
             t.siblings('ul').toggleClass('open');
             t.closest('li').siblings().toggleClass('closed');
           }
@@ -156,7 +156,7 @@
             return t.attr('dim-ref') === 'measure';
           },
           drop: function (e, ui) {
-            if ($('#filter-measure').size() === 0) {
+            if ($('#filter-measure').length === 0) {
               $('#pivot').append('<input type="text" name="filter" id="measure" dim-ref="measure" class="form-control" readonly>');
             }
             changeView($('#filter-measure'), ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
@@ -169,7 +169,7 @@
           drop: function (e, ui) {
             var dr = ui.draggable.attr('dim-ref');
             var input = $('.filter-' + dr);
-            if (input.size() === 0) {
+            if (input.length === 0) {
               input = $('<input type="text" name="filter" class="form-control" id="filter-' + dr + '" dim-ref="' + dr + '" readonly>');
               $('#pivot').append(input);
             }
@@ -180,7 +180,7 @@
     $('.row-target')
       .droppable({
         drop: function (e, ui) {
-          if ($('.row-selection').size() < nthRow($(this))) {
+          if ($('.row-selection').length < nthRow($(this))) {
             $('#pivot').append('<input type="text" name="row" class="row-selection form-control" readonly>');
           }
           changeView($('.row-selection').get(nthRow($(this)) - 1), ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));
@@ -197,7 +197,7 @@
     $('.column-target')
       .droppable({
         drop: function (e, ui) {
-          if ($('.column-selection').size() < nthCol($(this))) {
+          if ($('.column-selection').length < nthCol($(this))) {
             $('#pivot').append('<input type="text" name="column" class="column-selection form-control" readonly>');
           }
           changeView($('.column-selection').get(nthCol($(this)) - 1), ui.draggable.attr('dim-ref') + thl.separator + ui.draggable.attr('node-ref'));

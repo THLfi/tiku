@@ -88,11 +88,14 @@
 
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <div class="col-sm-11">${message("cube.quick-info")}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sulje"></button>
+
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Sulje">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
 
-        <div class="pull-right">
-            <span class="glyphicon glyphicon-resize-full"></span>
+        <div class="float-end">
+            <span class="fas fa-expand-alt fa-expand-alt-cube"></span>
         </div>
 
         [#include "cube/cube-filter.ftl" /]
