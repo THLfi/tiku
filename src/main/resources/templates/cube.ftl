@@ -75,7 +75,7 @@
     <div class="pivot-body">
     <div class="pivot-sidebar">
          <button class="browser-toggle btn btn-default">
-            <i class="fa fa-sliders"></i>            
+            <i class="fas fa-sliders-h"></i>
             <span class="sr-only">${message("cube.options")}</span>
          </button>
          <ul class="tree-browser">
