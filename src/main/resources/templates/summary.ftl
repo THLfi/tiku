@@ -604,7 +604,6 @@
     <script src="${resourceUrl}/js/jquery.js"></script>
     <script src="${resourceUrl}/js/jquery-ui.js"></script>
     <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.min.js"></script>
     <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     <script src="${resourceUrl}/js/d3.min.js"></script>
     <script src="${resourceUrl}/js/json-stat.js"></script>

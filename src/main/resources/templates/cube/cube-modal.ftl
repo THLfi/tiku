@@ -35,7 +35,7 @@
                 </div>
 
 
-                <div class="col-sm-6 selectable">
+                <div class="col-sm-6 selected">
 
                     <h5>${message("cube.dimension.customize.selected")}</h5>
 

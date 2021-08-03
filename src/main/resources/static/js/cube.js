@@ -322,7 +322,9 @@
           }
           /* Highlight last added elements - position before animating */
           option.addClass('just-added');
-          selected.scrollTop(selected.scrollTop() - selected.offset().top + option.offset().top - selected.height() / 2);
+          if (selected.length) {
+            selected.scrollTop(selected.scrollTop() - selected.offset().top + option.offset().top - selected.height() / 2);
+          }
         });
 
       /* create row or column subset http parameter value and reload cube */
