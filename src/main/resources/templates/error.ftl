@@ -58,7 +58,10 @@
     [@footer/]
 
     <script src="${resourceUrl}/js/jquery.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.js"></script>
+    <script src="${resourceUrl}/js/jquery-ui.js"></script>
+    <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
 
+    <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>

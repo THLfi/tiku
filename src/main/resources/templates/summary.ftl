@@ -81,14 +81,14 @@
       <input type="hidden" name="${filter.id}_0" value="${filter.selected[0].id}" />
     [#else]
       [#list filter.filterStages as filterStage]
-        <div class="form-group">
+        <div class="form-group search">
           <label for="s-${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
           [#if filter.searchable && !filter.multiple]
             <div class="dropdown">
-              <div class="search-group">
-                <input class="form-control search-control" placeholder="[#if filterStage.selected??]${filterStage.selected[0].label.getValue(lang)}[/#if]"/>
-                <span class="fas fa-search"></span>
-              </div>
+                <div class="search-group">
+                    <span class="fas fa-search"></span>
+                    <input class="form-control search-control" placeholder="[#if filterStage.selected??]${filterStage.selected[0].label.getValue(lang)}[/#if]"/>
+                </div>
               <ul class="dropdown-menu">
                 <li><small class="pull-right" style="padding: 0 15px">
                   <a href="#">
@@ -597,14 +597,15 @@
 
     [@footer/]
 
-    <script nonce="${cspNonce}">
-        [#include "summary-script.ftl" /]
-    </script>
-
     <script src="${resourceUrl}/js/jquery.js"></script>
     <script src="${resourceUrl}/js/jquery-ui.js"></script>
     <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
     <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
+
+    <script nonce="${cspNonce}">
+        [#include "summary-script.ftl" /]
+    </script>
+
     <script src="${resourceUrl}/js/d3.min.js"></script>
     <script src="${resourceUrl}/js/json-stat.js"></script>
     [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]

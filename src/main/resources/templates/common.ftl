@@ -50,10 +50,6 @@
           <script src="${resourceUrl}/js/respond.min.js"></script>
         <![endif]-->
 
-        <script src="${resourceUrl}/js/jquery.js"></script>
-        <script src="${resourceUrl}/js/jquery-ui.js"></script>
-        <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-        <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     </head>
     <body class="common">
 
@@ -88,7 +84,6 @@
 
 	  [@footer/]
 
-      <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
 </html>
 [/#macro]

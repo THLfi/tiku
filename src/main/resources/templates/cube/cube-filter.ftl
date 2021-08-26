@@ -13,7 +13,7 @@
 
                     [#elseif f.dimension.id == d.id]
                         <dt>[@label d /]</dt>
-                        <dd><span class="label label-default" data-ref="${d.id}" data-index="${idx}">[@label f /] [#if RequestParameters.sc?? && f.code??](${f.code})[/#if]<span class="fas fa-minus-circle"></span></span></dd>
+                        <dd><span class="label label-default" data-ref="${d.id}" data-index="${idx}">[@label f /] [#if RequestParameters.sc?? && f.code??](${f.code})[/#if]<span class="fas fa-times"></span></span></dd>
                         [#assign idx = idx + 1 /]
                     [/#if]
             [/#list]

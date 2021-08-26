@@ -91,7 +91,7 @@
                     [#if f.dimension.isMeasure() && !multipleMeasuresShown]
                     [#elseif f.dimension.id == d.id]
                         <dt>[@label d /]</dt>
-                        <dd><span class="label label-default" dim-ref="${d.id}">[@label f /] <span class="fas fa-minus-circle"></span></span></dd>
+                        <dd><span class="label label-default" dim-ref="${d.id}">[@label f /] <span class="fas fa-times"></span></span></dd>
                         [#break /]
                     [/#if]
             [/#list]

@@ -407,12 +407,12 @@ ul.tree-browser {
 	letter-spacing: 1px;
 }
 
-.label .glyphicon {
+.label .fas {
 	display: none;
 	color: #c00;
 }
 
-.label.hover .glyphicon {
+.label.hover .fas {
 	display: inline-block;
 }
 
@@ -844,6 +844,13 @@ button.close {
 
 .dropdown-menu {
 	font-size: 14px;
+	padding: 10px;
+	overflow: scroll;
+	max-height: 400px;
+}
+
+.dropdown.open > .dropdown-menu {
+	display: list-item;
 }
 
 .dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {

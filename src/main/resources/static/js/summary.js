@@ -2761,7 +2761,7 @@ function selectChartType (e) {
     });
     $('select[multiple]').each(function () {
       var btn = $('<a>')
-        .addClass('btn btn-default')
+        .addClass('btn btn-secondary')
         .text(thl.messages['select'])
         .click(populateModal);
 
