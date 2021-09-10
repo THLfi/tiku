@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers()
                 .contentSecurityPolicy(
                         "default-src 'self'; " +
-                                "script-src '" + NONCE_HEADER + "' 'report-sample' 'self' https://repo.thl.fi/sites/pivot/js/jquery.stickytable.js https://repo.thl.fi/sites/pivot/js/d3.min.js https://repo.thl.fi/sites/pivot/js/json-stat.js https://repo.thl.fi/sites/pivot/js/jquery.js https://repo.thl.fi/sites/pivot/js/jquery.ui.touch-punch.min.js https://repo.thl.fi/sites/pivot/js/bootstrap.js https://repo.thl.fi/sites/pivot/js/jquery-ui.js https://www.google-analytics.com/analytics.js; " +
+                                "script-src '" + NONCE_HEADER + "' 'report-sample' 'self' https://repo.thl.fi/sites/pivot/library-update/pivot/js/jquery.stickytable.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/d3.min.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/json-stat.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/jquery.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/jquery.ui.touch-punch.min.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/bootstrap.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/bootstrap.min.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/bootstrap.bundle.min.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/jquery-ui.js https://www.google-analytics.com/analytics.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/leaflet.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/proj4.min.js https://repo.thl.fi/sites/pivot/library-update/pivot/js/proj4leaflet.js https://sotkanet.fi/sotkanet/fi/api/geojson/MAA https://sotkanet.fi/sotkanet/fi/api/geojson/MAAKUNTA; " +
                                 "style-src 'self' 'unsafe-inline' https://repo.thl.fi; " +
                                 "object-src 'none'; " +
                                 "base-uri 'self'; " +
@@ -32,7 +32,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "manifest-src 'self'; " +
                                 "media-src 'self'; " +
                                 "worker-src 'none'; "
-                ).reportOnly().and()   // set report only, remove when policy needs to be forced
-                .xssProtection().disable();
+                ).and().xssProtection().disable();
     }
 }
