@@ -861,6 +861,7 @@ button.close {
 	font-size: 14px;
 	line-height: 1.42857143;
 	color: #555;
+	appearance: auto;
 }
 
 .form-group {
@@ -888,4 +889,8 @@ a:focus, a:hover {
 	list-style: none;
 	background-color: #e9ecef;
 	border-radius: .25rem;
+}
+
+.text-align-center {
+	text-align: center;
 }

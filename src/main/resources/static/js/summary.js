@@ -887,7 +887,7 @@ function selectChartType (e) {
               if ((+val.value<0 && negatives) || (+val.value===0 && zeros)){
                 tdAndClass = '<td class="text-danger">';
               }
-              var span = $('<span></span>')
+              var span = $('<span class="text-align-center"></span>')
                 .text(content)
                 .addClass(cls + i);
               cell = $(tdAndClass);

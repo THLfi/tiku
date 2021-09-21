@@ -67,7 +67,7 @@
       [/#list]
       </select>
     </div>
-    <hr />
+    <br />
     [/#if]
   [/#if]
 
@@ -82,7 +82,7 @@
     [#else]
       [#list filter.filterStages as filterStage]
         <div class="form-group search">
-          <label for="s-${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
+          <label class="bold" for="s-${filter.id}-${filterStage_index}">${filterStage.label.getValue(lang)}</label>
           [#if filter.searchable && !filter.multiple]
             <div class="dropdown">
                 <div class="search-group">
@@ -101,32 +101,32 @@
               </ul>
             </div>
           [/#if]
-          <select class="form-control" name="${filter.id}_${filterStage_index}" id="s-${filter.id}-${filterStage_index}" [#if filter.multiple]multiple[/#if]>
-            [#if filterStage_index > 0]
-              <option value=""></option>
-            [/#if]
-            [#list filterStage.options as option]
-                [#if option.hidden && option.measure]
-                [#else]
-                    [#assign selected]
-                        [#if filterStage.selected??]
-                          [#list filterStage.selected as s]
-                            [#if s.id == option.id]
-                              selected
-                              [#break /]
-                            [/#if]
-                          [/#list]
-                        [/#if]
-                    [/#assign]
-                    <option value="${option.surrogateId}" ${selected} data-level=[#if filter.isCompleteDimension]"${option.level.index}"[#else]"0"[/#if]>
-                      [@label option /]
-                    </option>
+              <select class="form-control" name="${filter.id}_${filterStage_index}" id="s-${filter.id}-${filterStage_index}" [#if filter.multiple]multiple[/#if]>
+                [#if filterStage_index > 0]
+                  <option value=""></option>
                 [/#if]
-            [/#list]
-          </select>
+                [#list filterStage.options as option]
+                    [#if option.hidden && option.measure]
+                    [#else]
+                        [#assign selected]
+                            [#if filterStage.selected??]
+                              [#list filterStage.selected as s]
+                                [#if s.id == option.id]
+                                  selected
+                                  [#break /]
+                                [/#if]
+                              [/#list]
+                            [/#if]
+                        [/#assign]
+                        <option value="${option.surrogateId}" ${selected} data-level=[#if filter.isCompleteDimension]"${option.level.index}"[#else]"0"[/#if]>
+                          [@label option /]
+                        </option>
+                    [/#if]
+                [/#list]
+              </select>
         </div>
       [/#list]
-      <hr />
+      <br />
     [/#if]
 [/#list]
 [#list summary.drilledDimensions as dim]
@@ -222,7 +222,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
               </div>
-          <hr />
+          <br />
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
           [@show_filter_values presentation /]
           [#assign emindex = 0 /]
@@ -243,7 +243,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
           </div>
-          <hr />
+         <br />
       [#elseif "line" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -258,7 +258,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
               </div>
-          <hr />
+         <br />
        [#elseif "radar" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -273,7 +273,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
               </div>
-          <hr />
+         <br />
       [#elseif "pie" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -284,7 +284,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
           </div>
-          <hr />
+         <br />
       [#elseif "gauge" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -315,7 +315,7 @@
               [@export presentation "image" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
           </div>
-          <hr />
+         <br />
       [#elseif "table" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -336,7 +336,7 @@
               [@export presentation "table" /]
               <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
           </div>
-          <hr />
+         <br />
         [#elseif "list" = presentation.type]
             [@show_filter_values presentation /]
             <div
@@ -346,7 +346,7 @@
                 [@export presentation "table" /]
                 <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
             </div>
-            <hr />
+            <br />
       [#elseif "map" = presentation.type]
       <div 
         id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
@@ -404,7 +404,7 @@
             [@breadcrumbs drillNode.parent false /]
         [/#if]
     [/#if]
-    <li>
+    <li class="breadcrumb-item active">
         [#if isLeaf]
             [@label drillNode /]
         [#else]

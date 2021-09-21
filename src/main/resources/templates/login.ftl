@@ -45,7 +45,7 @@
         </div>
 
         <div class="pivot-content">
-               <form class="form col-xs-6" method="POST">
+               <form class="form col-sm-6" method="POST">
 
                     <p>${message("login.intro")}</p>
 
@@ -65,7 +65,7 @@
 
                     <input type="hidden" name="csrf" value="${csrf!}" />
                     <div class="form-group">
-                        <label for="password">${message("login.password")}</label>
+                        <label class="bold" for="password">${message("login.password")}</label>
                         <input class="form-control" type="password" name="password" id="password" autofocus />
                     </div>
                     <button id="submitbutton" type="submit" class="btn btn-primary">${message("login.login")}</button>

@@ -8,7 +8,7 @@
   <ul class="dropdown-menu ${type}" role="menu" aria-labelledby="dLabel">
     <li>
         <a href="#" data-ref="${index}" class="remove dropdown-item">
-            <span class="fas fa-minus-circle"></span> ${message("cube.dimension.remove")}
+            <span class="fas fa-times-circle"></span> ${message("cube.dimension.remove")}
         </a>
     </li>
     <li>
@@ -56,7 +56,7 @@
     [#if index + 1 < maxIndex]
     <li>
         <a href="#" data-ref="${index}" class="move-down dropdown-item">
-            <span class="glyphicon [#if type == "row"]fa-arrow-right[#else]fa-arrow-down[/#if]"></span> ${message("cube.dimension.move.down.${type}")}
+            <span class="fas [#if type == "row"]fa-arrow-right[#else]fa-arrow-down[/#if]"></span> ${message("cube.dimension.move.down.${type}")}
         </a>
     </li>
     [/#if]

@@ -385,7 +385,7 @@
    position: relative;
  }
 
- .search-group .glyphicon {
+ .search-group .fas {
    position: absolute;
    top: 8px;
    right: 8px;
