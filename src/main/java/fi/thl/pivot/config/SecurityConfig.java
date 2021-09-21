@@ -28,7 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "connect-src 'self' https://www.google-analytics.com; " +
                                 "font-src 'self' https://repo.thl.fi; " +
                                 "frame-src 'self'; " +
-                                "img-src 'self' https://repo.thl.fi; " +
+                                "img-src 'self' blob: https://repo.thl.fi; " +
                                 "manifest-src 'self'; " +
                                 "media-src 'self'; " +
                                 "worker-src 'none'; "
