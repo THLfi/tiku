@@ -15,6 +15,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final String NONCE_HEADER = NonceGenerator.generateNonceHeader();
 
         http
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/**").permitAll();
 
