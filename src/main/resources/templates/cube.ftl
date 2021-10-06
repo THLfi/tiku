@@ -85,10 +85,10 @@
 
     <div class="pivot-content">
 
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="quick-info alert alert-warning alert-dismissible fade show d-none" role="alert">
             <div class="col-sm-11">${message("cube.quick-info")}</div>
 
-            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Sulje">
+            <button id="close-quick-info" type="button" class="close" data-bs-dismiss="alert" aria-label="Sulje">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>

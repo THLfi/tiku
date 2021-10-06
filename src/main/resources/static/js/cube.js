@@ -588,13 +588,13 @@
     });
 
     if (!document.cookie.match(/cube_info/)) {
-      $('.quick-info').removeClass('hidden');
+      $('.quick-info').removeClass('d-none');
       $('#close-quick-info').click(function() {
         var date = new Date();
         var expireTime = date.getTime() + 10000 * 24 * 60 * 60 * 1000;
         date.setTime(expireTime);
         document.cookie = "cube_info=shown;expires=" + date.toGMTString() + "; path=/";
-        $('.quick-info').addClass('hidden');
+        $('.quick-info').removeClass('show');
       });
     }
 

@@ -842,6 +842,10 @@ button.close {
 	padding: 5px;
 }
 
+.toolbar-control .dropdown-menu, .presentation-row .dropdown-menu {
+	overflow: auto;
+}
+
 .dropdown-menu {
 	font-size: 14px;
 	padding: 10px;
