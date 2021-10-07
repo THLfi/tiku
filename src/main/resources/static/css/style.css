@@ -842,7 +842,7 @@ button.close {
 	padding: 5px;
 }
 
-.toolbar-control .dropdown-menu, .presentation-row .dropdown-menu {
+.toolbar-control .dropdown-menu, .presentation-row .dropdown-menu, .cube .dropdown-menu {
 	overflow: auto;
 }
 
