@@ -93,7 +93,6 @@ public class SummaryController extends AbstractController {
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
     public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf) {
-        session = request.getSession();
         if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
         	validateCsrf(csrf);
         }
@@ -105,8 +104,7 @@ public class SummaryController extends AbstractController {
 
     @RequestMapping(value = "/logout", produces = "text/html;charset=UTF-8")
     public String loginToCube(@ModelAttribute SummaryRequest summaryRequest, HttpServletRequest request) {
-    	session = request.getSession();
-        logout();
+        logout(request.getSession());
         return "redirect:/" + summaryRequest.getSummaryUrl();
     }
 
@@ -116,7 +114,6 @@ public class SummaryController extends AbstractController {
             throws CubeNotFoundException {
 
         LOG.info("ACCESS Rendering summary " + summaryRequest.getCube());
-        this.session = servletRequest.getSession();
 
         // Load summary and hydra definitions for the current summary
         // If the source does not exists then display 404 for the user
