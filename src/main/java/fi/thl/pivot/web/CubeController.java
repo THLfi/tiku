@@ -2,6 +2,7 @@ package fi.thl.pivot.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import fi.thl.pivot.web.tools.NonceGenerator;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.HydraSource;
@@ -36,7 +39,6 @@ public class CubeController extends AbstractCubeController {
     public String displayCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, Model model)
             throws CubeNotFoundException, CubeAccessDeniedException {
         logger.info(String.format("ACCESS HTML cube requested %s %s %s", cubeRequest.getEnv(), cubeRequest.getCube(), cubeRequest.toString()));
-        this.session = request.getSession();
         String backUrl = String.format("%s/%s/%s", cubeRequest.getEnv(), cubeRequest.getLocale().getLanguage(), cubeRequest.getSubject());
         // Redirect to default view if no parameters set
         if(cubeRequest.getRowHeaders().isEmpty() || cubeRequest.getColumnHeaders().isEmpty()) {
@@ -87,12 +89,12 @@ public class CubeController extends AbstractCubeController {
    
 
     private String password(CubeRequest cubeRequest) {
+    	HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
         return (String) session.getAttribute(sessionAttributeName(cubeRequest.getEnv(), cubeRequest.getCube()));
     }
 
     @RequestMapping(value = "", produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
     public String loginToCube(@ModelAttribute CubeRequest cubeRequest, HttpServletRequest request, @RequestParam String password, @RequestParam(required = false) String csrf, HttpServletResponse response) {
-        session = request.getSession();
         if (isExternalAddress(request.getRemoteAddr()) || csrf != null) {
             validateCsrf(csrf);
         }
@@ -102,8 +104,7 @@ public class CubeController extends AbstractCubeController {
 
     @RequestMapping(value = "/logout", produces = "text/html;charset=UTF-8")
     public String logout(@ModelAttribute CubeRequest cubeRequest, @PathVariable String env, @PathVariable String cube, HttpServletRequest request) {
-    	session = request.getSession();
-        logout();
+        logout(request.getSession());
         return "redirect:/" + cubeRequest.getCubeUrl();
     }
 
