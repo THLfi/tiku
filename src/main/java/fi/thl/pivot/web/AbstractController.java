@@ -21,6 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
@@ -51,9 +53,6 @@ public abstract class AbstractController {
 
     @Autowired
     protected FreeMarkerConfig freemarker;
-
-    @Autowired
-    protected HttpSession session;
 
     @Autowired
     private AccessTokens accessToken;
@@ -181,10 +180,10 @@ public abstract class AbstractController {
             loadMetadata(source);
             if (source.isProtectedWith(password)) {
                 recreateSession(request);
-                logger.info("SECURITY User logged into " + env + "/" + cube + ", session: " + session.getId());
-                session.setAttribute(sessionAttributeName(env, cube), password);
+                logger.info("SECURITY User logged into " + env + "/" + cube + ", session: " + request.getSession().getId());
+                request.getSession().setAttribute(sessionAttributeName(env, cube), password);
             } else {
-                logger.warn("SECURITY User provided an incorrect password while logging into " + env + "/" + cube + ", session: " + session.getId());
+                logger.warn("SECURITY User provided an incorrect password while logging into " + env + "/" + cube + ", session: " + request.getSession().getId());
                 throw new UserNotAuthenticatedException(source, true);
             }
         } else {
@@ -196,6 +195,7 @@ public abstract class AbstractController {
      * Validates inserted password
      */
     private void validatePassword(HydraSource source, String password, String env, String cube) {
+    	HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
         if (password.length() >= 100) {
             logger.warn("SECURITY User provided an invalid password while logging into " + env + "/" + cube + ", session: " + session.getId());
             throw new UserNotAuthenticatedException(source, true);
@@ -205,8 +205,8 @@ public abstract class AbstractController {
     /**
      * Logs the user out of each cube and environment
      */
-    protected void logout() {
-        logger.info("SECURITY user logged out, " + session.getId());
+    protected void logout(HttpSession session) {
+    	logger.info("SECURITY user logged out, " + session.getId());
         session.invalidate();
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractController {
     }
 
     protected void checkLoginRequirements(AbstractRequest request, Model model, HydraSource source, String cubeId) {
-
+    	HttpSession session = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest().getSession();
         if (source.isProtected()) {
             Object pwdAttribute = session.getAttribute(sessionAttributeName(request.getEnv(), cubeId));
             if (pwdAttribute == null) {
@@ -301,6 +301,7 @@ public abstract class AbstractController {
     }
 
     protected void recreateSession(HttpServletRequest request) {
+    	HttpSession session = request.getSession();
         Map<String, Object> sessionAttributes = Maps.newHashMap();
         Enumeration<String> sessionKeys = session.getAttributeNames();
         while (sessionKeys.hasMoreElements()) {
@@ -308,7 +309,7 @@ public abstract class AbstractController {
             sessionAttributes.put(key , session.getAttribute(key));
         }
         session.invalidate();
-        session = request.getSession(true);
+    	session = request.getSession(true);
         for (Map.Entry<String, Object> sessionAttribute : sessionAttributes.entrySet()) {
             session.setAttribute(sessionAttribute.getKey(), sessionAttribute.getValue());
         }
