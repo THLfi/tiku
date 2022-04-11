@@ -4,11 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fi.thl.pivot.model.IDimensionNode;
-import fi.thl.pivot.web.tools.NonceGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fi.thl.pivot.annotation.Monitored;
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.exception.CubeNotFoundException;
+import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.model.Report;
 import fi.thl.pivot.summary.model.Presentation;
 import fi.thl.pivot.summary.model.Selection;
@@ -38,6 +36,7 @@ import fi.thl.pivot.summary.model.hydra.HydraDataPresentation;
 import fi.thl.pivot.summary.model.hydra.HydraFilter;
 import fi.thl.pivot.summary.model.hydra.HydraSummary;
 import fi.thl.pivot.summary.model.hydra.HydraTablePresentation;
+import fi.thl.pivot.web.tools.NonceGenerator;
 
 @Controller
 @RequestMapping("/{env}/{locale}/{subject}/{hydra}/summary_{summaryId}")
@@ -154,8 +153,7 @@ public class SummaryController extends AbstractController {
         model.addAttribute("contactInformation", source.getContactInformation());
         model.addAttribute("cspNonce", NonceGenerator.getNonce());
 
-        model.addAttribute("reports",
-                listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));
+        model.addAttribute("reports", listSummariesBasedOnTheSameSubject(summaryRequest.getEnv(), summaryRequest.getCube(), source));
 
         logger.debug("Sending user to template summary with summary " + summaryRequest.getCube());
 
@@ -225,23 +223,19 @@ public class SummaryController extends AbstractController {
     }
 
     private Collection<Report> listSummariesBasedOnTheSameSubject(String env, String summaryId, HydraSource source) {
-        final Set<String> reports = Sets.newHashSet();
-        return Collections2.filter(
-                amorDao.listReports(env, summaryId.substring(0, summaryId.indexOf(".")), source.getRunid()),
-                new Predicate<Report>() {
-
-                    @Override
-                    public boolean apply(Report report) {
-                        String id = String.format("%s.%s.%s", report.getHydra(), report.getFact(),
-                                report.getType().toString());
-                        if (reports.contains(id)) {
-                            return false;
-                        } else {
-                            reports.add(id);
-                            return true;
-                        }
-                    }
-                });
+        Set<String> reports = Sets.newHashSet();
+        return amorDao.listReports(env, summaryId.substring(0, summaryId.indexOf(".")), source.getRunid())
+            .stream()
+            .filter(report -> {
+                String id = String.format("%s.%s.%s", report.getHydra(), report.getFact(), report.getType().toString());
+                if (reports.contains(id)) {
+                  return false;
+                } else {
+                  reports.add(id);
+                  return true;
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     private boolean isDrillParameter(Map.Entry<String, String[]> parameter) {
