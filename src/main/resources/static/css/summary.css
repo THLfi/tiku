@@ -367,6 +367,16 @@
  .export {
    float: right;
    z-index:100;
+   margin-right: 6px;
+ }
+
+ .presentation.map .export .dropdown-menu {
+    padding: .5rem 0 !important;
+ }
+
+ .export .dropdown-item {
+   color: #212529;
+   padding: 3px 20px;
  }
 
  .presentation.highlight .series {
@@ -440,6 +450,10 @@ span.disc::after {
      width: 100%;
    }
    header img { display: block; }
+
+   .filter-toggle {
+     display: inline-block;
+   }
  }
  @media screen and (max-width: 767px) {
    body, header {
@@ -461,7 +475,9 @@ span.disc::after {
    #languages {
      top: 0;
    }
-   
+   .stripe-left {
+      width: 90%;
+    }
    .summary-content .col-sm-3 {
      background: #efefef;
      border-bottom: 1px solid #808080;
@@ -520,6 +536,12 @@ span.disc::after {
      padding-left: 10px;
    }
  }
+
+@media screen and (max-width: 500px) {
+  .stripe-left {
+    width: 80%;
+  }
+}
 
  @media print {
 
