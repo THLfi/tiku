@@ -97,7 +97,9 @@ public class LogSource {
                             req.getSession().getId(), view, cs.isZeroValuesFiltered() ? "t" : "f",
                             cs.isEmptyValuesFiltered() ? "t" : "f");
 
-                    logSelectedValues(env, cs, id);
+                    // Disabled 11.4.2022 due problems of logging too many rows.
+                    // Enable again when underlying table is partitioned
+                    // logSelectedValues(env, cs, id);
 
                     return null;
                 }
