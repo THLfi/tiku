@@ -917,12 +917,21 @@ a:focus, a:hover {
 
 @media screen and (max-width: 767px) {
 
-  .pivot-header #languages {
-    height: 50px;
-  }
+	.pivot-header #languages {
+		height: 50px;
+	}
 
-  .pivot-header #languages ul li {
-    margin-top: 2px;
-  }
+	.pivot-header #languages ul li {
+		margin-top: 2px;
+	}
+
+}
+
+@media screen and (max-width: 400px) {
+
+	#toolbar-left .rightest {
+		margin-right: 0;
+		padding-right: 0;
+	}
 
 }

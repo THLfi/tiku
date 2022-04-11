@@ -1,5 +1,5 @@
 [#ftl]
-
+<div id="toolbar-left">
 <div class="btn-group" role="group">
     <div class="dropdown">
         <button class="btn btn-secondary" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">${message("cube.options")}</button>
@@ -92,4 +92,5 @@
     [/#if]
 
     <div class="btn-group rightest" role="group" aria-label="..."></div>
+</div>
 </div>
