@@ -84,6 +84,17 @@ a:hover {
 	padding-top: 0px;
 }
 
+div.export .dropdown-item.active, div.export .dropdown-item:active {
+	color: #212529;
+	background-color: #fff;
+}
+
+button.btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+
 .fa-expand-alt, .fa-compress-alt {
 	cursor:pointer;
 }
@@ -166,6 +177,10 @@ a:hover {
 	background: transparent;
 	border: 0;
 	color: #fff;
+}
+
+.toolbar-control .btn.focus, .toolbar-control .btn:focus {
+  height: 34px;
 }
 
 .toolbar-control .btn-group>.btn .caret {
@@ -760,7 +775,9 @@ body {
 }
 
 .btn {
-	font-size: 14px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .btn-sm {
@@ -897,4 +914,16 @@ a:focus, a:hover {
 
 .text-align-center {
 	text-align: center;
+}
+
+@media screen and (max-width: 767px) {
+
+  .pivot-header #languages {
+    height: 50px;
+  }
+
+  .pivot-header #languages ul li {
+    margin-top: 2px;
+  }
+
 }

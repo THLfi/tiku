@@ -450,6 +450,10 @@ span.disc::after {
      width: 100%;
    }
    header img { display: block; }
+
+   .filter-toggle {
+     display: inline-block;
+   }
  }
  @media screen and (max-width: 767px) {
    body, header {
@@ -471,7 +475,9 @@ span.disc::after {
    #languages {
      top: 0;
    }
-   
+   .stripe-left {
+      width: 90%;
+    }
    .summary-content .col-sm-3 {
      background: #efefef;
      border-bottom: 1px solid #808080;
@@ -530,6 +536,12 @@ span.disc::after {
      padding-left: 10px;
    }
  }
+
+@media screen and (max-width: 500px) {
+  .stripe-left {
+    width: 80%;
+  }
+}
 
  @media print {
 

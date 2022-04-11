@@ -19,7 +19,7 @@
         </ul>
     </div>
 
-    <div class="dropdown">
+    <div class="dropdown export">
         <button class="btn btn-secondary" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">
             <i class="fa fa-download"></i>
             <span class="hide-xs">${message("cube.export")}</span>

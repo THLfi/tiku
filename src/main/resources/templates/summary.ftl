@@ -17,7 +17,7 @@
     [#if headingLevel == "" || !["1", "2", "3"]?seq_contains(headingLevel)]
         [#assign headingLevel = "3" /]
     [#else]
-        [#assign headingLevel = headingLevel?number + 2 /]          
+        [#assign headingLevel = headingLevel?number + 2 /]
     [/#if]
 	[#return headingLevel]
 [/#function]
@@ -90,7 +90,7 @@
                     <input class="form-control search-control" placeholder="[#if filterStage.selected??]${filterStage.selected[0].label.getValue(lang)}[/#if]"/>
                 </div>
               <ul class="dropdown-menu">
-                <li><small class="pull-right" style="padding: 0 15px">
+                <li><small class="float-end" style="padding: 0 15px">
                   <a href="#">
                   [#if lang="en"]close
                   [#elseif lang="sv"]stäng
@@ -486,63 +486,59 @@
         [/#if]
       </div>
 
-      <div>
-
-        <div class="btn-group pull-left filter-toggle">
+      <div class="stripe-left">
+        <div class="btn-group float-start filter-toggle">
           <button class="btn btn-default">
              <i class="fas fa-sliders-h"></i>
              <span class="sr-only">${message("cube.options")}</span>
-         </button>
-       </div>
-       
-    
-       
-       
-      <div class="pull-right rightest"></div>
+          </button>
+        </div>
 
-      [#if requireLogin]
-      <div class="btn-group pull-right" role="group" aria-label="${message("site.logout")}">
-          <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
-              <button type="submit" class="btn btn-default">
-              	<i class="fas fa-sign-out-alt"></i>
-              	<span class="hide-xs">${message("site.logout")}</span>
-              </button>
-          </form>
-      </div>
-      [/#if]
-      <div class="btn-group pull-right help" role="group">
-        [#if summary.link.getValue(lang)?? && !summary.link.getValue(lang)?ends_with('n/a')]
-        <a href="${summary.link.getValue(lang)}" target="_blank" type="submit" class="btn btn-default">
-          <span class="fas fa-info-circle"></span>
-          <span class="hide-xs">${message("summary.more")}</span>
-        </a>
+        <div class="float-end rightest hide-xs"></div>
+
+        [#if requireLogin]
+        <div class="btn-group float-end" role="group" aria-label="${message("site.logout")}">
+            <form class="form" method="POST" action="${rc.contextPath}/${summaryRequest.summaryUrl}/logout">
+                <button type="submit" class="btn btn-default">
+                	<i class="fas fa-sign-out-alt"></i>
+                	<span class="hide-xs">${message("site.logout")}</span>
+                </button>
+            </form>
+        </div>
         [/#if]
-        <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
-          <span class="fas fa-question-circle"></span>
-          <span class="hide-xs">${message("site.help")}</span>
-        </a>
+        <div class="btn-group float-end help" role="group">
+          [#if summary.link.getValue(lang)?? && !summary.link.getValue(lang)?ends_with('n/a')]
+          <a href="${summary.link.getValue(lang)}" target="_blank" type="submit" class="btn btn-default">
+            <span class="fas fa-info-circle"></span>
+            <span class="hide-xs">${message("summary.more")}</span>
+          </a>
+          [/#if]
+          <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
+            <span class="fas fa-question-circle"></span>
+            <span class="hide-xs">${message("site.help")}</span>
+          </a>
+        </div>
+  
+        [#if reports?size>0]
+        <div class="btn-group help small-button" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}">
+            <i class="fa fa-th"></i>
+            <span class="hide-xs">${message("site.changeMaterial")}</span>	
+     	    </a>
+        </div>
+        [/#if]
+  
+        [#if env == "deve" || env == "test"]
+        <div class="btn-group help small-button" role="group">
+          <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
+            <i class="fa fa-code"></i> 
+            <span class="hide-xs">${message("summary.view-source")}</span>
+          </a>
+        </div>
+        [/#if]
+        
       </div>
-
-      [#if reports?size>0]
-      <div class="btn-group  help small-button" role="group">
-        <a href="${rc.contextPath}/${summaryRequest.env}/${lang}/${reports?first.subject}">
-          <i class="fa fa-th"></i>
-          <span class="hide-xs">${message("site.changeMaterial")}</span>	
-   	    </a>	
-      </div>
-      [/#if]
-
-      [#if env == "deve" || env == "test"]
-      <div class="btn-group help small-button" role="group">
-        <a href="${rc.contextPath}/${summaryRequest.summaryUrl}/source">
-          <i class="fa fa-code"></i> 
-          <span class="hide-xs">${message("summary.view-source")}</span>
-        </a>
-      </div>
-      [/#if]
-      
-    </div>
-    </div>
+    </div> <!-- end stripe -->
 
     <div class="summary-body container-fluid">
         <div class="summary-content row">
