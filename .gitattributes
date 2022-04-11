@@ -1,0 +1,10 @@
+# .gitattributes defines style of used line breaks for single repository
+# The default behaviour is to use Linux style linebreaks (i.e. auto == lf)
+* text=auto
+
+# These should be handled as text files
+*.java text
+*.xml text
+
+# These should be handles as binary files
+*.zip binary

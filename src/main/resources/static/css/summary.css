@@ -367,6 +367,16 @@
  .export {
    float: right;
    z-index:100;
+   margin-right: 6px;
+ }
+
+ .presentation.map .export .dropdown-menu {
+    padding: .5rem 0 !important;
+ }
+
+ .export .dropdown-item {
+   color: #212529;
+   padding: 3px 20px;
  }
 
  .presentation.highlight .series {

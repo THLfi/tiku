@@ -534,7 +534,8 @@
         thl.toggleField(sort);
         thl.toggleField(sortMode);
 
-        sortMode.val($(this).attr('class'));
+		var sortModeVal = $(this).hasClass('asc') ? 'asc' : 'desc';
+        sortMode.val(sortModeVal);
 
         if ($(this).closest('.row-target').length > 0) {
           sort.val('r' + $(this).closest('th').attr('data-ref'));
