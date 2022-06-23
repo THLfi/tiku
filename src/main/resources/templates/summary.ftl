@@ -53,7 +53,7 @@
     [/#list]
     [#if mapLevels?? && mapLevels?size > 1]
     <div class="form-group">
-      <label for="geo">
+      <label class="bold" for="geo">
         [#if lang="en"]Select region
         [#elseif lang="sv"]Välj områden
         [#else]Valitse aluejako
@@ -90,7 +90,7 @@
                     <input class="form-control search-control" placeholder="[#if filterStage.selected??]${filterStage.selected[0].label.getValue(lang)}[/#if]"/>
                 </div>
               <ul class="dropdown-menu">
-                <li><small class="float-end" style="padding: 0 15px">
+                <li><small class="float-end dropdown-close">
                   <a href="#">
                   [#if lang="en"]close
                   [#elseif lang="sv"]stäng
@@ -606,7 +606,7 @@
     <script src="${resourceUrl}/js/json-stat.js"></script>
     [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]
     <script src="${rc.contextPath}/js/map-palette.min.js?v=${buildTimestamp}"></script>
-    <script src="${rc.contextPath}/js/summary.min.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/summary.js?v=${buildTimestamp}"></script>
 
     <script nonce="${cspNonce}">
     var labels = {},

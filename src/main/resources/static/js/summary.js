@@ -864,7 +864,7 @@ function selectChartType (e) {
             var cell;
             if (val == null || val.value === null) {
               cell = $('<td >')
-                .append('<span>..</span>')
+                .append('<span class="p-left">..</span>')
                 .css('text-align', opt.align[0])
               row.append(cell);
               if(hasValue || opt.suppress === 'none' || opt.suppress === 'zero') {
@@ -887,7 +887,7 @@ function selectChartType (e) {
               if ((+val.value<0 && negatives) || (+val.value===0 && zeros)){
                 tdAndClass = '<td class="text-danger">';
               }
-              var span = $('<span class="text-align-center"></span>')
+              var span = $('<span></span>')
                 .text(content)
                 .addClass(cls + i);
               cell = $(tdAndClass);
