@@ -64,11 +64,11 @@
                    </div>
 
                     <input type="hidden" name="csrf" value="${csrf!}" />
-                    <div class="form-group">
-                        <label class="bold" for="password">${message("login.password")}</label>
+                    <div class="form-group login-grp">
+                        <label class="login-lbl" for="password">${message("login.password")}</label>
                         <input class="form-control" type="password" name="password" id="password" autofocus />
                     </div>
-                    <button id="submitbutton" type="submit" class="btn btn-primary">${message("login.login")}</button>
+                    <button id="submitbutton" type="submit" class="btn btn-primary login-btn">${message("login.login")}</button>
                </form>
         </div>
 
