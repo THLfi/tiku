@@ -84,7 +84,7 @@ public class CubePdfController extends AbstractCubeController {
             }
 
             model.addAttribute("tableBounds", calculateSplitTableBounds(cs));
-            model.addAttribute("messageSource", new MessageSourceWrapper(messageSource, "fi"));
+            model.addAttribute("messageSource", new MessageSourceWrapper(messageSource, cubeRequest.getUiLanguage()));
 
             new PdfExporter(cubeRequest.getUiLanguage(), freemarker).export(model, resp.getOutputStream());
         } else {

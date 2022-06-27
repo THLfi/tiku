@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,9 +30,11 @@ public class PdfExporter {
     private final Logger logger = LoggerFactory.getLogger(PdfExporter.class);
  
     private FreeMarkerConfig freemarker;
+    private Locale locale;
 
     public PdfExporter(String language, FreeMarkerConfig configurer) {
         this.freemarker = configurer;
+        this.locale = new Locale(language);
     }
 
     public void export(Model model, OutputStream out) throws IOException {
@@ -79,7 +82,7 @@ public class PdfExporter {
 
         
         final Configuration configuration = freemarker.getConfiguration();
-        Template tmpl = configuration.getTemplate("cube.pdf.ftl");
+        Template tmpl = configuration.getTemplate("cube.pdf.ftl", locale);
         tmpl.process(model.asMap(), writer);
         writer.flush();
         return bos;

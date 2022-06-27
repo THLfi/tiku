@@ -411,6 +411,18 @@
    padding-right: 24px;
  }
 
+.form-group.search ul.dropdown-menu li a {
+  color: #555;
+}
+
+.dropdown-menu small.dropdown-close {
+  padding: 0 15px;
+}
+
+.dropdown-menu small.dropdown-close a {
+  color: #005c9e!important;
+}
+
 .table-responsive > .table {
   margin-bottom: 0;
 }
@@ -527,6 +539,9 @@ span.disc::after {
        background: #efefef;
        display: table-cell;
        float: none;
+   }
+   .p-left {
+    padding-left: 8px;
    }
 }
 @media screen and (min-width: 768px) {

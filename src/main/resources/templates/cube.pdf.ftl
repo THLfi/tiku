@@ -1,7 +1,6 @@
 [#ftl]<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE html>
 
-[#setting locale="fi"]
 [#function value val]
     [#if val?matches("\\d+,\\d+")][#return val?replace(",",".")?number?string(",##0.00")/][/#if]
     [#if val?matches("\\d+")][#return val?number?string(",##0")/][/#if]

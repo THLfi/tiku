@@ -915,6 +915,22 @@ a:focus, a:hover {
 	text-align: center;
 }
 
+.lnk-btn {
+	padding: 6px 12px;
+	text-decoration: none!important;
+}
+
+.lnk-btn:hover {
+	background-color: #e6e6e6;
+	border-radius: 4px;
+	max-height: 33px;
+}
+
+.lnk-btn:hover span,
+.lnk-btn:hover i {
+	color: #212529;
+}
+
 @media screen and (max-width: 767px) {
 
 	.pivot-header #languages {
