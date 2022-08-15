@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 
 import fi.thl.pivot.util.Constants;
 import fi.thl.pivot.util.ThreadRole;
@@ -103,8 +103,7 @@ public class DimensionNode implements IDimensionNode {
     @Override
     public Collection<IDimensionNode> getChildren() {
         final boolean canAccess = canAccess();
-        Collections.sort(children);
-        return Collections2.filter(children, new Predicate<IDimensionNode>() {
+        return children.stream().sorted().filter(new Predicate<IDimensionNode>() {
 
             @Override
             public boolean apply(IDimensionNode input) {
@@ -119,7 +118,7 @@ public class DimensionNode implements IDimensionNode {
                 }
                 return false;
             }
-        });
+        }).collect(Collectors.toList());
     }
 
     @Override
