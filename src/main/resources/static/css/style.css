@@ -84,6 +84,10 @@ a:hover {
 	padding-top: 0px;
 }
 
+div.export {
+	margin-left: 3px;
+}
+
 div.export .dropdown-item.active, div.export .dropdown-item:active {
 	color: #212529;
 	background-color: #fff;
@@ -387,7 +391,7 @@ ul.tree-browser {
 	border-radius: 10px 10px 10px 10px;
 	font-weight: 500;
 	width: 100%;
-	text-align: center;
+	justify-content: center;
 	color: #303030;
 }
 
@@ -405,6 +409,11 @@ ul.tree-browser {
 	background: #e6e6e6;
 	cursor: pointer;
 	cursor: hand;
+}
+
+.label.filter {
+	border-radius: 0.25em;
+	padding: 4px 8px;
 }
 
 .step {
@@ -915,7 +924,12 @@ a:focus, a:hover {
 	text-align: center;
 }
 
+.hide-btn-focus {
+    box-shadow: none!important;
+}
+
 .lnk-btn {
+	margin-left: 3px;
 	padding: 6px 12px;
 	text-decoration: none!important;
 }

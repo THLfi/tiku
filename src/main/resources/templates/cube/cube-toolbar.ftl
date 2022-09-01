@@ -2,7 +2,7 @@
 <div id="toolbar-left">
 <div class="btn-group" role="group">
     <div class="dropdown">
-        <button class="btn btn-secondary" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">${message("cube.options")}<span class="caret"></span></button>
+        <button class="btn btn-secondary hide-btn-focus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">${message("cube.options")}<span class="caret"></span></button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
             <li class="reset-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-sync"></span> ${message("cube.reset")}</a></li>
             <li class="transpose-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-expand-alt"></span> ${message("cube.transpose")}</a></li>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="dropdown export">
-        <button class="btn btn-secondary" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">
+        <button class="btn btn-secondary hide-btn-focus" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">
             <i class="fa fa-download"></i>
             <span class="hide-xs">${message("cube.export")}</span>
         </button>
