@@ -924,6 +924,11 @@ a:focus, a:hover {
 	text-align: center;
 }
 
+.options-dropdown a:active {
+	color: #212529;
+	background-color: #FFFFFF;
+}
+
 .hide-btn-focus {
     box-shadow: none!important;
 }
