@@ -9,10 +9,10 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-import fi.thl.pivot.model.DimensionNode;
 import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.model.Label;
 import fi.thl.pivot.summary.model.Summary.Scheme;
+import fi.thl.pivot.util.Constants;
 
 public class FilterStage {
 
@@ -99,15 +99,21 @@ public class FilterStage {
 
         if (null != defaultItem && !defaultItem.isEmpty()) {
             
-            if (defaultItem.contains(":last:")) {
+            if (defaultItem.contains(Constants.DEFAULT_LAST_ITEM)) {
                 List<IDimensionNode> opt = Lists.newArrayList(getOptions());
                 selected.add(opt.get(opt.size() - 1));
                 return;
+            } else if (defaultItem.stream().filter(dItem -> dItem.startsWith(Constants.DEFAULT_LAST_ITEMS_START)).findFirst().isPresent()) {
+                getDefaultItemsToShow(Constants.DEFAULT_LAST_ITEMS_START);
+                return;
             }
 
-            if (defaultItem.contains(":first:")) {
+            if (defaultItem.contains(Constants.DEFAULT_FIRST_ITEM)) {
                 List<IDimensionNode> opt = Lists.newArrayList(getOptions());
                 selected.add(opt.get(0));
+                return;
+            } else if (defaultItem.stream().filter(dItem -> dItem.startsWith(Constants.DEFAULT_FIRST_ITEMS_START)).findFirst().isPresent()) {
+                getDefaultItemsToShow(Constants.DEFAULT_FIRST_ITEMS_START);
                 return;
             }
 
@@ -167,4 +173,34 @@ public class FilterStage {
         this.id = id;
     }
 
+    private void getDefaultItemsToShow(String firstOrLastItems) {
+        List<IDimensionNode> opt = Lists.newArrayList(getOptions());
+        String value = defaultItem.stream().filter(dItem -> dItem.startsWith(firstOrLastItems)).findFirst().orElse(null);
+        if (value != null) {
+            // Get number of items from string.
+            String subString = value.substring(firstOrLastItems.length(), value.length() - 1);
+            Integer numberOfItems = getNumberFromString(subString);
+
+            if (numberOfItems != null) {
+                if (numberOfItems.intValue() > opt.size()) {
+                    selected.addAll(opt);
+                } else {
+                    if (firstOrLastItems == Constants.DEFAULT_FIRST_ITEMS_START) {
+                        opt = opt.subList(0, numberOfItems.intValue());
+                    } else {
+                        opt = opt.subList(opt.size() - numberOfItems.intValue(), opt.size());
+                    }
+                    selected.addAll(opt);
+                }
+            }
+        }
+    }
+
+    private Integer getNumberFromString(String numberOfItems) {
+        try {
+            return Integer.parseInt(numberOfItems);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
+    }
 }
