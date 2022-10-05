@@ -6,5 +6,6 @@
 /src/test/resources/jdbc.properties
 .DS_Store
 .idea
+.vscode
 *.iml
 application.properties
