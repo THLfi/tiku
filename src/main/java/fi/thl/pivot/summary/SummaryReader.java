@@ -634,7 +634,8 @@ public class SummaryReader {
         private boolean hasFilterForDimension(DataPresentation p, Node dimension) {
             boolean hasFilter = false;
             for (Selection s : p.getFilters()) {
-                if (s.getDimension().equals(dimension.getTextContent())) {
+                // Skip setting hasFilter(":filter:") for dimension "provider" without stage to get all items to show on presentation
+                if (s.getDimension().equals(dimension.getTextContent()) && !s.getDimension().equals("provider")) {
                     hasFilter = true;
                     break;
                 }
