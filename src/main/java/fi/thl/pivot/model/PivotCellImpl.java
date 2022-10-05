@@ -105,7 +105,7 @@ public class PivotCellImpl implements PivotCell {
         if (null == value) {
             return -1;
         }
-        if (isNumber() && !o.isNumber()) {
+        if (isNumber() && !o.isNumber() || o.getValue() == null) {
             return 1;
         }
         if (isNumber()) {
