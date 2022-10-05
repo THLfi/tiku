@@ -21,4 +21,9 @@ public final class Constants {
     public static final String CONFIDENCE_INTERVAL_UPPER_LIMIT  = "ci_upper"; 
     public static final String CONFIDENCE_INTERVAL_LOWER_LIMIT  = "ci_lower";
     public static final String SAMPLE_SIZE  = "n";
+
+    public static final String DEFAULT_FIRST_ITEM = ":first:";
+    public static final String DEFAULT_FIRST_ITEMS_START = ":first";
+    public static final String DEFAULT_LAST_ITEM = ":last:";
+    public static final String DEFAULT_LAST_ITEMS_START = ":last";
 }
