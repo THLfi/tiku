@@ -1,6 +1,6 @@
 (function ($, thl) {
   $(document).ready(function () {
-
+    
     var stickyHeadersSupported = function() {
       // Sticky headers works with Chrome and Firefox (Safari to be tested)
       // Original stickytable code was unusable with IE11 due performance issues.
@@ -11,18 +11,19 @@
       navigator.vendor.indexOf('Apple') > -1; // Safari and other browsers running under Apple OS
     }();
 
+    if (stickyHeadersSupported) {
+      $('table.cube').wrap('<div class="sticky-table sticky-ltr-cells"></div>');
+      $(document).trigger('stickyTable');
+    }
+    else if ($('.sticky-table').length) {
+      $('table.cube th.sticky-cell').removeAttr('style');
+      $('table.cube tr.sticky-header th').removeAttr('style');
+      $('table.cube tr.sticky-header').removeAttr('style');
+      $('table.cube').unwrap();
+    }
+
+    var t = $(this);
     $('.fa-expand-alt-cube').click(function() {
-      var t = $(this);
-      if (t.hasClass('fa-expand-alt') && stickyHeadersSupported) {
-        $('table.cube').wrap('<div class="sticky-table sticky-ltr-cells"></div>');
-        $(document).trigger('stickyTable');
-      }
-      else if ($('.sticky-table').length) {
-        $('table.cube th.sticky-cell').removeAttr('style');
-        $('table.cube tr.sticky-header th').removeAttr('style');
-        $('table.cube tr.sticky-header').removeAttr('style');
-        $('table.cube').unwrap();
-      }
       t.toggleClass('fa-expand-alt fa-compress-alt');
       $('body').toggleClass('full-screen');
     });
@@ -506,7 +507,7 @@
     });
 
     var dropdown = $('<div class="dropdown">');
-    var dropdownToggle = $('<button type="button" class="btn btn-secondary btn-sm drowdown-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownToggle = $('<button type="button" class="btn btn-secondary btn-sm drowdown-toggle bs-dd-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
     var dropdownMenu = $('<ul class="dropdown-menu">');
     var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
     var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
@@ -599,5 +600,16 @@
       });
     }
 
+    function bsDropdownToggle(e) {
+      e.addEventListener("show.bs.dropdown", addCssClass);
+      e.addEventListener("hide.bs.dropdown", removeCssClass);
+    }
+    function addCssClass() {
+      $(this).closest('th').addClass('bs-toggle-z-index');
+    }
+    function removeCssClass() {
+      $(this).closest('th').removeClass('bs-toggle-z-index');
+    }
+    document.querySelectorAll(".bs-dd-toggle").forEach(bsDropdownToggle);
   });
 })(window.jQuery, window.thl);
