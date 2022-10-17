@@ -523,6 +523,10 @@ ul.tree-browser {
 	transform: rotate(-37deg);
 }
 
+.bs-toggle-z-index {
+	z-index: 999!important;
+}
+
 @media screen and (min-width: 768px) {
 
 .modal-dialog {
