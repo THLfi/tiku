@@ -343,5 +343,4 @@ public class HydraDataPresentation extends DataPresentation {
         }
         return wm;
     }
-
 }

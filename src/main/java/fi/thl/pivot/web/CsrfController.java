@@ -20,5 +20,4 @@ public class CsrfController extends AbstractController {
     public String getCsrf(HttpSession session, HttpServletRequest request) {
         return getCsrf();
     }
-
 }
