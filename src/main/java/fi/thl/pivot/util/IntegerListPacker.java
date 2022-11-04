@@ -16,7 +16,7 @@ import com.google.common.io.ByteStreams;
 
 import com.google.common.base.Preconditions;
 
-public class PivotUtils {
+public class IntegerListPacker {
   /**
    * <p>
    * The concept of this class is to pack a list of integers to a smaller
@@ -78,11 +78,11 @@ public class PivotUtils {
       }
     }
 
-    private static String pack(List<Integer> integers) {
+    public static String pack(List<Integer> integers) {
       return packTokens(tokenize(asDifferences(integers)));
     }
 
-    private static List<Integer> unpack(String packed) {
+    public static List<Integer> unpack(String packed) {
       if (packed.length() == 0) {
         return Collections.emptyList();
       }

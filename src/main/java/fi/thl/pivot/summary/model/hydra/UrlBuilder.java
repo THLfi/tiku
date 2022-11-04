@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import fi.thl.pivot.model.IDimensionNode;
 import fi.thl.pivot.summary.model.Presentation.SortMode;
 import fi.thl.pivot.summary.model.Presentation.SuppressMode;
-import fi.thl.pivot.util.PivotUtils;
+import fi.thl.pivot.util.IntegerListPacker;
 
 public class UrlBuilder {
 
@@ -39,7 +39,7 @@ public class UrlBuilder {
     public void addParameter(String dimensionId, List<IDimensionNode> nodes) {
         if (!nodes.isEmpty()) {
             List<Integer> joined = Lists.transform(nodes, new NodeToId());
-            String packedParams = PivotUtils.packAndZip(joined);
+            String packedParams = IntegerListPacker.packAndZip(joined);
             logger.debug("Dimension nodes length before packing: " + joiner.join(joined).length());
             logger.debug("Dimension nodes length after packing: " + packedParams.length());
 

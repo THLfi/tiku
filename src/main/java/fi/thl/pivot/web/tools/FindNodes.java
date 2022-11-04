@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 
 import fi.thl.pivot.datasource.HydraSource;
 import fi.thl.pivot.util.Constants;
-import fi.thl.pivot.util.PivotUtils;
+import fi.thl.pivot.util.IntegerListPacker;
 
 /**
  * Converts a identifier set to corresponding set of dimension nodes. The
@@ -110,7 +110,7 @@ public final class FindNodes implements Function<String, List<IDimensionNode>> {
         // Check if url params have been packed or not. If only one dimension node is set as parameter the packed length is 12(original 6).
         if (dotIndex == identifier.length() - 1 && (dotIndex - idx) > 7) {
             String str = identifier.substring(idx + 1, identifier.length() - 1);
-            List<Integer> unpacked = PivotUtils.unzipAndUnpack(str);
+            List<Integer> unpacked = IntegerListPacker.unzipAndUnpack(str);
             ids = unpacked.stream().map(String::valueOf).collect(Collectors.joining("."));
         } else {
             // extract node identifiers
