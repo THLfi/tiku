@@ -1,10 +1,12 @@
 [#ftl]
 
-[#macro dimDropdown type node index maxIndex]
+[#macro dimDropdown type node index maxIndex buttonTitleText]
 <div class="dropdown" data-level="${index}">
-  <button class="btn btn-secondary btn-sm bs-dd-toggle" id="dLabel" type="button" data-bs-toggle="dropdown" data-bs-target="#dDropdown" aria-haspopup="true" role="button" aria-expanded="false">
-    <span class="fas fa-cog"></span>
-  </button>
+    <button title="${buttonTitleText}" class="btn btn-secondary btn-sm bs-dd-toggle" id="dLabel" type="button" data-bs-toggle="dropdown" data-bs-target="#dDropdown" aria-haspopup="true" role="button" aria-expanded="false">
+        <span class="fas fa-cog"> </span>
+    </button>
+
+
   <ul class="dropdown-menu ${type}" role="menu" aria-labelledby="dLabel">
     <li>
         <a href="#" data-ref="${index}" class="remove dropdown-item">

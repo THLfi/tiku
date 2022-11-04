@@ -3,6 +3,10 @@ var thl = {
     id: '${subject}.${hydra}.${cubeId}',
     url: '${rc.contextPath}/${env}/${lang}/${subject}/${hydra}/${cubeId}/',
     messages: {
+      'cube.dimension.column-selections': '${message("cube.dimension.column-selections")?js_string}',
+      'cube.dimension.row-column-edit': '${message("cube.dimension.row-column-edit")?js_string}',
+      'cube.dimension.row-selections': '${message("cube.dimension.row-selections")?js_string}',
+      'cube.dimension.column-selections': '${message("cube.dimension.column-selections")?js_string}',
       'cube.dimension.sort.asc': '${message("cube.dimension.sort.asc")?js_string}',
       'cube.dimension.sort.desc': '${message("cube.dimension.sort.desc")?js_string}',
       'cube.dimension.hide': '${message("cube.dimension.hide")?js_string}',

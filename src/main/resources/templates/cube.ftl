@@ -13,7 +13,7 @@
     [#return "- ${code} - " /]
 [/#function]
 
-[#macro label e][#if e?? && e.label??]${e.label.getValue(lang)}[#else]???[/#if][/#macro]
+[#macro label e][#if e?? && e.label??]${e.label.getValue(lang)} [#else]???[/#if][/#macro]<!-- sarake ja riviotsikon teksti -->
 
 [#include "cube/cube-dimension-dropdown.ftl" /]
 
@@ -130,7 +130,7 @@
         [#include "cube/cube-script.ftl" /]
     </script>
 
-    <script src="${rc.contextPath}/js/cube.min.js?v=${buildTimestamp}"></script>
+    <script src="${rc.contextPath}/js/cube.js?v=${buildTimestamp}"></script><!--TODO:remember switch back to cube.min.js-->
     <script src="${rc.contextPath}/${dimensionsUrl}"></script>
     <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
 
