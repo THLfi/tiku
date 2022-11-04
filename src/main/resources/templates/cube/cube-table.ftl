@@ -23,7 +23,7 @@
                 [#assign span = tableHelper.getColumnSpanAt(ch_index, c) /]
                 [#assign hn = pivot.getColumnAt(ch_index, c) /]
                 <th colspan="${span}" class="column-target [#if ch_index = pivot.columns?size -1]leaf[/#if]" data-ref="${pivot.getColumnNumber(c)}" data-level="${ch_index}">
-                        <a href="#" class="colhdr" id="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}" data-ref="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}"><!--sarakeotsikot-->
+                        <a href="#" class="colhdr" id="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}" data-ref="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}">
                         [@label hn /] [#if RequestParameters.sc?? && hn.code??](${hn.code!})[/#if]
                     </a>
                 </th>
