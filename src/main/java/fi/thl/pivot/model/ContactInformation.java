@@ -41,4 +41,5 @@ public class ContactInformation {
 			contactData.put(typeAsEnum, label);
 		}
 	}
+
 }
