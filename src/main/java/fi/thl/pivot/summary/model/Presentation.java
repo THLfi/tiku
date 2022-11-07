@@ -12,7 +12,7 @@ public interface Presentation {
     public static enum SortMode {
         none, desc, asc
     }
-    
+
     public static enum SuppressMode {
         none, empty, zero, all;
 
@@ -50,7 +50,7 @@ public interface Presentation {
             }
             if("zeros_and_negatives".equalsIgnoreCase(attribute)) {
                 return zeros_and_negatives;
-            }           
+            }
             return none;
         }
     }
@@ -73,7 +73,7 @@ public interface Presentation {
     }
 
     /**
-     * 
+     *
      * @return the type of the presentation as defined in the summary
      *         configuration
      */

@@ -1,9 +1,9 @@
 [#ftl]
 <div id="toolbar-left">
 <div class="btn-group" role="group">
-    <div class="dropdown options-dropdown">
-        <button class="btn btn-secondary hide-btn-focus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="...">${message("cube.options")}<span class="caret"></span></button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+    <div class="dropdown options-dropdown" title="${message("cube.dimension.column-selections")}">
+        <button class="btn btn-secondary hide-btn-focus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="..." title="${message('cube.dimension.column-selections')}">${message("cube.options")}<span class="caret"></span></button>
+        <ul title="${message("cube.dimension.column-selections")}" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
             <li class="reset-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-sync"></span> ${message("cube.reset")}</a></li>
             <li class="transpose-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-retweet"></span> ${message("cube.transpose")}</a></li>
             <li class="hide-zero-action" role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.fz??]${message("cube.filter-zero.off")}[#else]${message("cube.filter-zero.on")}[/#if]</a></li>

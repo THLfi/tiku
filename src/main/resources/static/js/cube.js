@@ -506,8 +506,12 @@
       $(this).toggleClass('hover');
     });
 
-    var dropdown = $('<div class="dropdown">');
-    var dropdownToggle = $('<button type="button" class="btn btn-secondary btn-sm drowdown-toggle bs-dd-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownCol = $('<div class="dropdown">');
+    var dropdownRow = $('<div class="dropdown">');
+
+    var dropdownToggleRow = $('<button type="button"  title="' + thl.messages['cube.dimension.row-selections'] + '"    class="btn btn-secondary btn-sm drowdown-toggle bs-dd-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+    var dropdownToggleCol = $('<button type="button"  title="' + thl.messages['cube.dimension.column-selections'] + '" class="btn btn-secondary btn-sm drowdown-toggle bs-dd-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
+
     var dropdownMenu = $('<ul class="dropdown-menu">');
     var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
     var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
@@ -515,37 +519,90 @@
     var dropdownMenuMeta = $('<li><a role="menuitem" class="info dropdown-item">' + thl.messages['cube.dimension.info'] + '</a></li>');
 
     dropdownMenu
-      .append(dropdownMenuSortAsc)
-      .append(dropdownMenuSortDesc)
-      .append(dropdownMenuHide)
-      .append(dropdownMenuMeta);
+        .append(dropdownMenuSortAsc)
+        .append(dropdownMenuSortDesc)
+        .append(dropdownMenuHide)
+        .append(dropdownMenuMeta);
 
-    dropdown
-      .append(dropdownToggle)
-      .append(dropdownMenu);
+    dropdownRow
+        .append(dropdownToggleRow)
+        .append(dropdownMenu);
 
-    $('.row-target, .column-target')
-      .not('.accept-all')
-      .append(dropdown)
-      .find('.asc,.desc')
-      .click(function () {
-        var sort = $('#pivot input[name=sort]');
-        var sortMode = $('#pivot input[name=mode]');
+    dropdownCol
+        .append(dropdownToggleCol)
+        .append(dropdownMenu.clone());
 
-        thl.toggleField(sort);
-        thl.toggleField(sortMode);
+      $(".column-target")
+          .not('.accept-all')
+          .each(function(){
+          $(this).val("Phone");
+      })
 
-		var sortModeVal = $(this).hasClass('asc') ? 'asc' : 'desc';
-        sortMode.val(sortModeVal);
+    $('.column-target')
+        .not('.accept-all')
+        .append(dropdownCol)
+        .find('.asc,.desc')
+        .click(function () {
+          var sort = $('#pivot input[name=sort]');
+          var sortMode = $('#pivot input[name=mode]');
 
-        if ($(this).closest('.row-target').length > 0) {
-          sort.val('r' + $(this).closest('th').attr('data-ref'));
-        } else {
-          sort.val('c' + $(this).closest('th').attr('data-ref'));
-        }
+          thl.toggleField(sort);
+          thl.toggleField(sortMode);
 
-        $('#pivot').submit();
-      });
+          var sortModeVal = $(this).hasClass('asc') ? 'asc' : 'desc';
+          sortMode.val(sortModeVal);
+
+          if ($(this).closest('.row-target').length > 0) {
+            sort.val('r' + $(this).closest('th').attr('data-ref'));
+          } else {
+            sort.val('c' + $(this).closest('th').attr('data-ref'));
+          }
+
+          $('#pivot').submit();
+        });
+
+      $('.column-target')
+          .not('.accept-all')
+          .each(function () {
+              var btn = $(this).find(".btn").first();
+              var link = $(this).find(".colhdr").first();
+              var l = link.attr('id');
+              btn.attr('aria-describedby', l)
+          });
+
+
+
+      $('.row-target')
+          .not('.accept-all')
+          .append(dropdownRow)
+          .find('.asc,.desc')
+          .click(function () {
+              var sort = $('#pivot input[name=sort]');
+              var sortMode = $('#pivot input[name=mode]');
+
+              thl.toggleField(sort);
+              thl.toggleField(sortMode);
+
+              var sortModeVal = $(this).hasClass('asc') ? 'asc' : 'desc';
+              sortMode.val(sortModeVal);
+
+              if ($(this).closest('.row-target').length > 0) {
+                  sort.val('r' + $(this).closest('th').attr('data-ref'));
+              } else {
+                  sort.val('c' + $(this).closest('th').attr('data-ref'));
+              }
+
+              $('#pivot').submit();
+          });
+      $('.row-target')
+          .not('.accept-all')
+          .each(function () {
+              var btn = $(this).find(".btn").first();
+              var link = $(this).find(".rowhdr").first();
+              var l = link.attr('id');
+              btn.attr('aria-describedby', l)
+          });
+
 
     var metadataCallback = function (href) {
       var w = window.open(href, 'tikumetadata', 'scrollbars=1,menubar=0,resizable=1,status=0,location=0,width=650,height=450,screenX=250,screenY=350');

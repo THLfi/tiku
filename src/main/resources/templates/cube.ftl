@@ -13,7 +13,7 @@
     [#return "- ${code} - " /]
 [/#function]
 
-[#macro label e][#if e?? && e.label??]${e.label.getValue(lang)}[#else]???[/#if][/#macro]
+[#macro label e][#if e?? && e.label??]${e.label.getValue(lang)} [#else]???[/#if][/#macro]
 
 [#include "cube/cube-dimension-dropdown.ftl" /]
 

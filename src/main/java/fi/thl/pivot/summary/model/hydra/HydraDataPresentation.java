@@ -112,7 +112,7 @@ public class HydraDataPresentation extends DataPresentation {
      * Constructs the URL to fetch data from the pivot api. Attempts to make sure
      * that both row and column attributes are used in the data query. If not
      * then the pivot API will fail.
-     * 
+     *
      * @return
      */
     public String getDataUrl() {
@@ -282,12 +282,12 @@ public class HydraDataPresentation extends DataPresentation {
     public boolean getShowConfidenceInterval() {
         return delegate.getShowConfidenceInterval();
     }
-    
+
     @Override
     public boolean getShowSampleSize() {
         return delegate.getShowSampleSize();
     }
-    
+
     @Override
     public boolean isShowSampleSize() {
         return delegate.isShowSampleSize();
