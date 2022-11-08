@@ -514,13 +514,20 @@ function selectChartType (e) {
         var map = L.map(opt.target.get(0), {
           crs : crs,
           maxZoom : 4,
-          scrollWheelZoom : false
+          scrollWheelZoom : false,
+          zoomControl: false
         }).setView([65, 25], 0);
         map.getPanes().markerPane.style.visibility = 'hidden';
         map.on('zoomend', function() {
           var currentZoom = map.getZoom();
-          map.getPanes().markerPane.style.fontSize = getFontSize(currentZoom);
+          map.getPanes().markerPane.style.fontSize = '50%';// getFontSize(currentZoom);
         });
+
+        L.control.zoom({
+          position:'topleft',
+            zoomInTitle: thl.messages['map.zoom.in.title'],
+            zoomOutTitle: thl.messages['map.zoom.out.title']
+        }).addTo(map);
 
         L.Proj.geoJson(maps.features.MAA, {
           style: {
