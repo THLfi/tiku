@@ -26,4 +26,7 @@ public final class Constants {
     public static final String DEFAULT_FIRST_ITEMS_START = ":first";
     public static final String DEFAULT_LAST_ITEM = ":last:";
     public static final String DEFAULT_LAST_ITEMS_START = ":last";
+
+    public static final String DEFAULT_STAGE = ":all:";
+    public static final String FILTER_STAGE = ":filter:";
 }
