@@ -292,6 +292,17 @@ public class HydraSummary extends Summary {
         return null;
     }
 
+    public HydraFilter getSelectionByDimensionAndDefaultItem(String dimension, String defaultItem) {
+        for (Selection s : getSelections()) {
+            HydraFilter hydraFilter = (HydraFilter) s;
+            FilterStage filterStage = hydraFilter.getFilterStages() != null ? hydraFilter.getFilterStages().get(0) : null;
+            if (s.getDimension().equals(dimension) && filterStage != null && filterStage.getDefaultItem().stream().filter(dI -> dI.equals(defaultItem)).findFirst().isPresent()) {
+                return hydraFilter;
+            }
+        }
+        return null;
+    }
+
     public List<IDimensionNode> getSelectedByDimension(String dimension) {
         HydraFilter s = getSelectionByDimension(dimension);
         if (s != null) {

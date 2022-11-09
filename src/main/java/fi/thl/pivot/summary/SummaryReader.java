@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 import fi.thl.pivot.model.Label;
 import fi.thl.pivot.summary.model.*;
 import fi.thl.pivot.summary.model.SummaryDimension.TotalMode;
+import fi.thl.pivot.util.Constants;
 
 /**
  * <p>
@@ -50,7 +51,6 @@ public class SummaryReader {
     private static final String SECTION_ELEMENT = "section";
     private static final String ROW_ELEMENT = "row";
     private static final String GRID_ELEMENT = "grid";
-    private static final String DEFAULT_STAGE = ":all:";
     private static final String STAGE_ELEMENT = "stage";
     private static final String DIMENSION_ELEMENT = "dim";
     private static final String LANGUAGE_ELEMENT = "lang";
@@ -459,7 +459,7 @@ public class SummaryReader {
                 if (super.hasFilterForDimension(p, firstChildNode(row, DIMENSION_ELEMENT))) {
                     return new SummaryStage(SummaryStage.Type.STAGE, FILTER_STAGE);
                 } else {
-                    return new SummaryStage(SummaryStage.Type.STAGE, DEFAULT_STAGE);
+                    return new SummaryStage(SummaryStage.Type.STAGE, Constants.DEFAULT_STAGE);
                 }
             } else {
                 return new SummaryStage(SummaryStage.Type.STAGE, stageNode.getTextContent());
@@ -604,7 +604,17 @@ public class SummaryReader {
                     }
                     if (items.isEmpty()) {
                         boolean hasFilter = hasFilterForDimension(p, dimension);
-                        items.add(hasFilter ? ":filter:" : DEFAULT_STAGE);
+
+                        if (hasFilter) {
+                            Selection selection = p.getFilters().get(0);
+                            String defaultItem = selection.getDefaultItem().stream().filter(dI ->
+                                dI.startsWith(Constants.DEFAULT_FIRST_ITEMS_START) ||
+                                dI.startsWith(Constants.DEFAULT_LAST_ITEMS_START))
+                                .findFirst().orElse(null);
+                            items.add(defaultItem != null ? defaultItem : Constants.FILTER_STAGE);
+                        } else {
+                            items.add(Constants.DEFAULT_STAGE);
+                        }
                     };
                     stages.add(new SummaryStage(type, items, dimension.getTextContent()));
                 }

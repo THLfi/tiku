@@ -18,6 +18,7 @@ import fi.thl.pivot.summary.model.SummaryDimension;
 import fi.thl.pivot.summary.model.SummaryItem;
 import fi.thl.pivot.summary.model.SummaryMeasure;
 import fi.thl.pivot.summary.model.SummaryStage;
+import fi.thl.pivot.util.Constants;
 
 final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem> {
 
@@ -46,10 +47,13 @@ final class ExtendDimensionFunction implements Function<SummaryItem, SummaryItem
     private SummaryItem extendStage(final SummaryDimension dim) {
         SummaryStage stage = dim.getStage();
         if (SummaryStage.Type.STAGE.equals(stage.getType())) {
-            if (":filter:".equals(stage.getStage())) {
+            if (Constants.FILTER_STAGE.equals(stage.getStage())) {
                 HydraFilter s = summary.getSelectionByDimension(dim.getDimension());
                 return new DimensionExtension(source, dim, IncludeDescendants.apply(s));
-            } else if (":all:".equals(stage.getStage())) {
+            } else if (stage.getStage().startsWith(Constants.DEFAULT_FIRST_ITEMS_START) || stage.getStage().startsWith(Constants.DEFAULT_LAST_ITEMS_START)) {
+                HydraFilter s = summary.getSelectionByDimensionAndDefaultItem(dim.getDimension(), stage.getItems().get(0));
+                return new DimensionExtension(source, dim, IncludeDescendants.apply(s));
+            } else if (Constants.DEFAULT_STAGE.equals(stage.getStage())) {
                 return new DimensionExtension(source, dim, allNodesIn(dim));
             } else {
                 List<IDimensionNode> stageNodes = findNodes(dim.getDimension(), stage.getStage());
