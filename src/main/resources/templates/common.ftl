@@ -30,11 +30,11 @@
   </footer>
 [/#macro]
 
-[#macro amor_page title=message("site.common.title")]
+[#macro amor_page title=message("site.common.title") pagename=message("site.common.pagename")]
 <!DOCTYPE html>
 <html>
     <head>
-        <title>THL TIKU: AMOR</title>
+        <title>${pagename}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
@@ -69,7 +69,6 @@
       </header>
 
       <div class="stripe">
-
           <div id="languages" role="navigation" aria-labelledby="languages">
               [#if languages?? && languages?size > 1]
                   <ul>
