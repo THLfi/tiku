@@ -513,10 +513,10 @@
     var dropdownToggleCol = $('<button type="button"  title="' + thl.messages['cube.dimension.column-selections'] + '" class="btn btn-secondary btn-sm drowdown-toggle bs-dd-toggle" data-bs-toggle="dropdown"><span class="caret"></span></button>');
 
     var dropdownMenu = $('<ul class="dropdown-menu">');
-    var dropdownMenuSortAsc = $('<li><a role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
-    var dropdownMenuSortDesc = $('<li><a role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
-    var dropdownMenuHide = $('<li><a role="menuitem" class="rowhide dropdown-item">' + thl.messages['cube.dimension.hide'] + '</a></li>');
-    var dropdownMenuMeta = $('<li><a role="menuitem" class="info dropdown-item">' + thl.messages['cube.dimension.info'] + '</a></li>');
+    var dropdownMenuSortAsc = $('<li><a href="#" role="menuitem" class="asc dropdown-item">' + thl.messages['cube.dimension.sort.asc'] + '</a></li>');
+    var dropdownMenuSortDesc = $('<li><a href="#" role="menuitem" class="desc dropdown-item">' + thl.messages['cube.dimension.sort.desc'] + '</a></li>');
+    var dropdownMenuHide = $('<li><a href="#" role="menuitem" class="rowhide dropdown-item">' + thl.messages['cube.dimension.hide'] + '</a></li>');
+    var dropdownMenuMeta = $('<li><a href="#" role="menuitem" class="info dropdown-item">' + thl.messages['cube.dimension.info'] + '</a></li>');
 
     dropdownMenu
         .append(dropdownMenuSortAsc)
