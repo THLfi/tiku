@@ -13,3 +13,6 @@ if (typeof thl.messages === 'undefined') {
 }
 thl.messages["no-data"] = '${message("summary.no-data")?js_string}';
 thl.messages["select"] = '${message("cube.dimension.customize")?js_string}';
+
+thl.messages["map.zoom.in.title"] = '${message("map.zoom.in.title")?js_string}';
+thl.messages["map.zoom.out.title"] = '${message("map.zoom.out.title")?js_string}';
