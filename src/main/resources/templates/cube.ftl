@@ -94,7 +94,7 @@
         </div>
 
         <div class="float-end">
-            <span class="fas fa-expand-alt fa-expand-alt-cube"></span>
+            <span class="fas fa-expand-alt fa-expand-alt-cube full-screen-button"></span>
         </div>
 
         [#include "cube/cube-filter.ftl" /]
