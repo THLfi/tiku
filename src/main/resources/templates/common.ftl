@@ -12,9 +12,8 @@
 [/#function]
 
 [#macro footer]
-  <footer class="default">
+  <footer class="default" role="contentinfo">
     <div class="container-fluid">
-      <div class="row">
         <div class="col-xs-12">
           <a title="${message("site.company")}" href="http://thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
    	        <img class="footer-logo" src="${resourceUrl}/images/THL.svg"/>
@@ -31,11 +30,11 @@
   </footer>
 [/#macro]
 
-[#macro amor_page title=message("site.common.title")]
+[#macro amor_page title=message("site.common.title") pagename=message("site.common.pagename")]
 <!DOCTYPE html>
 <html>
     <head>
-        <title>THL TIKU: AMOR</title>
+        <title>${pagename}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
@@ -53,7 +52,7 @@
     </head>
     <body class="common">
 
-      <header class="summary-header container-fluid">
+      <header role="banner" class="summary-header container-fluid">
           <div class="logo">
               <img src="${resourceUrl}/images/THL_tunnus_pitka_${lang}_RGB.svg">
           </div>
@@ -69,7 +68,22 @@
           <div class="clearfix"></div>
       </header>
 
-      <div class="stripe"></div>
+      <div class="stripe">
+          <div id="languages" role="navigation" aria-labelledby="languages">
+              [#if languages?? && languages?size > 1]
+                  <ul>
+                      <li><div class="hide-xl btn-group vl"></div></li>
+                      [#list languages as x]
+                          [#if x != lang]
+                              <li><a href="${rc.contextPath}/${env}/${x}/${subject}/">${x}</a></li>
+                          [#else]
+                              <li class="active"><a href="${rc.contextPath}/${env}/${x}/${subject}/">${x}</a></li>
+                          [/#if]
+                      [/#list]
+                  </ul>
+              [/#if]
+          </div>
+      </div>
 
       <div class="summary-body container">
 

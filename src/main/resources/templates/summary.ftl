@@ -42,7 +42,7 @@
 [/#macro]
 [#macro summary_filter_form]
 
-<form id="summary-form" class="form form-horizontal" method="GET" action="#">
+<form id="summary-form" class="form form-horizontal" method="GET" action="#" role="region">
 
 [#list summary.presentations as presentation]
   [#if presentation.type == "map"]
@@ -451,7 +451,7 @@
     </head>
     <body class="common">
 
-    <header class="summary-header container-fluid">
+    <header role="banner" class="summary-header container-fluid">
         <div class="logo">
             <img 
             src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
@@ -471,7 +471,7 @@
 
     <div class="stripe">
 
-      <div id="languages">
+      <div id="languages" role="navigation" aria-labelledby="languages">
         [#if supportedLanguages?? && supportedLanguages?size > 1]
           <ul>         
           <li><div class="hide-xl btn-group vl"></div></li>
@@ -486,7 +486,7 @@
         [/#if]
       </div>
 
-      <div class="stripe-left">
+      <div class="stripe-left" role="navigation">
         <div class="btn-group float-start filter-toggle">
           <button class="btn btn-default">
              <i class="fas fa-sliders-h"></i>
@@ -555,7 +555,7 @@
                 </ul>
                 [/#list]
 
-                <div class="content">
+                <div class="content" role="main">
                   <h2>${summary.title.getValue(lang)}</h2>
                   [#if summary.note.getValue(lang)! == "n/a"]
                   [#else]

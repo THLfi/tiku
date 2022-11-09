@@ -2,13 +2,7 @@ package fi.thl.pivot.web;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -102,6 +96,9 @@ public class AmorListController {
         model.addAttribute("showRestrictedView", true);
         model.addAttribute("reports", listReportsInSubjectForLanguage(env, subject, locale));
         model.addAttribute("lang", locale);
+        model.addAttribute("env", env);
+        model.addAttribute("subject", subject);
+        model.addAttribute("languages", Arrays.asList("fi","en","sv"));
         return "amor-list";
     }
 

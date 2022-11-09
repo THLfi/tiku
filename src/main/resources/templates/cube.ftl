@@ -39,7 +39,7 @@
     </head>
     <body>
 
-    <div class="pivot-header">
+    <div class="pivot-header" role="banner" >
         <h1>
           [#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if]
           [#if env != "prod"]
@@ -50,7 +50,7 @@
             <img src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
         
-        <div id="languages">
+        <div id="languages" role="navigation">
         
           [#if supportedLanguages?? && supportedLanguages?size > 1]
             <ul>
@@ -66,13 +66,13 @@
           </ul>
         </div>
         [#include "cube/cube-form.ftl" /]
-        <div class="toolbar-control">
+        <div id="toolbar" class="toolbar-control" role="navigation" aria-labelledby="toolbar">
             [#include "cube/cube-toolbar.ftl" /]
         </div>
     </div>
 
     <div class="pivot-body">
-    <div class="pivot-sidebar">
+    <div class="pivot-sidebar" role="region">
          <button class="browser-toggle btn btn-default">
             <i class="fas fa-sliders-h"></i>
             <span class="sr-only">${message("cube.options")}</span>
@@ -83,7 +83,7 @@
 
     </div>
 
-    <div class="pivot-content">
+    <div class="pivot-content" role="main">
 
         <div class="quick-info alert alert-warning alert-dismissible fade show d-none" role="alert">
             <div class="col-sm-11">${message("cube.quick-info")}</div>
@@ -117,7 +117,7 @@
 
     </div>
 
-    <div class="pivot-footer">
+    <div class="pivot-footer" role="contentinfo">
         &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("cube.updated")} ${runDate?string("dd.MM.yyyy")}
     </div>
 
