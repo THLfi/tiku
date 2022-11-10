@@ -604,7 +604,6 @@
 
     <script src="${rc.contextPath}/js/d3.min.js"></script>
     <script src="${rc.contextPath}/js/json-stat.js"></script>
-    [#--<script src="${rc.contextPath}/js/jspdf.min.js"></script>--]
     <script src="${rc.contextPath}/js/map-palette.min.js?v=${buildTimestamp}"></script>
     <script src="${rc.contextPath}/js/summary.js?v=${buildTimestamp}"></script>
 

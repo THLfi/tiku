@@ -3,6 +3,7 @@ package fi.thl.pivot.web;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 
@@ -29,6 +31,9 @@ public class CubePdfController extends AbstractCubeController {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     /**
      * <p>
@@ -85,6 +90,8 @@ public class CubePdfController extends AbstractCubeController {
 
             model.addAttribute("tableBounds", calculateSplitTableBounds(cs));
             model.addAttribute("messageSource", new MessageSourceWrapper(messageSource, cubeRequest.getUiLanguage()));
+            // ${rc.contextPath} could not be used in pdf creation so needed to add baseUrl to model.
+            model.addAttribute("baseUrl", ServletUriComponentsBuilder.fromRequestUri(httpServletRequest).replacePath(null).build().toUriString());
 
             new PdfExporter(cubeRequest.getUiLanguage(), freemarker).export(model, resp.getOutputStream());
         } else {

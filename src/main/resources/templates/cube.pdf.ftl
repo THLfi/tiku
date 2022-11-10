@@ -70,7 +70,7 @@
         }
 
         </style>
-        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="${baseUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     </head>
     <body>
 
