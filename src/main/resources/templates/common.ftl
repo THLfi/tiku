@@ -51,6 +51,9 @@
 
     </head>
     <body class="common">
+    <div id="skip-to-content" class="skip-to-content">
+        <a  href="#to-main-content">${message("link-to-content")}</a><br/>
+    </div>
 
       <header role="banner" class="summary-header container-fluid">
           <div class="logo">
@@ -93,6 +96,7 @@
             ${breadcrumbs!}
         </ol>
         [/#if]
+          <div id="to-main-content" ></div>
         [#nested /]
       </div>
 

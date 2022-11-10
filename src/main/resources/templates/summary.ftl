@@ -450,6 +450,10 @@
 
     </head>
     <body class="common">
+    <div id="skip-to-content" class="skip-to-content">
+        <a  href="#to-main-content">${message("link-to-content")}</a><br/>
+        <a  href="#to-select-list">${message("link-to-select-list")}</a>
+    </div>
 
     <header role="banner" class="summary-header container-fluid">
         <div class="logo">
@@ -470,7 +474,6 @@
 
 
     <div class="stripe">
-
       <div id="languages" role="navigation" aria-labelledby="languages">
         [#if supportedLanguages?? && supportedLanguages?size > 1]
           <ul>         
@@ -543,7 +546,7 @@
     <div class="summary-body container-fluid">
         <div class="summary-content row">
 
-            <div class="col-sm-3">
+            <div id="to-select-list" class="col-sm-3">
                 [@summary_filter_form /]
             </div>
 
@@ -555,7 +558,7 @@
                 </ul>
                 [/#list]
 
-                <div class="content" role="main">
+                <div class="content" id="to-main-content" role="main">
                   <h2>${summary.title.getValue(lang)}</h2>
                   [#if summary.note.getValue(lang)! == "n/a"]
                   [#else]

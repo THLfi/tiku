@@ -38,7 +38,9 @@
         <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
-
+    <div id="skip-to-content">
+        <a href="#to-main-content">${message("link-to-content")}</a>
+    </div>
     <div class="pivot-header" role="banner" >
         <h1>
           [#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if]

@@ -12,6 +12,29 @@ body.common {
 	margin-bottom: 54px;
 }
 
+#skip-to-content a {
+	padding: 6px;
+	position: absolute;
+	top: -40px;
+	left: 0;
+	color: #fff;
+	border-bottom-right-radius: 3px;
+	background: 0 0;
+	-webkit-transition: top 1s ease-out,background 1s linear;
+	transition: top 1s ease-out,background 1s linear;
+	z-index: 100;
+}
+
+#skip-to-content a:focus{
+	top:0px;
+	background:#3D6D9A;
+	outline:0;
+	-webkit-transition:top .1s ease-in,background .5s linear;
+	transition:top .1s ease-in,background .5s linear
+}
+
+skip-to-content{clip:rect(0 0 0 0);position:absolute}
+
 h1 {
 	position: relative;
 	margin-top: 25px;

@@ -31,7 +31,7 @@
     </head>
     <body class="common">
 
-    <div class="pivot-header">
+    <div class="pivot-header" role="banner">
         <h1>${cubeLabel.getValue(lang)}</h1>
         <div class="logo">
             <img src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
