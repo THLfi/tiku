@@ -16,7 +16,7 @@
     <div class="container-fluid">
         <div class="col-xs-12">
           <a title="${message("site.company")}" href="http://thl.fi/[#if lang!="fi"]${lang}/web/thlfi-${lang}[/#if]">
-   	        <img class="footer-logo" src="${resourceUrl}/images/THL.svg"/>
+   	        <img class="footer-logo" src="${rc.contextPath}/images/THL.svg"/>
    	      </a>
         </div>
         [#-- This is useful when we have destination for the links
@@ -37,16 +37,16 @@
         <title>${pagename}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/solid.css" rel="stylesheet">
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
-        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <link rel="stylesheet" href="${rc.contextPath}/css/common.css" />
         <!--[if lt IE 9]>
-          <script src="${resourceUrl}/js/html5shiv.js"></script>
-          <script src="${resourceUrl}/js/respond.min.js"></script>
+          <script src="${rc.contextPath}/js/html5shiv.js"></script>
+          <script src="${rc.contextPath}/js/respond.min.js"></script>
         <![endif]-->
 
     </head>
@@ -54,7 +54,7 @@
 
       <header role="banner" class="summary-header container-fluid">
           <div class="logo">
-              <img src="${resourceUrl}/images/THL_tunnus_pitka_${lang}_RGB.svg">
+              <img src="${rc.contextPath}/images/THL_tunnus_pitka_${lang}_RGB.svg">
           </div>
           <div class="col-xs-10 col-md-9">
               <h1>

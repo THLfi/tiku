@@ -220,7 +220,7 @@
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}">
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
               </div>
           <br />
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
@@ -241,7 +241,7 @@
               [#if presentation.legendless??]data-legendless="${presentation.legendless}"[/#if]
               [#if presentation.widthMeasure??]data-width-measure="${presentation.widthMeasure.surrogateId!'N/A'}"[/#if]>
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
           </div>
          <br />
       [#elseif "line" = presentation.type]
@@ -256,7 +256,7 @@
                [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
               </div>
          <br />
        [#elseif "radar" = presentation.type]
@@ -271,7 +271,7 @@
               [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
               </div>
          <br />
       [#elseif "pie" = presentation.type]
@@ -282,7 +282,7 @@
               data-ref="${factTable}.json?${presentation.dataUrl}"
               [#if presentation.showSampleSize]data-n="true"[/#if]>
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
           </div>
          <br />
       [#elseif "gauge" = presentation.type]
@@ -313,7 +313,7 @@
                       [/#if]
               >
               [@export presentation "image" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
           </div>
          <br />
       [#elseif "table" = presentation.type]
@@ -334,7 +334,7 @@
               data-row-highlight-nodes="[#list presentation.rows as row][#if row.totalHighlightNodes??][#list row.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]"
               data-column-highlight-nodes="[#list presentation.columns as column][#if column.totalHighlightNodes??][#list column.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]">
               [@export presentation "table" /]
-              <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
           </div>
          <br />
         [#elseif "list" = presentation.type]
@@ -344,7 +344,7 @@
                 class="presentation list"
                 data-ref="${factTable}.json?${presentation.dataUrl}"
                 [@export presentation "table" /]
-                <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+                <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
             </div>
             <br />
       [#elseif "map" = presentation.type]
@@ -372,7 +372,7 @@
         data-no-limits[/#if]
       >
       [@export presentation "image" /]
-      <img src="${resourceUrl}/images/loading.gif" alt="loading"/>
+      <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
       </div>
       [#assign containsMap = true]
       [#else]
@@ -434,18 +434,18 @@
         <title>${summary.title.getValue(lang)} - ${factName.getValue(lang)} -  ${message("site.title")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/solid.css" rel="stylesheet">
-        <link rel="stylesheet" href="${resourceUrl}/webjars/source-sans-pro/2.0.10/source-sans-pro.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css?v=${buildTimestamp}" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css?v=${buildTimestamp}" />
-        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
        
 
         <!--[if lt IE 9]>
-          <script src="${resourceUrl}/js/html5shiv.js"></script>
-          <script src="${resourceUrl}/js/respond.min.js"></script>
+          <script src="${rc.contextPath}/js/html5shiv.js"></script>
+          <script src="${rc.contextPath}/js/respond.min.js"></script>
         <![endif]-->
 
     </head>
@@ -454,7 +454,7 @@
     <header role="banner" class="summary-header container-fluid">
         <div class="logo">
             <img 
-            src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
         <div class="col-xs-12 col-md-9">
             <h1>
@@ -593,18 +593,17 @@
 
     [@footer/]
 
-    <script src="${resourceUrl}/js/jquery.js"></script>
-    <script src="${resourceUrl}/js/jquery-ui.js"></script>
-    <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
+    <script src="${rc.contextPath}/js/jquery.js"></script>
+    <script src="${rc.contextPath}/js/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="${rc.contextPath}/js/bootstrap.bundle.min.js"></script>
 
     <script nonce="${cspNonce}">
         [#include "summary-script.ftl" /]
     </script>
 
-    <script src="${resourceUrl}/js/d3.min.js"></script>
-    <script src="${resourceUrl}/js/json-stat.js"></script>
-    [#--<script src="${resourceUrl}/js/jspdf.min.js"></script>--]
+    <script src="${rc.contextPath}/js/d3.min.js"></script>
+    <script src="${rc.contextPath}/js/json-stat.js"></script>
     <script src="${rc.contextPath}/js/map-palette.min.js?v=${buildTimestamp}"></script>
     <script src="${rc.contextPath}/js/summary.js?v=${buildTimestamp}"></script>
 
@@ -626,10 +625,10 @@
 
     [#if containsMap] 
       [#assign mapLang][#if lang="sv"]sv[#elseif lang="en"]en[#else]fi[/#if][/#assign]
-      <link href="${resourceUrl}/css/leaflet.css" rel="stylesheet">
-      <script src="${resourceUrl}/js/leaflet.js"></script>
-      <script src="${resourceUrl}/js/proj4.min.js"></script>
-      <script src="${resourceUrl}/js/proj4leaflet.js"></script>
+      <link href="${rc.contextPath}/css/leaflet.css" rel="stylesheet">
+      <script src="${rc.contextPath}/js/leaflet.js"></script>
+      <script src="${rc.contextPath}/js/proj4.min.js"></script>
+      <script src="${rc.contextPath}/js/proj4leaflet.js"></script>
       <script src="https://sotkanet.fi/sotkanet/${mapLang}/api/geojson/MAA"></script>
 
       [#list summary.presentations as presentation]

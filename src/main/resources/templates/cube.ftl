@@ -23,19 +23,19 @@
         <title>[#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if] - ${message("site.title")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/font-awesome/5.15.3/css/solid.css" rel="stylesheet">
-        <link rel="stylesheet" href="${resourceUrl}/webjars/source-sans-pro/2.0.10/source-sans-pro.css" />
-        <link rel="stylesheet" href="${resourceUrl}/css/jquery.stickytable.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/jquery.stickytable.min.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css"?v=${buildTimestamp}" />
-        <link href="${resourceUrl}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <!--[if lt IE 9]>
-          <script src="${resourceUrl}/js/html5shiv.js"></script>
-          <script src="${resourceUrl}/js/respond.min.js"></script>
+          <script src="${rc.contextPath}/js/html5shiv.js"></script>
+          <script src="${rc.contextPath}/js/respond.min.js"></script>
         <![endif]-->
 
-        <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
+        <script src="${rc.contextPath}/js/bootstrap.bundle.min.js"></script>
     </head>
     <body>
 
@@ -47,7 +47,7 @@
           [/#if]
         </h1>
         <div class="logo">
-            <img src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
         
         <div id="languages" role="navigation">
@@ -121,10 +121,10 @@
         &copy; ${message("site.company")} ${.now?string("yyyy")}[#if isOpenData], ${message("site.license.cc")}[/#if]. ${message("cube.updated")} ${runDate?string("dd.MM.yyyy")}
     </div>
 
-    <script src="${resourceUrl}/js/jquery.js"></script>
-    <script src="${resourceUrl}/js/jquery-ui.js"></script>
-    <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/jquery.stickytable.js"></script>
+    <script src="${rc.contextPath}/js/jquery.js"></script>
+    <script src="${rc.contextPath}/js/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="${rc.contextPath}/js/jquery.stickytable.js"></script>
 
     <script nonce="${cspNonce}">
         [#include "cube/cube-script.ftl" /]

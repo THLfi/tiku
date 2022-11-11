@@ -11,7 +11,7 @@
     <li class="breadcrumb-item active">${env!}</a></li>
 [/#assign]
 
-<script src="${resourceUrl}/js/jquery.js"></script>
+<script src="${rc.contextPath}/js/jquery.js"></script>
 <script src="${rc.contextPath}/js/amor-list.min.js"></script>
 
 [@amor_page message("amor-list.title")]

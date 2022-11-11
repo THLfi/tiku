@@ -21,13 +21,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-        <link rel="stylesheet" href="${resourceUrl}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${resourceUrl}/webjars/source-sans-pro/2.0.10/source-sans-pro.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
         <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
         <!--[if lt IE 9]>
-          <script src="${resourceUrl}/js/html5shiv.js"></script>
-          <script src="${resourceUrl}/js/respond.min.js"></script>
+          <script src="${rc.contextPath}/js/html5shiv.js"></script>
+          <script src="${rc.contextPath}/js/respond.min.js"></script>
         <![endif]-->
 
 
@@ -37,7 +37,7 @@
     <header class="summary-header container">
         <h1>${message("site.error")}</h1>
         <div class="logo">
-            <img src="${resourceUrl}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
         </div>
     </header>
 
@@ -57,10 +57,10 @@
 
     [@footer/]
 
-    <script src="${resourceUrl}/js/jquery.js"></script>
-    <script src="${resourceUrl}/js/jquery-ui.js"></script>
-    <script src="${resourceUrl}/js/jquery.ui.touch-punch.min.js"></script>
-    <script src="${resourceUrl}/js/bootstrap.bundle.min.js"></script>
+    <script src="${rc.contextPath}/js/jquery.js"></script>
+    <script src="${rc.contextPath}/js/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="${rc.contextPath}/js/bootstrap.bundle.min.js"></script>
 
     <script src="${rc.contextPath}/js/google-analytics.min.js"></script>
     </body>
