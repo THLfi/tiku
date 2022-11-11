@@ -18,18 +18,18 @@
 [#include "cube/cube-dimension-dropdown.ftl" /]
 
 
-<html>
+<html lang="${lang!'fi'}">
     <head>
         <title>[#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if] - ${message("site.title")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/jquery.stickytable.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/style.css"?v=${buildTimestamp}" />
-        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/jquery.stickytable.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/style.css?v=${buildTimestamp}">
+        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/js/html5shiv.js"></script>
           <script src="${rc.contextPath}/js/respond.min.js"></script>
@@ -47,7 +47,7 @@
           [/#if]
         </h1>
         <div class="logo">
-            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!'fi'}_RGB.svg" alt="${message('site.thl.logo.alt')}">
         </div>
         
         <div id="languages" role="navigation">

@@ -2,12 +2,12 @@
 
 [#macro dimDropdown type node index maxIndex buttonTitleText]
 <div class="dropdown" data-level="${index}">
-    <button title="${buttonTitleText}" class="btn btn-secondary btn-sm bs-dd-toggle" id="dLabel" type="button" data-bs-toggle="dropdown" data-bs-target="#dDropdown" aria-haspopup="true" role="button" aria-expanded="false">
+    <button title="${buttonTitleText}" class="btn btn-secondary btn-sm bs-dd-toggle" id="dLabel-${type}-${index}" type="button" data-bs-toggle="dropdown" data-bs-target="#dDropdown" aria-haspopup="true" aria-expanded="false">
         <span class="fas fa-cog"> </span>
     </button>
 
 
-  <ul class="dropdown-menu ${type}" role="menu" aria-labelledby="dLabel">
+  <ul class="dropdown-menu ${type}" role="menu" aria-labelledby="dLabel-${type}-${index}">
     <li>
         <a href="#" data-ref="${index}" class="remove dropdown-item">
             <span class="fas fa-times-circle"></span> ${message("cube.dimension.remove")}

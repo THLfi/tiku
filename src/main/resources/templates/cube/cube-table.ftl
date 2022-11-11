@@ -23,7 +23,7 @@
                 [#assign span = tableHelper.getColumnSpanAt(ch_index, c) /]
                 [#assign hn = pivot.getColumnAt(ch_index, c) /]
                 <th colspan="${span}" class="column-target [#if ch_index = pivot.columns?size -1]leaf[/#if]" data-ref="${pivot.getColumnNumber(c)}" data-level="${ch_index}">
-                        <a href="#" class="colhdr" id="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}" data-ref="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}">
+                        <a href="#" class="colhdr" id="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}-${pivot.getColumnNumber(c)}" data-ref="${hn.dimension.id}${dimensionSeparator}${hn.surrogateId}">
                         [@label hn /] [#if RequestParameters.sc?? && hn.code??](${hn.code!})[/#if]
                     </a>
                 </th>
@@ -41,7 +41,7 @@
             [/#if]
         </th>
     [/#list]
-    <th class="empty" />
+    <th class="empty"></th>
     <th class="column-target accept-all" colspan="${pivot.columnCount}">
         <span class="fas fa-plus glyphicon glyphicon-plus"></span>
     </th>
@@ -57,7 +57,7 @@
                     [#assign rh = pivot.getRowAt(r_index, rowNum)]
                     [#assign span = rowspan.assign(r_index, tableHelper.getRowSpanAt(r_index, rowNum)) /]
                     <th class="row-target sticky-cell [#if r_index = pivot.rows?size - 1]leaf[/#if]" [#if span > 1]rowspan="${span}"[/#if] data-level="${r_index}" data-ref="${cell.actualRowNumber}">
-                        <a href="#" class="rowhdr" id="${rh.dimension.id}${dimensionSeparator}${rh.surrogateId}" data-ref="${rh.dimension.id}${dimensionSeparator}${rh.surrogateId}">
+                        <a href="#" class="rowhdr" id="${rh.dimension.id}${dimensionSeparator}${rh.surrogateId}-${cell.actualRowNumber}" data-ref="${rh.dimension.id}${dimensionSeparator}${rh.surrogateId}">
                             [@label rh /] [#if RequestParameters.sc?? && rh.code??](${rh.code!})[/#if]
                         </a>
                     </th>

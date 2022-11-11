@@ -23,10 +23,10 @@
 <head>
 
   <title>[@label node /] - [#if cubeLabel??]${cubeLabel.getValue(lang)}[#else]n/a[/#if] - ${message("site.title")}</title>
-  <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
-  <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
-  <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css">
+  <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css">
+  <link rel="stylesheet" href="${rc.contextPath}/css/style.css">
+  <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
 
   <style>
     h1 { margin-left: 0px; border-bottom: 1px solid #ccc; }

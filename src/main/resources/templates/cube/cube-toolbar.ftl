@@ -26,14 +26,14 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2" role="menu">
             [#assign reqParameters][#compress]
-                [#list rowParams as r]row=${r}&[/#list]
-                [#list colParams as r]column=${r}&[/#list]
-                [#list filters as r]filter=${r.dimension.id}-${r.surrogateId}&[/#list]
-                [#if RequestParameters.fo??]&fo=1[/#if]
-                [#if RequestParameters.fz??]&fz=1[/#if]
-                [#if RequestParameters.sc??]&sc=1[/#if]
-                [#if RequestParameters.sort??]&sort=${RequestParameters.sort}[/#if]
-                [#if RequestParameters.mode??]&mode=${RequestParameters.mode}[/#if]
+                [#list rowParams as r]row=${r}&amp;[/#list]
+                [#list colParams as r]column=${r}&amp;[/#list]
+                [#list filters as r]filter=${r.dimension.id}-${r.surrogateId}&amp;[/#list]
+                [#if RequestParameters.fo??]&amp;fo=1[/#if]
+                [#if RequestParameters.fz??]&amp;fz=1[/#if]
+                [#if RequestParameters.sc??]&amp;sc=1[/#if]
+                [#if RequestParameters.sort??]&amp;sort=${RequestParameters.sort}[/#if]
+                [#if RequestParameters.mode??]&amp;mode=${RequestParameters.mode}[/#if]
 
             [/#compress][/#assign]
             [#assign reqParameters=reqParameters?replace("\\n|\\r", "", "rm") /]
@@ -75,7 +75,7 @@
       </a>
     [/#if]
 
-    <a class="lnk-btn" target="_blank" href="${message("site.help.url")}" type="submit">
+    <a class="lnk-btn" target="_blank" href="${message('site.help.url')}">
       <span class="fas fa-question-circle"></span>
       <span class="hide-xs">${message("site.help")}</span>
     </a>

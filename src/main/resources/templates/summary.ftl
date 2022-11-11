@@ -67,7 +67,7 @@
       [/#list]
       </select>
     </div>
-    <br />
+    <br>
     [/#if]
   [/#if]
 
@@ -78,7 +78,7 @@
     [#assign dim = filter.dimensionEntity /]
 
     [#if !filter.visible]
-      <input type="hidden" name="${filter.id}_0" value="${filter.selected[0].id}" />
+      <input type="hidden" name="${filter.id}_0" value="${filter.selected[0].id}">
     [#else]
       [#list filter.filterStages as filterStage]
         <div class="form-group search">
@@ -126,7 +126,7 @@
               </select>
         </div>
       [/#list]
-      <br />
+      <br>
     [/#if]
 [/#list]
 [#list summary.drilledDimensions as dim]
@@ -220,9 +220,9 @@
               data-ref="${factTable}.json?${presentation.dataUrl}"
               data-sort="${presentation.sortMode}">
               [@export presentation "image" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
               </div>
-          <br />
+          <br>
       [#elseif "column" = presentation.type || "columnstacked" = presentation.type || "columnstacked100" = presentation.type]
           [@show_filter_values presentation /]
           [#assign emindex = 0 /]
@@ -241,9 +241,9 @@
               [#if presentation.legendless??]data-legendless="${presentation.legendless}"[/#if]
               [#if presentation.widthMeasure??]data-width-measure="${presentation.widthMeasure.surrogateId!'N/A'}"[/#if]>
               [@export presentation "image" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
           </div>
-         <br />
+         <br>
       [#elseif "line" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -256,9 +256,9 @@
                [#if presentation.showSampleSize]data-n="true"[/#if]
               [#if presentation.showConfidenceInterval]data-ci="true"[/#if]>
               [@export presentation "image" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
               </div>
-         <br />
+         <br>
        [#elseif "radar" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -273,7 +273,7 @@
               [@export presentation "image" /]
               <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
               </div>
-         <br />
+         <br>
       [#elseif "pie" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -282,9 +282,9 @@
               data-ref="${factTable}.json?${presentation.dataUrl}"
               [#if presentation.showSampleSize]data-n="true"[/#if]>
               [@export presentation "image" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
           </div>
-         <br />
+         <br>
       [#elseif "gauge" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -313,9 +313,9 @@
                       [/#if]
               >
               [@export presentation "image" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
           </div>
-         <br />
+         <br>
       [#elseif "table" = presentation.type]
           [@show_filter_values presentation /]
           <div
@@ -334,9 +334,9 @@
               data-row-highlight-nodes="[#list presentation.rows as row][#if row.totalHighlightNodes??][#list row.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]"
               data-column-highlight-nodes="[#list presentation.columns as column][#if column.totalHighlightNodes??][#list column.totalHighlightNodes as node]${node.surrogateId} [/#list][/#if][/#list]">
               [@export presentation "table" /]
-              <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+              <img src="${rc.contextPath}/images/loading.gif" alt="loading">
           </div>
-         <br />
+         <br>
         [#elseif "list" = presentation.type]
             [@show_filter_values presentation /]
             <div
@@ -344,9 +344,9 @@
                 class="presentation list"
                 data-ref="${factTable}.json?${presentation.dataUrl}"
                 [@export presentation "table" /]
-                <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+                <img src="${rc.contextPath}/images/loading.gif" alt="loading">
             </div>
-            <br />
+            <br>
       [#elseif "map" = presentation.type]
       <div 
         id="[#if presentation.id??]${presentation.id!}[#else]p${presentation_index}[/#if]"
@@ -372,7 +372,7 @@
         data-no-limits[/#if]
       >
       [@export presentation "image" /]
-      <img src="${rc.contextPath}/images/loading.gif" alt="loading"/>
+      <img src="${rc.contextPath}/images/loading.gif" alt="loading">
       </div>
       [#assign containsMap = true]
       [#else]
@@ -434,13 +434,13 @@
         <title>${summary.title.getValue(lang)} - ${factName.getValue(lang)} -  ${message("site.title")}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/style.css?v=${buildTimestamp}" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/summary.css?v=${buildTimestamp}" />
-        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/fontawesome.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/solid.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/style.css?v=${buildTimestamp}">
+        <link rel="stylesheet" href="${rc.contextPath}/css/summary.css?v=${buildTimestamp}">
+        <link href="${rc.contextPath}/images/favicon.ico" rel="shortcut icon" type="image/x-icon">
        
 
         <!--[if lt IE 9]>
@@ -453,8 +453,7 @@
 
     <header role="banner" class="summary-header container-fluid">
         <div class="logo">
-            <img 
-            src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!'fi'}_RGB.svg" alt="${message('site.thl.logo.alt')}">
         </div>
         <div class="col-xs-12 col-md-9">
             <h1>
@@ -508,12 +507,12 @@
         [/#if]
         <div class="btn-group float-end help" role="group">
           [#if summary.link.getValue(lang)?? && !summary.link.getValue(lang)?ends_with('n/a')]
-          <a href="${summary.link.getValue(lang)}" target="_blank" type="submit" class="btn btn-default">
+          <a href="${summary.link.getValue(lang)}" target="_blank" class="btn btn-default">
             <span class="fas fa-info-circle"></span>
             <span class="hide-xs">${message("summary.more")}</span>
           </a>
           [/#if]
-          <a href="${message("site.help.url")}" target="_blank" type="submit" class="btn btn-default">
+          <a href="${message('site.help.url')}" target="_blank" class="btn btn-default">
             <span class="fas fa-question-circle"></span>
             <span class="hide-xs">${message("site.help")}</span>
           </a>
