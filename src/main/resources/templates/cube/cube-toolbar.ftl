@@ -4,11 +4,11 @@
     <div class="dropdown options-dropdown" title="${message("cube.dimension.column-selections")}">
         <button class="btn btn-secondary hide-btn-focus" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="..." title="${message('cube.dimension.column-selections')}">${message("cube.options")}<span class="caret"></span></button>
         <ul title="${message("cube.dimension.column-selections")}" class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-            <li class="reset-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-sync"></span> ${message("cube.reset")}</a></li>
-            <li class="transpose-action" role="presentation"><a class="dropdown-item" role="menuitem"><span class="fas fa-retweet"></span> ${message("cube.transpose")}</a></li>
-            <li class="hide-zero-action" role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.fz??]${message("cube.filter-zero.off")}[#else]${message("cube.filter-zero.on")}[/#if]</a></li>
-            <li class="hide-empty-action" [#if RequestParameters.fz??]disabled[/#if] role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.fo??]${message("cube.filter-empty.off")}[#else]${message("cube.filter-empty.on")}[/#if]</a></li>
-            <li class="show-codes-action" role="presentation"><a class="dropdown-item" role="menuitem">[#if RequestParameters.sc??]${message("cube.codes.off")}[#else]${message("cube.codes.on")}[/#if]</a></li>
+            <li class="reset-action" role="presentation"><a href="#" class="dropdown-item" role="menuitem"><span class="fas fa-sync"></span> ${message("cube.reset")}</a></li>
+            <li class="transpose-action" role="presentation"><a href="#" class="dropdown-item" role="menuitem"><span class="fas fa-retweet"></span> ${message("cube.transpose")}</a></li>
+            <li class="hide-zero-action" role="presentation"><a href="#" class="dropdown-item" role="menuitem">[#if RequestParameters.fz??]${message("cube.filter-zero.off")}[#else]${message("cube.filter-zero.on")}[/#if]</a></li>
+            <li class="hide-empty-action" [#if RequestParameters.fz??]disabled[/#if] role="presentation"><a href="#" class="dropdown-item" role="menuitem">[#if RequestParameters.fo??]${message("cube.filter-empty.off")}[#else]${message("cube.filter-empty.on")}[/#if]</a></li>
+            <li class="show-codes-action" role="presentation"><a href="#" class="dropdown-item" role="menuitem">[#if RequestParameters.sc??]${message("cube.codes.off")}[#else]${message("cube.codes.on")}[/#if]</a></li>
 
             [#if views?size > 0]
                 <li><hr class="dropdown-divider"></li>
@@ -26,14 +26,14 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton2" role="menu">
             [#assign reqParameters][#compress]
-                [#list rowParams as r]row=${r}&[/#list]
-                [#list colParams as r]column=${r}&[/#list]
-                [#list filters as r]filter=${r.dimension.id}-${r.surrogateId}&[/#list]
-                [#if RequestParameters.fo??]&fo=1[/#if]
-                [#if RequestParameters.fz??]&fz=1[/#if]
-                [#if RequestParameters.sc??]&sc=1[/#if]
-                [#if RequestParameters.sort??]&sort=${RequestParameters.sort}[/#if]
-                [#if RequestParameters.mode??]&mode=${RequestParameters.mode}[/#if]
+                [#list rowParams as r]row=${r}&amp;[/#list]
+                [#list colParams as r]column=${r}&amp;[/#list]
+                [#list filters as r]filter=${r.dimension.id}-${r.surrogateId}&amp;[/#list]
+                [#if RequestParameters.fo??]&amp;fo=1[/#if]
+                [#if RequestParameters.fz??]&amp;fz=1[/#if]
+                [#if RequestParameters.sc??]&amp;sc=1[/#if]
+                [#if RequestParameters.sort??]&amp;sort=${RequestParameters.sort}[/#if]
+                [#if RequestParameters.mode??]&amp;mode=${RequestParameters.mode}[/#if]
 
             [/#compress][/#assign]
             [#assign reqParameters=reqParameters?replace("\\n|\\r", "", "rm") /]
@@ -75,7 +75,7 @@
       </a>
     [/#if]
 
-    <a class="lnk-btn" target="_blank" href="${message("site.help.url")}" type="submit">
+    <a class="lnk-btn" target="_blank" href="${message('site.help.url')}">
       <span class="fas fa-question-circle"></span>
       <span class="hide-xs">${message("site.help")}</span>
     </a>

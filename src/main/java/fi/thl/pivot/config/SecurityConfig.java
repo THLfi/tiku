@@ -22,14 +22,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers()
                 .contentSecurityPolicy(
                         "default-src 'self'; " +
-                                "script-src '" + NONCE_HEADER + "' 'report-sample' 'self' https://repo.thl.fi/sites/pivot/pivot-production/js/jquery.stickytable.js https://repo.thl.fi/sites/pivot/pivot-production/js/d3.min.js https://repo.thl.fi/sites/pivot/pivot-production/js/json-stat.js https://repo.thl.fi/sites/pivot/pivot-production/js/jquery.js https://repo.thl.fi/sites/pivot/pivot-production/js/jquery.ui.touch-punch.min.js https://repo.thl.fi/sites/pivot/pivot-production/js/bootstrap.js https://repo.thl.fi/sites/pivot/pivot-production/js/bootstrap.min.js https://repo.thl.fi/sites/pivot/pivot-production/js/bootstrap.bundle.min.js https://repo.thl.fi/sites/pivot/pivot-production/js/jquery-ui.js https://www.google-analytics.com/analytics.js https://repo.thl.fi/sites/pivot/pivot-production/js/leaflet.js https://repo.thl.fi/sites/pivot/pivot-production/js/proj4.min.js https://repo.thl.fi/sites/pivot/pivot-production/js/proj4leaflet.js https://sotkanet.fi/sotkanet/fi/api/geojson/ https://sotkanet.fi/sotkanet/en/api/geojson/ https://sotkanet.fi/sotkanet/sv/api/geojson/; " +
-                                "style-src 'self' 'unsafe-inline' https://repo.thl.fi; " +
+                                "script-src '" + NONCE_HEADER + "' 'report-sample' 'self' https://www.google-analytics.com/analytics.js https://sotkanet.fi/sotkanet/fi/api/geojson/ https://sotkanet.fi/sotkanet/en/api/geojson/ https://sotkanet.fi/sotkanet/sv/api/geojson/; " +
+                                "style-src 'self' 'unsafe-inline'; " +
                                 "object-src 'none'; " +
                                 "base-uri 'self'; " +
                                 "connect-src 'self' https://www.google-analytics.com; " +
-                                "font-src 'self' https://repo.thl.fi; " +
+                                "font-src 'self'; " +
                                 "frame-src 'self'; " +
-                                "img-src 'self' blob: https://repo.thl.fi; " +
+                                "img-src 'self' blob:; " +
                                 "manifest-src 'self'; " +
                                 "media-src 'self'; " +
                                 "worker-src 'none'; "

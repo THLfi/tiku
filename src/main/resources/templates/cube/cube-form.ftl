@@ -28,12 +28,12 @@
         [/#if]
      [/#list]
 
-     <input type="hidden" name="fo" value="1" [#if RequestParameters.fo??][#else]disabled[/#if] />
-     <input type="hidden" name="fz" value="1" [#if RequestParameters.fz??][#else]disabled[/#if] />
-     <input type="hidden" name="sc" value="1" [#if RequestParameters.sc??][#else]disabled[/#if] />
+     <input type="hidden" name="fo" value="1" [#if RequestParameters.fo??][#else]disabled[/#if]>
+     <input type="hidden" name="fz" value="1" [#if RequestParameters.fz??][#else]disabled[/#if]>
+     <input type="hidden" name="sc" value="1" [#if RequestParameters.sc??][#else]disabled[/#if]>
 
-     <input type="hidden" name="sort" disabled />
-     <input type="hidden" name="mode" disabled />
+     <input type="hidden" name="sort" disabled>
+     <input type="hidden" name="mode" disabled>
 
      <button type="submit" class="btn btn-primary">P&auml;ivit&auml;</button>
 </form>

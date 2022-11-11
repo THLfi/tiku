@@ -8,15 +8,14 @@
 [/#function]
 [#assign breadcrumbs]
     <li class="breadcrumb-item"><a href="${rc.contextPath}/">Environments</a></li>
-    <li class="breadcrumb-item active">${env!}</a></li>
+    <li class="breadcrumb-item active">${env!}</li>
 [/#assign]
-
-<script src="${resourceUrl}/js/jquery.js"></script>
-<script src="${rc.contextPath}/js/amor-list.min.js"></script>
-
 [@amor_page message("amor-list.title")]
 
-<link rel="stylesheet" href="${rc.contextPath}/css/amor-list.css" />
+<link rel="stylesheet" href="${rc.contextPath}/css/amor-list.css">
+
+<script src="${rc.contextPath}/js/jquery.js"></script>
+<script src="${rc.contextPath}/js/amor-list.min.js"></script>
 
 [#list reports as report]
   [#if report_index > 0 && report.hydra != last_hydra]
@@ -37,8 +36,7 @@
     <div class="info">
       <span class="updated">[#if "SUMMARY"=report.type]${message("summary.data-updated")}[#else]${message("cube.updated")}[/#if]: ${report.added?string("dd.MM.yyyy HH:mm")}</span>
       [#if "SUMMARY"=report.type && (env = "test" || env = "deve")]
-      <a
-      href="${rc.contextPath}/${env}/${lang}/${report.subject}/${report.hydra}/summary_${report.fact}/source">${message("summary.view-source")}</a></h2>
+      <a href="${rc.contextPath}/${env}/${lang}/${report.subject}/${report.hydra}/summary_${report.fact}/source">${message("summary.view-source")}</a>
       [/#if]
     </div>
   </div>

@@ -1006,6 +1006,10 @@ a:focus, a:hover {
     background-color: #204d74;
 }
 
+li.no-dot {
+    list-style-type: none;
+}
+
 @media screen and (max-width: 767px) {
 
 	.pivot-header #languages {

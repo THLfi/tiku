@@ -44,7 +44,7 @@ public class UrlBuilder {
             logger.debug("Dimension nodes length after packing: " + packedParams.length());
 
             sb
-            .append("&")
+            .append("&amp;")
             .append(parameterName)
             .append("=")
             .append(dimensionId)
@@ -55,28 +55,28 @@ public class UrlBuilder {
     }
 
     public void sort(SortMode sortMode) {
-        sb.append("&mode=").append(sortMode.toString());
-        sb.append("&sort=c0");
+        sb.append("&amp;mode=").append(sortMode.toString());
+        sb.append("&amp;sort=c0");
     }
 
     public void suppress(SuppressMode suppressMode) {
         if(null == suppressMode || SuppressMode.none.equals(suppressMode)) {
             
         } else if (SuppressMode.empty.equals(suppressMode)) {
-            sb.append("&fo");
+            sb.append("&amp;fo");
         } else if (SuppressMode.zero.equals(suppressMode)) {
-            sb.append("&fz");
+            sb.append("&amp;fz");
         } else if (SuppressMode.all.equals(suppressMode)) {
-            sb.append("&fo&fz");
+            sb.append("&amp;fo&amp;fz");
         }
     }
 
     public void showConfidenceInterval() {
-        sb.append("&ci");
+        sb.append("&amp;ci");
     }
 
     public void showSampleSize() {
-        sb.append("&n");
+        sb.append("&amp;n");
     }
 
     public String getParameterName() {

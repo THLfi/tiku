@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
@@ -20,9 +19,6 @@ import freemarker.template.utility.XmlEscape;
 
 @Configuration
 public class FreemarkerConfig {
-	
-	@Value("${resourceUrl}")
-	private String resourceUrl;
 
 	@Bean
 	public ViewResolver fmViewResolver() {
@@ -52,7 +48,6 @@ public class FreemarkerConfig {
 		Map<String, Object> vars = new HashMap<>();
 		vars.put("xml_escape", new XmlEscape());
 		vars.put("html_escape", new HtmlEscape());
-		vars.put("resourceUrl", resourceUrl);
 		config.setFreemarkerVariables(vars);
 		return config;
 	}
