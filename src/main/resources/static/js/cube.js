@@ -28,7 +28,7 @@
       $('body').toggleClass('full-screen');
     });
 
-    function changeView (inputElement, value) {
+    function changeView (inputElement, value) {//TODO:PIVOT-894
       if (typeof inputElement.val === 'undefined') {
         inputElement = $(inputElement);
       }
@@ -459,8 +459,17 @@
       changeView($('.row-selection').get($(this).attr('data-ref')), $(this).attr('value-ref'));
     });
     $('.row-target a')
-      .click(function (e) {
+      .click(function (e) {//TODO:PIVOT-894
         e.preventDefault();
+        const a = $('.row-selection').get($(this).closest('.row-target').attr('data-level'));
+        const aa = $(a).val();
+        const b = $(this).attr('data-ref');
+        if(b === aa){
+            //not link
+            let c = aa;
+        }
+
+
         changeView($('.row-selection').get($(this).closest('.row-target').attr('data-level')), $(this).attr('data-ref'));
       });
     $('.column-target a')
@@ -597,10 +606,15 @@
       $('.row-target')
           .not('.accept-all')
           .each(function () {
-              var btn = $(this).find(".btn").first();
-              var link = $(this).find(".rowhdr").first();
-              var l = link.attr('id');
-              btn.attr('aria-describedby', l)
+              const btn = $(this).find(".btn").first();
+              const link = $(this).find(".rowhdr").first();
+              const oldLinkId = link.attr('id');
+              btn.attr('aria-describedby', oldLinkId);
+              const linkId = $($('.row-selection').get($(this).closest('.row-target').attr('data-level'))).val();
+              if(oldLinkId === linkId){
+                  const linkText =  $('a#'+oldLinkId).text();
+                  link.replaceWith($.trim(linkText) );
+              }
           });
 
 
