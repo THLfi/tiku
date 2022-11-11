@@ -21,10 +21,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/style.css" />
-        <link rel="stylesheet" href="${rc.contextPath}/css/summary.css" />
+        <link rel="stylesheet" href="${rc.contextPath}/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${rc.contextPath}/fonts/source-sans-pro/2.0.10/source-sans-pro.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/style.css">
+        <link rel="stylesheet" href="${rc.contextPath}/css/summary.css">
         <!--[if lt IE 9]>
           <script src="${rc.contextPath}/js/html5shiv.js"></script>
           <script src="${rc.contextPath}/js/respond.min.js"></script>
@@ -37,7 +37,7 @@
     <header class="summary-header container">
         <h1>${message("site.error")}</h1>
         <div class="logo">
-            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!"fi"}_RGB.svg">
+            <img src="${rc.contextPath}/images/THL_tunnus_pitka_${uiLanguage!'fi'}_RGB.svg" alt="${message('site.thl.logo.alt')}">
         </div>
     </header>
 

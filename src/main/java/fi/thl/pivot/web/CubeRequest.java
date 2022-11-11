@@ -117,32 +117,32 @@ public class CubeRequest extends AbstractRequest {
         sb.append(hydra).append("/");
         sb.append(cube).append("?");
         if (!"latest".equals(runId)) {
-            sb.append("&runid=").append(runId);
+            sb.append("&amp;runid=").append(runId);
         }
         for (String row : rowHeaders) {
-            sb.append("&row=").append(row);
+            sb.append("&amp;row=").append(row);
         }
         for (String column : columnHeaders) {
-            sb.append("&column=").append(column);
+            sb.append("&amp;column=").append(column);
         }
         for (String filter : filterValues) {
-            sb.append("&filter=").append(filter);
+            sb.append("&amp;filter=").append(filter);
         }
         if (null != getFilterEmptyValues()) {
-            sb.append("&fo");
+            sb.append("&amp;fo");
         }
         if (null != getFilterZeroes()) {
-            sb.append("&fz");
+            sb.append("&amp;fz");
         }
         if("1".equals(getShowCodes())) {
-            sb.append("&sc");
+            sb.append("&amp;sc");
         }
         if (null != sortNode) {
-            sb.append("&sort=").append(sortNode);
-            sb.append("&mode=").append(sortMode);
+            sb.append("&amp;sort=").append(sortNode);
+            sb.append("&amp;mode=").append(sortMode);
         }
         if (!"su".equals(searchType)) {
-            sb.append("&search=").append(searchType);
+            sb.append("&amp;search=").append(searchType);
         }
         return sb.toString();
     }
@@ -197,25 +197,25 @@ public class CubeRequest extends AbstractRequest {
     public String toDataUrl() {
         StringBuilder sb = new StringBuilder();
         for (String row : rowHeaders) {
-            sb.append(String.format("&row=%s", row));
+            sb.append(String.format("&amp;row=%s", row));
         }
         for (String column : columnHeaders) {
-            sb.append(String.format("&column=%s", column));
+            sb.append(String.format("&amp;column=%s", column));
         }
         for (String filter : filterValues) {
-            sb.append(String.format("&filter=%s", filter));
+            sb.append(String.format("&amp;filter=%s", filter));
         }
         if (fo != null) {
-            sb.append("&fo");
+            sb.append("&amp;fo");
         }
         if (fz != null) {
-            sb.append("&fz");
+            sb.append("&amp;fz");
         }
         if(ci != null) {
-            sb.append("&ci");
+            sb.append("&amp;ci");
         }
         if(n != null) {
-            sb.append("&n");
+            sb.append("&amp;n");
         }
         return sb.toString();
     }

@@ -25,6 +25,6 @@
         <span>${message("cube.filter")}</span>
     </div>
 
-    <p />
+    <p></p>
 </div>
 [/#if]
