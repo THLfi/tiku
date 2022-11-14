@@ -294,6 +294,10 @@ table tbody>tr>th.row-target, table tbody>tr>th.column-target {
 	right: 0;
 }
 
+.sticky-table {
+	overflow: visible !important;
+}
+
 .accept-all .glyphicon {
 	display: none;
 }

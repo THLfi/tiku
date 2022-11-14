@@ -460,7 +460,7 @@
     });
     $('.row-target a')
       .click(function (e) {
-        e.preventDefault();
+        e.preventDefault();        
         changeView($('.row-selection').get($(this).closest('.row-target').attr('data-level')), $(this).attr('data-ref'));
       });
     $('.column-target a')
@@ -597,10 +597,15 @@
       $('.row-target')
           .not('.accept-all')
           .each(function () {
-              var btn = $(this).find(".btn").first();
-              var link = $(this).find(".rowhdr").first();
-              var l = link.attr('id');
-              btn.attr('aria-describedby', l)
+              const btn = $(this).find(".btn").first();
+              const link = $(this).find(".rowhdr").first();
+              const oldLinkId = link.attr('id');
+              btn.attr('aria-describedby', oldLinkId);
+              const linkId = $($('.row-selection').get($(this).closest('.row-target').attr('data-level'))).val();
+              if(oldLinkId === linkId){
+                  const linkText =  $('a#'+oldLinkId).text();
+                  link.replaceWith($.trim(linkText) );
+              }
           });
 
 
