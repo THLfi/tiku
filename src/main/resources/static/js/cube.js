@@ -460,8 +460,7 @@
     });
     $('.row-target a')
       .click(function (e) {
-        e.preventDefault();
-        const a = $('.row-selection').get($(this).closest('.row-target').attr('data-level'));
+        e.preventDefault();        
         changeView($('.row-selection').get($(this).closest('.row-target').attr('data-level')), $(this).attr('data-ref'));
       });
     $('.column-target a')
