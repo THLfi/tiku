@@ -1,6 +1,6 @@
 [#ftl]
 
-<table class="cube table table-hover table-condensed table-bordered">
+        <table id="to-main-content" class="cube table table-hover table-condensed table-bordered">
 [#list pivot.columns as ch]
    <tr class="sticky-header">
         [#if ch_index == 0]
