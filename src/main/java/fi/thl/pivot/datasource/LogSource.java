@@ -93,7 +93,7 @@ public class LogSource {
                     final String id = cube + System.nanoTime();
                     String c[] = cube.split("\\.");
                     jdbcTemplate.update(String.format(USAGE_TEMPLATE, schema), id, c[0], c[1], c[2],
-                            c.length > 4 ? c[3] : "latest", req.getLocalAddr(), req.getRemoteAddr(),
+                            c.length > 4 ? c[3] : "latest", req.getLocalAddr(), "",
                             req.getSession().getId(), view, cs.isZeroValuesFiltered() ? "t" : "f",
                             cs.isEmptyValuesFiltered() ? "t" : "f");
 
