@@ -28,7 +28,7 @@
       $('body').toggleClass('full-screen');
     });
 
-    function changeView (inputElement, value) {//TODO:PIVOT-894
+    function changeView (inputElement, value) {
       if (typeof inputElement.val === 'undefined') {
         inputElement = $(inputElement);
       }
