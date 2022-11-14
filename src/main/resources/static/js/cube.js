@@ -462,14 +462,6 @@
       .click(function (e) {
         e.preventDefault();
         const a = $('.row-selection').get($(this).closest('.row-target').attr('data-level'));
-        const aa = $(a).val();
-        const b = $(this).attr('data-ref');
-        if(b === aa){
-            //not link
-            let c = aa;
-        }
-
-
         changeView($('.row-selection').get($(this).closest('.row-target').attr('data-level')), $(this).attr('data-ref'));
       });
     $('.column-target a')
