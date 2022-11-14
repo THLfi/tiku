@@ -459,7 +459,7 @@
       changeView($('.row-selection').get($(this).attr('data-ref')), $(this).attr('value-ref'));
     });
     $('.row-target a')
-      .click(function (e) {//TODO:PIVOT-894
+      .click(function (e) {
         e.preventDefault();
         const a = $('.row-selection').get($(this).closest('.row-target').attr('data-level'));
         const aa = $(a).val();
