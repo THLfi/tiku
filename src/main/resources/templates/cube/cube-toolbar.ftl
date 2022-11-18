@@ -91,6 +91,5 @@
     </div>
     [/#if]
 
-    <div class="btn-group rightest" role="group" aria-label="..."></div>
 </div>
 </div>
